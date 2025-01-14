@@ -10,7 +10,8 @@ import org.keycloak.models.KeycloakSession;
 public
 class DemographicProviderImpl implements DemographicProvider {
 
-	private final KeycloakSession session;
+	private final KeycloakSession                session;
+	private final DemographicVerificationService verificationService;
 
 	/**
 	 * Constructor to initialize the Keycloak session.
@@ -19,15 +20,16 @@ class DemographicProviderImpl implements DemographicProvider {
 	 * 		the KeycloakSession instance.
 	 */
 	public
-	DemographicProviderImpl( KeycloakSession session ) {
+	DemographicProviderImpl( KeycloakSession session, DemographicVerificationService verificationService ) {
 
 		this.session = session;
+		this.verificationService = verificationService;
 	}
 
 	@Override
 	public
 	void close( ) {
-		// Cleanup resources if necessary
+
 	}
 
 	/**
@@ -43,23 +45,19 @@ class DemographicProviderImpl implements DemographicProvider {
 	@Override
 	public
 	boolean validateDemographics( String userId, Map< String, String > demographics ) {
-		// Check for missing or null userId or demographics
-		if ( userId == null || demographics == null || demographics.isEmpty( ) ) {
+
+		if ( demographics == null || demographics.isEmpty( ) ) {
 			return false;
 		}
 
-		// Example validation logic: Check required keys
-		String firstName = demographics.get( "firstName" );
-		String lastName  = demographics.get( "lastName" );
-		String dob       = demographics.get( "dob" );
+		var firstName = demographics.get( "firstName" );
+		var lastName  = demographics.get( "lastName" );
 
-		if ( firstName == null || lastName == null || dob == null ) {
+		if ( firstName == null || lastName == null ) {
 			return false;
 		}
 
-		// Simulated validation logic for demonstration
-		// Replace with an external API/database check as needed
-		return firstName.equalsIgnoreCase( "John" ) && lastName.equalsIgnoreCase( "Doe" ) && dob.equals( "1990-01-01" );
+		return verificationService.verify( userId, demographics );
 	}
 
 }
