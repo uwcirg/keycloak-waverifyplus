@@ -2,14 +2,18 @@ package edu.uw.waverify.spi.demographic;
 
 import java.util.HashMap;
 
+import org.keycloak.models.KeycloakSession;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.keycloak.models.KeycloakSession;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+/**
+ * Unit tests for the DemographicProvider implementation.
+ */
 class DemographicProviderTest {
 
 	@Mock
@@ -17,6 +21,10 @@ class DemographicProviderTest {
 
 	private DemographicProvider demographicProvider;
 
+	/**
+	 * Sets up the test environment by initializing the DemographicProvider with a mock session and a mock verification
+	 * service.
+	 */
 	@BeforeEach
 	void setUp( ) {
 
@@ -27,6 +35,9 @@ class DemographicProviderTest {
 		demographicProvider = providerFactory.create( mockSession );
 	}
 
+	/**
+	 * Tests the validation logic when demographic data is empty.
+	 */
 	@Test
 	void testValidateDemographics_EmptyData( ) {
 
@@ -38,6 +49,9 @@ class DemographicProviderTest {
 		assertFalse( result, "Expected demographics to be invalid due to empty data" );
 	}
 
+	/**
+	 * Tests the validation logic when demographic data is incomplete.
+	 */
 	@Test
 	void testValidateDemographics_InvalidData( ) {
 
@@ -50,6 +64,9 @@ class DemographicProviderTest {
 		assertFalse( result, "Expected demographics to be invalid due to missing data" );
 	}
 
+	/**
+	 * Tests the validation logic when demographic data is complete and valid.
+	 */
 	@Test
 	void testValidateDemographics_ValidData( ) {
 
