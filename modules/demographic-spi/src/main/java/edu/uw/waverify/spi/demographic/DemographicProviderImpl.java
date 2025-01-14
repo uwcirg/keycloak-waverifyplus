@@ -4,6 +4,8 @@ import java.util.Map;
 
 import org.keycloak.models.KeycloakSession;
 
+import edu.uw.waverify.spi.demographic.verification.DemographicVerificationService;
+
 /**
  * Implementation of the DemographicProvider interface. Handles the core demographic validation logic.
  */

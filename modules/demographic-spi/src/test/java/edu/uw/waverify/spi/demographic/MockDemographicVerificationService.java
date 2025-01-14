@@ -2,6 +2,8 @@ package edu.uw.waverify.spi.demographic;
 
 import java.util.Map;
 
+import edu.uw.waverify.spi.demographic.verification.DemographicVerificationService;
+
 public
 class MockDemographicVerificationService implements DemographicVerificationService {
 

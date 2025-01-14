@@ -1,4 +1,4 @@
-package edu.uw.waverify.spi.demographic;
+package edu.uw.waverify.spi.demographic.verification;
 
 import java.util.Map;
 

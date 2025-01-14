@@ -22,7 +22,8 @@ class DemographicProviderTest {
 
 		MockitoAnnotations.openMocks( this );
 		var verificationService = new MockDemographicVerificationService( );
-		var providerFactory     = new DemographicProviderFactory( verificationService );
+		var providerFactory     = new DemographicProviderFactory( );
+		providerFactory.setDemographicVerificationService( verificationService );
 		demographicProvider = providerFactory.create( mockSession );
 	}
 
