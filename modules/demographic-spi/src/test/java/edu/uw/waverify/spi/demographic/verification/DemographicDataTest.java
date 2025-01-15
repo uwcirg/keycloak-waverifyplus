@@ -1,4 +1,4 @@
-package edu.uw.waverify.spi.demographic;
+package edu.uw.waverify.spi.demographic.verification;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

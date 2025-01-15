@@ -14,12 +14,17 @@ dependencies {
 	implementation 'org.keycloak:keycloak-server-spi:26.0.6'
 	implementation 'org.keycloak:keycloak-services:26.0.6'
 
-	// REST client for integration with mock-vp API
+	// REST client
 	implementation 'jakarta.ws.rs:jakarta.ws.rs-api:3.1.0'
 	implementation 'org.glassfish.jersey.core:jersey-client:3.1.0'
 
-	// Spring framework for utilities
-	implementation 'org.springframework:spring-context:6.0.0'
+	// JSON utilities
+	implementation 'javax.json:javax.json-api:1.1.4'
+	implementation 'org.glassfish:javax.json:1.1.4'
+
+	// lombok
+	compileOnly 'org.projectlombok:lombok:1.18.36'
+	annotationProcessor 'org.projectlombok:lombok:1.18.36'
 
 	// Logging dependencies
 	implementation 'org.slf4j:slf4j-api:2.0.0'
