@@ -97,7 +97,7 @@ class DemographicVerificationServiceImplTest {
 		// Arrange
 		String                userId       = "12345";
 		Map< String, String > demographics = Map.of( "firstName", "John", "lastName", "Doe" );
-		String                requestBody  = "{\"userId\":\"12345\",\"demographics\":{\"firstName\":\"John\",\"lastName\":\"Doe\"}}";
+		String                requestBody  = DemographicDataCodec.encode( userId, demographics );
 		String                responseBody = "{\"valid\":true}";
 
 		when( mockClient.target( DemographicVerificationServiceImpl.MOCK_VP_SERVER_URL ) ).thenReturn( mockTarget );
@@ -106,10 +106,14 @@ class DemographicVerificationServiceImplTest {
 		when( mockResponse.getStatus( ) ).thenReturn( 200 );
 		when( mockResponse.readEntity( String.class ) ).thenReturn( responseBody );
 
+		System.out.println( "Request body: " + requestBody );
+		System.out.println( "Mocked response body: " + responseBody );
+
 		// Act
 		boolean result = service.verify( userId, demographics );
 
 		// Assert
+		System.out.println( "Verification result: " + result );
 		assertTrue( result, "Demographic verification should return true for valid input." );
 		verify( mockBuilder ).post( eq( Entity.entity( requestBody, "application/json" ) ) );
 	}

@@ -14,7 +14,7 @@ import lombok.Setter;
 public
 class DemographicVerificationServiceImpl implements DemographicVerificationService {
 
-	static final String MOCK_VP_SERVER_URL = "http://mock-vp-server/verify";
+	public static final String MOCK_VP_SERVER_URL = "http://mock-vp-server/verify";
 
 	@Setter
 	private Client client;
@@ -42,10 +42,6 @@ class DemographicVerificationServiceImpl implements DemographicVerificationServi
 	@Override
 	public
 	boolean verify( String userId, Map< String, String > demographics ) {
-
-		if ( demographics == null || demographics.isEmpty( ) ) {
-			return false;
-		}
 
 		try {
 			// Encode the demographic data to JSON

@@ -28,13 +28,8 @@ class DemographicDataCodec {
 			JsonObject            jsonObject = jsonReader.readObject( );
 			Map< String, Object > result     = new HashMap<>( );
 
-			String userId = jsonObject.getString( "userId" );
-			result.put( "userId", userId );
-
-			JsonObject            demographicsJson = jsonObject.getJsonObject( "demographics" );
-			Map< String, String > demographics     = new HashMap<>( );
-			demographicsJson.forEach( ( key, value ) -> demographics.put( key, value.toString( ) ) );
-			result.put( "demographics", demographics );
+			var valid = jsonObject.getBoolean( "valid" );
+			result.put( "valid", valid );
 
 			return result;
 		}
