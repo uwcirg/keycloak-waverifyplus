@@ -25,9 +25,9 @@ class DemographicVerificationServiceTest {
 	@Test
 	void testVerify_ShouldReturnTrue_WhenDemographicsAreValid( ) {
 
-		DemographicVerificationService service = mock( DemographicVerificationService.class );
-		String                         userId  = "12345";
-		Map< String, String > demographics = Map.of( "firstName", "John", "lastName", "Doe" );
+		DemographicVerificationService service      = mock( DemographicVerificationService.class );
+		String                         userId       = "12345";
+		Map< String, String >          demographics = Map.of( "firstName", "John", "lastName", "Doe" );
 
 		when( service.verify( userId, demographics ) ).thenReturn( true );
 
