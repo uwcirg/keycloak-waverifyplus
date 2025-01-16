@@ -11,12 +11,12 @@ import lombok.Setter;
  * Implementation of the DemographicVerificationService interface. This class provides the logic for verifying
  * demographic information by interacting with the mock-vp server using jakarta.ws.rs.client.
  */
+@Setter
 public
-class DemographicVerificationServiceImpl implements DemographicVerificationService {
+class DemographicVerificationServiceImpl implements DemographicVerificationService, AutoCloseable {
 
 	public static final String MOCK_VP_SERVER_URL = "http://mock-vp-server/verify";
 
-	@Setter
 	private Client client;
 
 	/**
@@ -26,6 +26,16 @@ class DemographicVerificationServiceImpl implements DemographicVerificationServi
 	DemographicVerificationServiceImpl( ) {
 
 		this.client = ClientBuilder.newClient( );
+	}
+
+	/**
+	 * Closes the JAX-RS client.
+	 */
+	@Override
+	public
+	void close( ) {
+
+		client.close( );
 	}
 
 	/**
@@ -65,15 +75,6 @@ class DemographicVerificationServiceImpl implements DemographicVerificationServi
 		}
 
 		return false;
-	}
-
-	/**
-	 * Closes the JAX-RS client.
-	 */
-	public
-	void close( ) {
-
-		client.close( );
 	}
 
 }
