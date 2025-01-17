@@ -5,6 +5,7 @@ import java.util.Map;
 import jakarta.ws.rs.client.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
+import lombok.Getter;
 import lombok.Setter;
 
 /**
@@ -12,12 +13,12 @@ import lombok.Setter;
  * demographic information by interacting with the mock-vp server using jakarta.ws.rs.client.
  */
 @Setter
+@Getter
 public
 class DemographicVerificationServiceImpl implements DemographicVerificationService, AutoCloseable {
 
-	public static final String MOCK_VP_SERVER_URL = "http://mock-vp-server/verify";
-
 	private Client client;
+	public  String baseUrl = "http://mock-vp-server/verify";
 
 	/**
 	 * Default constructor initializing the JAX-RS client.
@@ -54,15 +55,12 @@ class DemographicVerificationServiceImpl implements DemographicVerificationServi
 	boolean verify( String userId, Map< String, String > demographics ) {
 
 		try {
-			// Encode the demographic data to JSON
 			String requestBody = DemographicDataCodec.encode( userId, demographics );
 
-			// Send POST request to the mock-vp server
-			Response response = client.target( MOCK_VP_SERVER_URL )
+			Response response = client.target( baseUrl )
 			                          .request( MediaType.APPLICATION_JSON )
 			                          .post( Entity.entity( requestBody, MediaType.APPLICATION_JSON ) );
 
-			// Handle the response
 			if ( response.getStatus( ) == 200 ) {
 				String                responseBody    = response.readEntity( String.class );
 				Map< String, Object > decodedResponse = DemographicDataCodec.decode( responseBody );

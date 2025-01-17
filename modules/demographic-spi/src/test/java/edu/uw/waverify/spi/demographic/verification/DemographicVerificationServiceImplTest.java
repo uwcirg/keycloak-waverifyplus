@@ -60,7 +60,7 @@ class DemographicVerificationServiceImplTest {
 		String                userId       = "12345";
 		Map< String, String > demographics = Map.of( "firstName", "John", "lastName", "Doe" );
 
-		when( mockClient.target( DemographicVerificationServiceImpl.MOCK_VP_SERVER_URL ) ).thenReturn( mockTarget );
+		when( mockClient.target( service.getBaseUrl( ) ) ).thenReturn( mockTarget );
 		when( mockTarget.request( "application/json" ) ).thenReturn( mockBuilder );
 		when( mockBuilder.post( any( ) ) ).thenReturn( mockResponse );
 		when( mockResponse.getStatus( ) ).thenReturn( 500 );
@@ -79,7 +79,7 @@ class DemographicVerificationServiceImplTest {
 		Map< String, String > demographics = Map.of( "firstName", "John", "lastName", "Doe" );
 		String                responseBody = "{\"unexpectedKey\":true}";
 
-		when( mockClient.target( DemographicVerificationServiceImpl.MOCK_VP_SERVER_URL ) ).thenReturn( mockTarget );
+		when( mockClient.target( service.getBaseUrl( ) ) ).thenReturn( mockTarget );
 		when( mockTarget.request( "application/json" ) ).thenReturn( mockBuilder );
 		when( mockBuilder.post( any( ) ) ).thenReturn( mockResponse );
 		when( mockResponse.getStatus( ) ).thenReturn( 200 );
@@ -100,7 +100,7 @@ class DemographicVerificationServiceImplTest {
 		String                requestBody  = DemographicDataCodec.encode( userId, demographics );
 		String                responseBody = "{\"valid\":true}";
 
-		when( mockClient.target( DemographicVerificationServiceImpl.MOCK_VP_SERVER_URL ) ).thenReturn( mockTarget );
+		when( mockClient.target( service.getBaseUrl( ) ) ).thenReturn( mockTarget );
 		when( mockTarget.request( "application/json" ) ).thenReturn( mockBuilder );
 		when( mockBuilder.post( any( ) ) ).thenReturn( mockResponse );
 		when( mockResponse.getStatus( ) ).thenReturn( 200 );

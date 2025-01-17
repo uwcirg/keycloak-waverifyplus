@@ -51,10 +51,8 @@ class DemographicDataCodec {
 		JsonObjectBuilder builder = Json.createObjectBuilder( );
 		builder.add( "userId", userId );
 
-		JsonObjectBuilder demographicsBuilder = Json.createObjectBuilder( );
-		demographics.forEach( demographicsBuilder::add );
+		demographics.forEach( builder::add );
 
-		builder.add( "demographics", demographicsBuilder.build( ) );
 		JsonObject jsonObject = builder.build( );
 
 		StringWriter stringWriter = new StringWriter( );
