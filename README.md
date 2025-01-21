@@ -26,7 +26,7 @@ For more details, see the [mock-vp README](mock-vp/README.md).
 into the Keycloak ecosystem. It communicates with the **mock-vp** server to perform demographic validation and provides
 a mechanism to extend Keycloak functionality with custom logic.
 
-For more details, see the [spi-demographic README](spi-demographic/README.md).
+For more details, see the [spi-demographic README](modules/spi-demographic/README.md).
 
 ---
 
@@ -34,7 +34,7 @@ For more details, see the [spi-demographic README](spi-demographic/README.md).
 
 1. Clone the repository:
    ```bash
-   git clone <repository-url>
+   git clone https://github.com/uwcirg/keycloak-waverifyplus.git
    cd keycloak-waverifyplus
    ```
 2. Build the entire project:
