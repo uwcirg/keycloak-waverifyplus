@@ -7,7 +7,8 @@ services:
         ports:
             - "8080:8080"
         volumes:
-            - ./modules/themes:/opt/keycloak/themes
+            - ./themes:/opt/keycloak/themes
+            - ./providers:/opt/keycloak/providers
             - keycloak-data:/opt/keycloak/data
         env_file:
             - keycloak.env

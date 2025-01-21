@@ -92,3 +92,26 @@ jar {
 	}
 	duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 }
+
+tasks.register('deploy') {
+	description = 'Deploys the JAR output to the Keycloak server directory'
+	group = 'deployment'
+
+	dependsOn(jar)
+
+	doLast {
+		def jarFile = jar.archiveFile.get().asFile
+		def keycloakDeployDir = new File(rootDir, "server/providers")
+
+		if (!keycloakDeployDir.exists()) {
+			keycloakDeployDir.mkdirs()
+		}
+
+		copy {
+			from jarFile
+			into keycloakDeployDir
+		}
+
+		println "JAR deployed to ${ keycloakDeployDir.absolutePath }"
+	}
+}
