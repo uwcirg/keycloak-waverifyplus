@@ -14,7 +14,7 @@ import org.mockito.MockitoAnnotations;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-class DemographicProviderImplTest {
+class DemographicAuthenticatorImplTest {
 
 	@Mock
 	private KeycloakSession mockSession;
@@ -22,13 +22,13 @@ class DemographicProviderImplTest {
 	@Mock
 	private DemographicVerificationService mockVerificationService;
 
-	private DemographicProviderImpl provider;
+	private DemographicAuthenticatorImpl provider;
 
 	@BeforeEach
 	void setUp( ) {
 
 		MockitoAnnotations.openMocks( this );
-		provider = new DemographicProviderImpl( mockSession, mockVerificationService );
+		provider = new DemographicAuthenticatorImpl( mockSession, mockVerificationService );
 	}
 
 	@Test
@@ -40,7 +40,7 @@ class DemographicProviderImplTest {
 	@Test
 	void testValidateDemographics_EmptyDemographics_ReturnsFalse( ) {
 
-		boolean result = provider.validateDemographics( "user123", Map.of( ) );
+		boolean result = provider.validateDemographics( Map.of( ) );
 		assertFalse( result, "Validation should return false for empty demographics" );
 	}
 
@@ -48,7 +48,7 @@ class DemographicProviderImplTest {
 	void testValidateDemographics_MissingFirstName_ReturnsFalse( ) {
 
 		Map< String, String > demographics = Map.of( "lastName", "Doe" );
-		boolean               result       = provider.validateDemographics( "user123", demographics );
+		boolean               result       = provider.validateDemographics( demographics );
 		assertFalse( result, "Validation should return false if firstName is missing" );
 	}
 
@@ -56,14 +56,14 @@ class DemographicProviderImplTest {
 	void testValidateDemographics_MissingLastName_ReturnsFalse( ) {
 
 		Map< String, String > demographics = Map.of( "firstName", "John" );
-		boolean               result       = provider.validateDemographics( "user123", demographics );
+		boolean               result       = provider.validateDemographics( demographics );
 		assertFalse( result, "Validation should return false if lastName is missing" );
 	}
 
 	@Test
 	void testValidateDemographics_NullDemographics_ReturnsFalse( ) {
 
-		boolean result = provider.validateDemographics( "user123", null );
+		boolean result = provider.validateDemographics( null );
 		assertFalse( result, "Validation should return false for null demographics" );
 	}
 
@@ -71,12 +71,12 @@ class DemographicProviderImplTest {
 	void testValidateDemographics_ValidDemographics_VerifiesUsingService( ) {
 
 		Map< String, String > demographics = Map.of( "firstName", "John", "lastName", "Doe" );
-		when( mockVerificationService.verify( "user123", demographics ) ).thenReturn( true );
+		when( mockVerificationService.verify( demographics ) ).thenReturn( true );
 
-		boolean result = provider.validateDemographics( "user123", demographics );
+		boolean result = provider.validateDemographics( demographics );
 
 		assertTrue( result, "Validation should return true for valid demographics" );
-		verify( mockVerificationService ).verify( "user123", demographics );
+		verify( mockVerificationService ).verify( demographics );
 	}
 
 }

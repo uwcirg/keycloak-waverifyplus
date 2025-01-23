@@ -26,7 +26,6 @@ class DemographicVerificationServiceImpl implements DemographicVerificationServi
 	public
 	DemographicVerificationServiceImpl( ) {
 
-		this.client = ClientBuilder.newClient( );
 	}
 
 	/**
@@ -42,8 +41,6 @@ class DemographicVerificationServiceImpl implements DemographicVerificationServi
 	/**
 	 * Verifies the provided demographic information for a given user ID by sending it to the mock-vp server.
 	 *
-	 * @param userId
-	 * 		The ID of the user whose demographics are being verified.
 	 * @param demographics
 	 * 		A map containing demographic data where keys represent the attribute names and values represent their
 	 * 		corresponding values.
@@ -52,14 +49,14 @@ class DemographicVerificationServiceImpl implements DemographicVerificationServi
 	 */
 	@Override
 	public
-	boolean verify( String userId, Map< String, String > demographics ) {
+	boolean verify( Map< String, String > demographics ) {
 
 		try {
-			String requestBody = DemographicDataCodec.encode( userId, demographics );
+			String requestBody = DemographicDataCodec.encode( demographics );
 
-			Response response = client.target( baseUrl )
-			                          .request( MediaType.APPLICATION_JSON )
-			                          .post( Entity.entity( requestBody, MediaType.APPLICATION_JSON ) );
+			Response response = getClient( ).target( baseUrl )
+			                                .request( MediaType.APPLICATION_JSON )
+			                                .post( Entity.entity( requestBody, MediaType.APPLICATION_JSON ) );
 
 			if ( response.getStatus( ) == 200 ) {
 				String                responseBody    = response.readEntity( String.class );
@@ -73,6 +70,15 @@ class DemographicVerificationServiceImpl implements DemographicVerificationServi
 		}
 
 		return false;
+	}
+
+	private
+	Client getClient( ) {
+
+		if ( this.client == null ) {
+			this.client = ClientBuilder.newClient( );
+		}
+		return this.client;
 	}
 
 }

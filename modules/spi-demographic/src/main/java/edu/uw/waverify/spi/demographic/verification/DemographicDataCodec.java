@@ -38,18 +38,15 @@ class DemographicDataCodec {
 	/**
 	 * Encodes demographic data and user ID into a JSON string.
 	 *
-	 * @param userId
-	 * 		The user ID to encode.
 	 * @param demographics
 	 * 		The demographic data to encode.
 	 *
 	 * @return A JSON string representing the encoded data.
 	 */
 	public static
-	String encode( String userId, Map< String, String > demographics ) {
+	String encode( Map< String, String > demographics ) {
 
 		JsonObjectBuilder builder = Json.createObjectBuilder( );
-		builder.add( "userId", userId );
 
 		demographics.forEach( builder::add );
 

@@ -4,7 +4,6 @@ import org.keycloak.models.KeycloakSession;
 import org.keycloak.models.KeycloakSessionFactory;
 
 import edu.uw.waverify.spi.demographic.verification.DemographicVerificationService;
-import edu.uw.waverify.spi.demographic.verification.DemographicVerificationServiceImpl;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -14,7 +13,7 @@ import org.mockito.MockitoAnnotations;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 
-class DemographicProviderFactoryTest {
+class DemographicAuthenticatorFactoryTest {
 
 	@Mock
 	private KeycloakSession mockSession;
@@ -22,13 +21,13 @@ class DemographicProviderFactoryTest {
 	@Mock
 	private KeycloakSessionFactory mockSessionFactory;
 
-	private DemographicProviderFactory factory;
+	private DemographicAuthenticatorFactory factory;
 
 	@BeforeEach
 	void setUp( ) {
 
 		MockitoAnnotations.openMocks( this );
-		factory = new DemographicProviderFactory( );
+		factory = new DemographicAuthenticatorFactory( );
 	}
 
 	@Test
@@ -42,12 +41,12 @@ class DemographicProviderFactoryTest {
 	@Test
 	void testCreate_ReturnsDemographicProvider( ) {
 
-		factory.setDemographicVerificationService( mock( DemographicVerificationService.class ) );
+		DemographicAuthenticatorFactory.setVerificationService( mock( DemographicVerificationService.class ) );
 
-		DemographicProvider provider = factory.create( mockSession );
+		var provider = factory.create( mockSession );
 
 		assertNotNull( provider, "Provider should not be null" );
-		assertInstanceOf( DemographicProviderImpl.class, provider, "Provider should be an instance of DemographicProviderImpl" );
+		assertInstanceOf( DemographicAuthenticatorImpl.class, provider, "Provider should be an instance of DemographicAuthenticatorImpl" );
 	}
 
 	@Test
@@ -60,24 +59,15 @@ class DemographicProviderFactoryTest {
 	@Test
 	void testGetId_ReturnsCorrectId( ) {
 
-		assertEquals( DemographicProviderFactory.PROVIDER_ID, factory.getId( ) );
+		assertEquals( DemographicAuthenticatorFactory.PROVIDER_ID, factory.getId( ) );
 	}
 
 	@Test
 	void testInit_SetsVerificationService( ) {
 
 		factory.init( null );
-
-		// Verify that the verification service is initialized as an instance of DemographicVerificationServiceImpl
-		var verificationServiceField = factory.getClass( )
-		                                      .getDeclaredFields( )[ 1 ];
-		verificationServiceField.setAccessible( true );
-		try {
-			var verificationService = verificationServiceField.get( factory );
-			assertInstanceOf( DemographicVerificationServiceImpl.class, verificationService );
-		} catch ( IllegalAccessException e ) {
-			fail( "Field access error: " + e.getMessage( ) );
-		}
+		var verificationService = DemographicAuthenticatorFactory.getVerificationService( );
+		assertInstanceOf( DemographicVerificationService.class, verificationService );
 	}
 
 	@Test

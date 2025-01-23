@@ -12,14 +12,12 @@ interface DemographicVerificationService {
 	/**
 	 * Verifies the provided demographic information for a given user ID.
 	 *
-	 * @param userId
-	 * 		The ID of the user whose demographics are being verified.
 	 * @param demographics
 	 * 		A map containing demographic data where keys represent the attribute names and values represent their
 	 * 		corresponding values.
 	 *
 	 * @return {@code true} if the demographic information is valid, {@code false} otherwise.
 	 */
-	boolean verify( String userId, Map< String, String > demographics );
+	boolean verify( Map< String, String > demographics );
 
 }

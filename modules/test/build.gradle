@@ -17,25 +17,32 @@ configurations {
 }
 
 dependencies {
+	// Keycloak server dependencies for SPI development
 	compileOnly 'org.keycloak:keycloak-server-spi:26.1.0'
 	compileOnly 'org.keycloak:keycloak-services:26.1.0'
 
+	// REST client
 	implementation 'jakarta.ws.rs:jakarta.ws.rs-api:3.1.0'
-	implementation 'org.glassfish.jersey.core:jersey-client:3.1.0'
-	implementation 'org.glassfish.jersey.inject:jersey-hk2:3.1.0'
+	testImplementation 'org.glassfish.jersey.core:jersey-client:3.1.0'
+	testImplementation 'org.glassfish.jersey.inject:jersey-hk2:3.1.0'
 
+	// JSON utilities
 	implementation 'javax.json:javax.json-api:1.1.4'
 	implementation 'org.glassfish:javax.json:1.1.4'
 
+	// lombok
 	compileOnly 'org.projectlombok:lombok:1.18.36'
 	annotationProcessor 'org.projectlombok:lombok:1.18.36'
 
-	testImplementation 'org.keycloak:keycloak-server-spi:26.1.0'
-	testImplementation 'org.keycloak:keycloak-services:26.1.0'
+	// Testing dependencies
 	testImplementation 'org.junit.jupiter:junit-jupiter:5.11.3'
 	testImplementation 'org.mockito:mockito-core:5.14.2'
+	testImplementation 'org.mockito:mockito-junit-jupiter:5.14.2'
+	testImplementation 'net.bytebuddy:byte-buddy:1.15.10'
+	testRuntimeOnly 'org.junit.platform:junit-platform-launcher:1.11.4'
 
 	integrationTestImplementation project(':mock-vp')
+	integrationTestImplementation project(':spi-demographic')
 	integrationTestImplementation 'org.springframework.boot:spring-boot-starter-test:3.3.4'
 }
 
@@ -47,6 +54,28 @@ tasks.test {
 	useJUnitPlatform()
 }
 
+sourceSets {
+	integrationTest {
+		java.srcDir 'src/test-integration/java'
+		resources.srcDir 'src/test-integration/resources'
+		compileClasspath += sourceSets.main.output + configurations.testRuntimeClasspath
+		runtimeClasspath += output + compileClasspath
+	}
+}
+
+tasks.register('integrationTest', Test) {
+	description = 'Runs integration tests'
+	group = 'verification'
+	testClassesDirs = sourceSets.integrationTest.output.classesDirs
+	classpath = sourceSets.integrationTest.runtimeClasspath
+	shouldRunAfter(tasks.test)
+}
+
+tasks.integrationTest {
+	jvmArgs = tasks.test.jvmArgs
+	useJUnitPlatform()
+}
+
 jar {
 	manifest {
 		attributes(
@@ -55,7 +84,9 @@ jar {
 				'Keycloak-SPI': 'true'
 		)
 	}
-	from sourceSets.main.output
+	from {
+		configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+	}
 	duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 }
 
@@ -80,26 +111,4 @@ tasks.register('deploy') {
 
 		println "JAR deployed to ${ keycloakDeployDir.absolutePath }"
 	}
-}
-
-sourceSets {
-	integrationTest {
-		java.srcDir 'src/test-integration/java'
-		resources.srcDir 'src/test-integration/resources'
-		compileClasspath += sourceSets.main.output + configurations.testRuntimeClasspath
-		runtimeClasspath += output + compileClasspath
-	}
-}
-
-tasks.register('integrationTest', Test) {
-	description = 'Runs integration tests'
-	group = 'verification'
-	testClassesDirs = sourceSets.integrationTest.output.classesDirs
-	classpath = sourceSets.integrationTest.runtimeClasspath
-	shouldRunAfter(tasks.test)
-}
-
-tasks.integrationTest {
-	jvmArgs = tasks.test.jvmArgs
-	useJUnitPlatform()
 }

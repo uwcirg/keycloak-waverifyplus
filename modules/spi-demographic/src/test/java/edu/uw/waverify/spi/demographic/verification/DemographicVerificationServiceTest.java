@@ -12,27 +12,27 @@ class DemographicVerificationServiceTest {
 	@Test
 	void testVerify_ShouldReturnFalse_WhenDemographicsAreInvalid( ) {
 
-		DemographicVerificationService service      = mock( DemographicVerificationService.class );
-		String                         userId       = "12345";
-		Map< String, String >          demographics = Map.of( );
+		DemographicVerificationService service = mock( DemographicVerificationService.class );
 
-		when( service.verify( userId, demographics ) ).thenReturn( false );
+		Map< String, String > demographics = Map.of( );
 
-		assertFalse( service.verify( userId, demographics ), "verify should return false for invalid demographics" );
-		verify( service ).verify( userId, demographics );
+		when( service.verify( demographics ) ).thenReturn( false );
+
+		assertFalse( service.verify( demographics ), "verify should return false for invalid demographics" );
+		verify( service ).verify( demographics );
 	}
 
 	@Test
 	void testVerify_ShouldReturnTrue_WhenDemographicsAreValid( ) {
 
-		DemographicVerificationService service      = mock( DemographicVerificationService.class );
-		String                         userId       = "12345";
-		Map< String, String >          demographics = Map.of( "firstName", "John", "lastName", "Doe" );
+		DemographicVerificationService service = mock( DemographicVerificationService.class );
 
-		when( service.verify( userId, demographics ) ).thenReturn( true );
+		Map< String, String > demographics = Map.of( "firstName", "John", "lastName", "Doe" );
 
-		assertTrue( service.verify( userId, demographics ), "verify should return true for valid demographics" );
-		verify( service ).verify( userId, demographics );
+		when( service.verify( demographics ) ).thenReturn( true );
+
+		assertTrue( service.verify( demographics ), "verify should return true for valid demographics" );
+		verify( service ).verify( demographics );
 	}
 
 }

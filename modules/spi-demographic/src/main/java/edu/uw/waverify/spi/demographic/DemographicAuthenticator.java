@@ -2,7 +2,7 @@ package edu.uw.waverify.spi.demographic;
 
 import java.util.Map;
 
-import org.keycloak.provider.Provider;
+import org.keycloak.authentication.Authenticator;
 
 /**
  * Interface defining the contract for demographic validation providers. Implementations of this interface are
@@ -10,19 +10,18 @@ import org.keycloak.provider.Provider;
  * application-specific requirements.
  */
 public
-interface DemographicProvider extends Provider {
+interface DemographicAuthenticator extends Authenticator {
 
 	/**
 	 * Validates demographic information provided by the user.
 	 *
-	 * @param userId
-	 * 		The unique identifier of the user whose demographics are being validated.
 	 * @param demographics
 	 * 		A map containing key-value pairs of demographic data to validate. Keys represent demographic attributes (e.g.,
-	 * 		"firstName", "email"), and values are the corresponding user-provided data.
+	 * 		"firstName", "email"), and values are the corresponding user-provided data. Example: {"firstName": "John",
+	 * 		"dob": "2000-01-01"}.
 	 *
 	 * @return {@code true} if the demographic information is valid, {@code false} otherwise.
 	 */
-	boolean validateDemographics( String userId, Map< String, String > demographics );
+	boolean validateDemographics( Map< String, String > demographics );
 
 }

@@ -14,8 +14,6 @@ class MockDemographicVerificationService implements DemographicVerificationServi
 	/**
 	 * Verifies if the provided demographic data contains both "firstName" and "lastName" keys.
 	 *
-	 * @param userId
-	 * 		the user ID to validate demographics for.
 	 * @param demographics
 	 * 		a map containing demographic data.
 	 *
@@ -23,7 +21,7 @@ class MockDemographicVerificationService implements DemographicVerificationServi
 	 */
 	@Override
 	public
-	boolean verify( String userId, Map< String, String > demographics ) {
+	boolean verify( Map< String, String > demographics ) {
 
 		return demographics.containsKey( "firstName" ) && demographics.containsKey( "lastName" );
 	}
