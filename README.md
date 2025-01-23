@@ -1,10 +1,11 @@
 # Keycloak WaverifyPlus
 
 Keycloak WaverifyPlus is a multi-project Gradle-based application designed to integrate with Keycloak for extended
-functionality. It comprises two subprojects:
+functionality. It comprises three subprojects:
 
 1. **mock-vp**
 2. **authenticator-demographic**
+3. **authenticator-pin**
 
 ---
 
@@ -23,11 +24,20 @@ For more details, see the [mock-vp README](mock-vp/README.md).
 ### 2. authenticator-demographic
 
 **authenticator-demographic** is a Keycloak Service Provider Interface (SPI) implementation that integrates demographic
-validation
-into the Keycloak ecosystem. It communicates with the **mock-vp** server to perform demographic validation and provides
-a mechanism to extend Keycloak functionality with custom logic.
+validation into the Keycloak ecosystem. It communicates with the **mock-vp** server to perform demographic validation
+and provides a mechanism to extend Keycloak functionality with custom logic.
 
-For more details, see the [authenticator-demographic README](modules/authenticator-demographic/README.md).
+For more details, see the [authenticator-demographic README](authenticator-demographic/README.md).
+
+---
+
+### 3. authenticator-pin
+
+**authenticator-pin** is another Keycloak Service Provider Interface (SPI) implementation. It provides functionality for
+PIN-based authentication within Keycloak. This subproject extends Keycloak’s authentication mechanisms, enabling
+PIN-based workflows for secure user authentication.
+
+For more details, see the [authenticator-pin README](authenticator-pin/README.md).
 
 ---
 
@@ -44,7 +54,7 @@ For more details, see the [authenticator-demographic README](modules/authenticat
    ```
 3. To run mock-vp, execute:
    ```bash
-   ./gradlew :mock-vp:bootRun 
+   ./gradlew :mock-vp:bootRun
    ```
 
 ## Running Tests and Integration Tests

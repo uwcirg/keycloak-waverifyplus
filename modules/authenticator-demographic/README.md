@@ -1,19 +1,20 @@
-# Demographic SPI
+# Demographic Authentication Module
 
 ## Overview
 
-This module provides integration between Keycloak and the demographic verification service. It is implemented as a
-Keycloak Service Provider Interface (SPI) and includes custom providers, factories, and services for validating
-demographic data during authentication workflows.
+The Demographic Authentication Module extends Keycloak's functionality by integrating demographic validation into its
+authentication workflows. This module is implemented as a Keycloak Service Provider Interface (SPI) and provides custom
+authenticators, factories, and services for validating demographic data submitted by users.
 
-The SPI framework allows Keycloak to be extended with custom logic, making it possible to integrate third-party services
-such as a verification service for demographic validation.
+The SPI framework enables Keycloak to incorporate third-party services like demographic validation seamlessly, ensuring
+extensibility and modularity.
 
 ## Key Features
 
-- Provides an SPI for demographic validation.
-- Implements a custom provider and factory to interact with the verification service.
-- Supports the validation of demographic data submitted by users during authentication or registration workflows.
+- Custom SPI for demographic validation.
+- Implementations of providers, factories, and services for demographic data verification.
+- Integration with external services for validation logic.
+- Support for user-defined configurations (e.g., timeout settings).
 
 ---
 
@@ -21,65 +22,104 @@ such as a verification service for demographic validation.
 
 ### **1. Service Provider Interface (SPI)**
 
-An SPI in Keycloak defines a contract that allows developers to implement custom extensions or integrate external
-services into Keycloak. It specifies:
+An SPI defines a contract allowing developers to extend Keycloak with custom implementations or integrate external
+services. Key attributes of an SPI include:
 
-- The `getProviderClass` method for defining the primary interface of the service.
-- The `getProviderFactoryClass` method for creating factory classes that instantiate the service.
+- The `getProviderClass` method specifies the main interface of the service.
+- The `getProviderFactoryClass` method creates factory classes for service instantiation.
 
-Example in this module: `DemographicSpi` defines the SPI for demographic validation.
-
----
-
-### **2. Provider**
-
-A provider is a concrete implementation of an SPI. It provides the actual functionality specified by the SPI contract.
-
-Example in this module: `DemographicProviderImpl` implements the demographic validation logic.
+In this module, `DemographicAuthenticator` defines the SPI for demographic validation.
 
 ---
 
-### **3. Provider Factory**
+### **2. Authenticator**
 
-A provider factory is responsible for creating instances of providers. It handles:
+An authenticator implements the logic for validating demographic information during authentication workflows. It
+processes the provided user data and integrates external verification services.
 
-- Initializing the provider instance.
-- Providing configurations or dependencies required by the provider.
+Example: `DemographicAuthenticatorImpl` contains the core logic for demographic validation.
 
-Example in this module: `DemographicProviderFactory` creates instances of `DemographicProviderImpl` and injects the
+---
+
+### **3. Authenticator Factory**
+
+A factory class is responsible for:
+
+- Instantiating authenticators.
+- Providing configurations or dependencies.
+- Managing the lifecycle of authenticators.
+
+Example: `DemographicAuthenticatorFactory` creates instances of `DemographicAuthenticatorImpl` and injects the
 `DemographicVerificationService` dependency.
 
 ---
 
 ### **4. Verification Service**
 
-The verification service is a custom class (`DemographicVerificationService`) used to connect with an external API or
-database for demographic validation. It encapsulates the logic for sending demographic data and receiving verification
-results.
+The verification service is a standalone class that connects to an external API or database to validate demographic
+information. It encapsulates the logic for communication and response handling.
 
-Example in this module: The factory initializes the `DemographicVerificationService` and passes it to the provider
-instances for use in validation.
+Example: `DemographicVerificationServiceImpl` provides a concrete implementation for interacting with the demographic
+verification API.
+
+---
+
+## Module Structure
+
+### **1. Interfaces and Contracts**
+
+- `DemographicAuthenticator`: Defines the contract for demographic validation logic.
+
+### **2. Implementation Classes**
+
+- `DemographicAuthenticatorImpl`: Implements the SPI, handling demographic validation workflows.
+
+### **3. Factory**
+
+- `DemographicAuthenticatorFactory`: Manages authenticator instances, dependencies, and configurations.
+
+### **4. Verification Services**
+
+- `DemographicVerificationService`: Abstract service for demographic verification.
+- `DemographicVerificationServiceImpl`: Concrete implementation communicating with the validation provider server.
 
 ---
 
 ## Usage Instructions
 
-1. **Build the Module**:
-   Run the following command to build the module:
+### **Building the Module**
+
+1. Build the module using Gradle:
    ```bash
    ./gradlew build
    ```
 
-2. **Deploy the Module**:
-   Copy the compiled JAR file to the `providers` directory of your Keycloak server.
+2. Ensure all dependencies are properly resolved before deployment.
 
-3. **Configure the Module**:
-   Add the following settings to your Keycloak configuration to enable the demographic SPI:
+### **Deploying the Module**
+
+1. Copy the compiled JAR file to the `providers` directory of your Keycloak server.
+
+2. Add the following settings to your Keycloak configuration:
    ```bash
-   -Dspi.demographic-validation.provider=demographic-validation
+   -Dspi.demographic-validation.provider=demographic-validation-authenticator
    ```
 
-4. **Start Keycloak**:
-   Restart your Keycloak server to load the new module.
+3. Restart the Keycloak server to apply changes.
+
+### **Configuring the Module**
+
+- Use the Keycloak admin console to enable the demographic authenticator in the desired authentication flow.
+- Adjust the configuration properties (e.g., `verification.timeout`) as required.
+
+---
+
+## Example Configuration
+
+To integrate demographic validation into your authentication flow:
+
+1. Add `DemographicAuthenticatorFactory` to your Keycloak authentication flow in the admin console.
+2. Provide the required configuration (e.g., API endpoint, timeouts).
+3. Deploy the updated flow and test the demographic validation functionality.
 
 ---
