@@ -27,7 +27,7 @@ For more details, see the [mock-vp README](mock-vp/README.md).
 validation into the Keycloak ecosystem. It communicates with the **mock-vp** server to perform demographic validation
 and provides a mechanism to extend Keycloak functionality with custom logic.
 
-For more details, see the [authenticator-demographic README](authenticator-demographic/README.md).
+For more details, see the [authenticator-demographic README](modules/authenticator-demographic/README.md).
 
 ---
 
@@ -37,7 +37,7 @@ For more details, see the [authenticator-demographic README](authenticator-demog
 PIN-based authentication within Keycloak. This subproject extends Keycloak’s authentication mechanisms, enabling
 PIN-based workflows for secure user authentication.
 
-For more details, see the [authenticator-pin README](authenticator-pin/README.md).
+For more details, see the [authenticator-pin README](modules/authenticator-pin/README.md).
 
 ---
 
