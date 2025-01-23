@@ -4,7 +4,7 @@ Keycloak WaverifyPlus is a multi-project Gradle-based application designed to in
 functionality. It comprises two subprojects:
 
 1. **mock-vp**
-2. **spi-demographic**
+2. **authenticator-demographic**
 
 ---
 
@@ -20,13 +20,14 @@ For more details, see the [mock-vp README](mock-vp/README.md).
 
 ---
 
-### 2. spi-demographic
+### 2. authenticator-demographic
 
-**spi-demographic** is a Keycloak Service Provider Interface (SPI) implementation that integrates demographic validation
+**authenticator-demographic** is a Keycloak Service Provider Interface (SPI) implementation that integrates demographic
+validation
 into the Keycloak ecosystem. It communicates with the **mock-vp** server to perform demographic validation and provides
 a mechanism to extend Keycloak functionality with custom logic.
 
-For more details, see the [spi-demographic README](modules/spi-demographic/README.md).
+For more details, see the [authenticator-demographic README](modules/authenticator-demographic/README.md).
 
 ---
 
@@ -55,7 +56,7 @@ For more details, see the [spi-demographic README](modules/spi-demographic/READM
   ./gradlew test
   ```
 
-### spi-demographic
+### authenticator-demographic
 
 - To run unit tests:
   ```bash

@@ -1,0 +1,105 @@
+plugins {
+	id 'java'
+	id 'org.springframework.boot' version '3.3.4'
+	id 'io.spring.dependency-management' version '1.1.6'
+}
+
+group = 'edu.uw.waverify'
+version = '0.0.1-SNAPSHOT'
+
+repositories {
+	mavenCentral()
+}
+
+configurations {
+	integrationTestImplementation.extendsFrom testImplementation
+	integrationTestRuntimeOnly.extendsFrom testRuntimeOnly
+}
+
+dependencies {
+	compileOnly 'org.keycloak:keycloak-server-spi:26.1.0'
+	compileOnly 'org.keycloak:keycloak-services:26.1.0'
+
+	implementation 'jakarta.ws.rs:jakarta.ws.rs-api:3.1.0'
+	implementation 'org.glassfish.jersey.core:jersey-client:3.1.0'
+	implementation 'org.glassfish.jersey.inject:jersey-hk2:3.1.0'
+
+	implementation 'javax.json:javax.json-api:1.1.4'
+	implementation 'org.glassfish:javax.json:1.1.4'
+
+	compileOnly 'org.projectlombok:lombok:1.18.36'
+	annotationProcessor 'org.projectlombok:lombok:1.18.36'
+
+	testImplementation 'org.keycloak:keycloak-server-spi:26.1.0'
+	testImplementation 'org.keycloak:keycloak-services:26.1.0'
+	testImplementation 'org.junit.jupiter:junit-jupiter:5.11.3'
+	testImplementation 'org.mockito:mockito-core:5.14.2'
+
+	integrationTestImplementation project(':mock-vp')
+	integrationTestImplementation 'org.springframework.boot:spring-boot-starter-test:3.3.4'
+}
+
+tasks.test {
+	var listArgs = new ArrayList<String>()
+	listArgs.add("--add-opens=java.base/java.lang=ALL-UNNAMED")
+	listArgs.add("--add-opens=java.base/java.lang.invoke=ALL-UNNAMED")
+	setJvmArgs(listArgs)
+	useJUnitPlatform()
+}
+
+jar {
+	manifest {
+		attributes(
+				'Implementation-Title': 'Demographic Validation SPI',
+				'Implementation-Version': version,
+				'Keycloak-SPI': 'true'
+		)
+	}
+	from sourceSets.main.output
+	duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+}
+
+tasks.register('deploy') {
+	description = 'Deploys the JAR output to the Keycloak server directory'
+	group = 'deployment'
+
+	dependsOn(jar)
+
+	doLast {
+		def jarFile = jar.archiveFile.get().asFile
+		def keycloakDeployDir = new File(rootDir, "server/providers")
+
+		if (!keycloakDeployDir.exists()) {
+			keycloakDeployDir.mkdirs()
+		}
+
+		copy {
+			from jarFile
+			into keycloakDeployDir
+		}
+
+		println "JAR deployed to ${ keycloakDeployDir.absolutePath }"
+	}
+}
+
+sourceSets {
+	integrationTest {
+		java.srcDir 'src/test-integration/java'
+		resources.srcDir 'src/test-integration/resources'
+		compileClasspath += sourceSets.main.output + configurations.testRuntimeClasspath
+		runtimeClasspath += output + compileClasspath
+	}
+}
+
+tasks.register('integrationTest', Test) {
+	description = 'Runs integration tests'
+	group = 'verification'
+	testClassesDirs = sourceSets.integrationTest.output.classesDirs
+	classpath = sourceSets.integrationTest.runtimeClasspath
+	shouldRunAfter(tasks.test)
+}
+
+tasks.integrationTest {
+	jvmArgs = tasks.test.jvmArgs
+	useJUnitPlatform()
+}
