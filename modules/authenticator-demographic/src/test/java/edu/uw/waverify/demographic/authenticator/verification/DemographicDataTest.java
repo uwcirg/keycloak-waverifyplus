@@ -1,4 +1,4 @@
-package edu.uw.waverify.authenticator.demographic.verification;
+package edu.uw.waverify.demographic.authenticator.verification;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

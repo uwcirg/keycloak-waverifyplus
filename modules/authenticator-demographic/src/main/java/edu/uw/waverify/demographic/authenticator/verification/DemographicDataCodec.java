@@ -1,4 +1,4 @@
-package edu.uw.waverify.authenticator.demographic.verification;
+package edu.uw.waverify.demographic.authenticator.verification;
 
 import java.io.StringReader;
 import java.io.StringWriter;

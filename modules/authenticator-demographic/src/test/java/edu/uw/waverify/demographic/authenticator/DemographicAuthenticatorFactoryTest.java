@@ -1,9 +1,9 @@
-package edu.uw.waverify.authenticator.demographic;
+package edu.uw.waverify.demographic.authenticator;
 
 import org.keycloak.models.KeycloakSession;
 import org.keycloak.models.KeycloakSessionFactory;
 
-import edu.uw.waverify.authenticator.demographic.verification.DemographicVerificationService;
+import edu.uw.waverify.demographic.authenticator.verification.DemographicVerificationService;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

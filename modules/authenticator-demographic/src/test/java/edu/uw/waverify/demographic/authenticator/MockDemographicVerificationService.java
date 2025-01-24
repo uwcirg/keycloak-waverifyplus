@@ -1,8 +1,8 @@
-package edu.uw.waverify.authenticator.demographic;
+package edu.uw.waverify.demographic.authenticator;
 
 import java.util.Map;
 
-import edu.uw.waverify.authenticator.demographic.verification.DemographicVerificationService;
+import edu.uw.waverify.demographic.authenticator.verification.DemographicVerificationService;
 
 /**
  * Mock implementation of {@link DemographicVerificationService} for testing purposes. This class simulates the behavior

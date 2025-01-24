@@ -1,4 +1,4 @@
-package edu.uw.waverify.authenticator.demographic;
+package edu.uw.waverify.demographic.authenticator;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -7,7 +7,7 @@ import org.keycloak.authentication.AuthenticationFlowContext;
 import org.keycloak.authentication.AuthenticationFlowError;
 import org.keycloak.models.*;
 
-import edu.uw.waverify.authenticator.demographic.verification.DemographicVerificationService;
+import edu.uw.waverify.demographic.authenticator.verification.DemographicVerificationService;
 
 import jakarta.ws.rs.core.Response;
 
@@ -42,7 +42,6 @@ class DemographicAuthenticatorImpl implements DemographicAuthenticator {
 		Response challenge = context.form( )
 		                            .createForm( "demographic.ftl" );
 		context.challenge( challenge );
-		context.success( );
 	}
 
 	@Override
@@ -52,7 +51,7 @@ class DemographicAuthenticatorImpl implements DemographicAuthenticator {
 		boolean validated = validateDemographics( context );
 		if ( !validated ) {
 			Response challenge = context.form( )
-			                            .setError( "badSecret" )
+			                            .setError( "Demographic validation failed. Please check your details." )
 			                            .createForm( "demographic.ftl" );
 			context.failureChallenge( AuthenticationFlowError.INVALID_CREDENTIALS, challenge );
 			return;
@@ -64,7 +63,7 @@ class DemographicAuthenticatorImpl implements DemographicAuthenticator {
 	public
 	boolean requiresUser( ) {
 
-		return true;
+		return false;
 	}
 
 	@Override

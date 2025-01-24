@@ -1,4 +1,4 @@
-package edu.uw.waverify.authenticator.demographic;
+package edu.uw.waverify.demographic.authenticator;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -9,8 +9,8 @@ import org.keycloak.models.KeycloakSession;
 import org.keycloak.models.KeycloakSessionFactory;
 import org.keycloak.provider.ProviderConfigProperty;
 
-import edu.uw.waverify.authenticator.demographic.verification.DemographicVerificationService;
-import edu.uw.waverify.authenticator.demographic.verification.DemographicVerificationServiceImpl;
+import edu.uw.waverify.demographic.authenticator.verification.DemographicVerificationService;
+import edu.uw.waverify.demographic.authenticator.verification.DemographicVerificationServiceImpl;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -58,8 +58,7 @@ class DemographicAuthenticatorFactory implements AuthenticatorFactory, Configura
 	Authenticator create( KeycloakSession session ) {
 
 		try {
-			return null;
-			//return new DemographicAuthenticatorImpl( session, verificationService );
+			return new DemographicAuthenticatorImpl( session, verificationService );
 		} catch ( Exception e ) {
 			log.error( "Error creating DemographicAuthenticator", e );
 			throw new RuntimeException( "Failed to create DemographicAuthenticator", e );

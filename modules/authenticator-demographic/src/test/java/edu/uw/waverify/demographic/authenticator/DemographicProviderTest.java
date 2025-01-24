@@ -1,4 +1,4 @@
-package edu.uw.waverify.authenticator.demographic;
+package edu.uw.waverify.demographic.authenticator;
 
 import java.util.HashMap;
 
