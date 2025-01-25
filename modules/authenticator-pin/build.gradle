@@ -16,11 +16,6 @@ semanticVersion {
 	snap = true
 }
 
-configurations {
-	integrationTestImplementation.extendsFrom testImplementation
-	integrationTestRuntimeOnly.extendsFrom testRuntimeOnly
-}
-
 dependencies {
 	compileOnly 'org.keycloak:keycloak-server-spi:26.1.0'
 	compileOnly 'org.keycloak:keycloak-services:26.1.0'
@@ -31,9 +26,6 @@ dependencies {
 
 	implementation 'javax.json:javax.json-api:1.1.4'
 	implementation 'org.glassfish:javax.json:1.1.4'
-
-	compileOnly 'org.projectlombok:lombok:1.18.36'
-	annotationProcessor 'org.projectlombok:lombok:1.18.36'
 
 	integrationTestImplementation project(':mock-vp')
 	integrationTestImplementation 'org.springframework.boot:spring-boot-starter-test:3.3.4'
@@ -49,49 +41,4 @@ jar {
 	}
 	from sourceSets.main.output
 	duplicatesStrategy = DuplicatesStrategy.EXCLUDE
-}
-
-tasks.register('deploy') {
-	description = 'Deploys the JAR output to the Keycloak server directory'
-	group = 'deployment'
-
-	dependsOn(jar)
-
-	doLast {
-		def jarFile = jar.archiveFile.get().asFile
-		def keycloakDeployDir = new File(rootDir, "server/providers")
-
-		if (!keycloakDeployDir.exists()) {
-			keycloakDeployDir.mkdirs()
-		}
-
-		copy {
-			from jarFile
-			into keycloakDeployDir
-		}
-
-		println "JAR deployed to ${ keycloakDeployDir.absolutePath }"
-	}
-}
-
-sourceSets {
-	integrationTest {
-		java.srcDir 'src/test-integration/java'
-		resources.srcDir 'src/test-integration/resources'
-		compileClasspath += sourceSets.main.output + configurations.testRuntimeClasspath
-		runtimeClasspath += output + compileClasspath
-	}
-}
-
-tasks.register('integrationTest', Test) {
-	description = 'Runs integration tests'
-	group = 'verification'
-	testClassesDirs = sourceSets.integrationTest.output.classesDirs
-	classpath = sourceSets.integrationTest.runtimeClasspath
-	shouldRunAfter(tasks.test)
-}
-
-tasks.integrationTest {
-	jvmArgs = tasks.test.jvmArgs
-	useJUnitPlatform()
 }
