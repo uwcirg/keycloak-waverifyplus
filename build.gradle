@@ -1,3 +1,49 @@
+import tech.esystems.workspace.java.plugin.artifact.ArtifactPlugin
+
+apply plugin: ArtifactPlugin
+
 wrapper {
 	gradleVersion = '8.11'
+}
+
+subprojects { Project project ->
+	project.pluginManager.withPlugin('java') {
+		project.repositories {
+			mavenCentral()
+		}
+
+		project.java {
+			sourceCompatibility = JavaVersion.VERSION_17
+			targetCompatibility = JavaVersion.VERSION_17
+		}
+
+		project.dependencies {
+			compileOnly 'org.projectlombok:lombok:1.18.36'
+			annotationProcessor 'org.projectlombok:lombok:1.18.36'
+
+			testImplementation platform('org.junit:junit-bom:5.11.3')
+			testImplementation 'org.junit.jupiter:junit-jupiter'
+			testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+
+			testImplementation 'org.keycloak:keycloak-server-spi:26.1.0'
+			testImplementation 'org.keycloak:keycloak-services:26.1.0'
+			testImplementation 'org.mockito:mockito-core:5.14.2'
+		}
+
+		project.tasks.withType(Test) {
+			var listArgs = new ArrayList<String>()
+			listArgs.add("--add-opens=java.base/java.lang=ALL-UNNAMED")
+			listArgs.add("--add-opens=java.base/java.lang.invoke=ALL-UNNAMED")
+			setJvmArgs(listArgs)
+
+			maxParallelForks = (int) (Runtime.runtime.availableProcessors() / 2)
+
+			useJUnitPlatform()
+
+			testLogging {
+				exceptionFormat 'full'
+				events "started", "passed", "skipped", "failed"
+			}
+		}
+	}
 }

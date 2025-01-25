@@ -4,11 +4,16 @@ plugins {
 	id 'io.spring.dependency-management' version '1.1.6'
 }
 
-group = 'edu.uw.waverify'
-version = '0.0.1-SNAPSHOT'
+artifact {
+	groupId = 'edu.uw.waverify'
+	artifactId = 'pin'
+}
 
-repositories {
-	mavenCentral()
+semanticVersion {
+	major = 1
+	minor = 0
+	patch = 0
+	snap = true
 }
 
 configurations {
@@ -30,21 +35,8 @@ dependencies {
 	compileOnly 'org.projectlombok:lombok:1.18.36'
 	annotationProcessor 'org.projectlombok:lombok:1.18.36'
 
-	testImplementation 'org.keycloak:keycloak-server-spi:26.1.0'
-	testImplementation 'org.keycloak:keycloak-services:26.1.0'
-	testImplementation 'org.junit.jupiter:junit-jupiter:5.11.3'
-	testImplementation 'org.mockito:mockito-core:5.14.2'
-
 	integrationTestImplementation project(':mock-vp')
 	integrationTestImplementation 'org.springframework.boot:spring-boot-starter-test:3.3.4'
-}
-
-tasks.test {
-	var listArgs = new ArrayList<String>()
-	listArgs.add("--add-opens=java.base/java.lang=ALL-UNNAMED")
-	listArgs.add("--add-opens=java.base/java.lang.invoke=ALL-UNNAMED")
-	setJvmArgs(listArgs)
-	useJUnitPlatform()
 }
 
 jar {
