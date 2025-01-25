@@ -4,7 +4,8 @@ import java.io.StringReader;
 import java.io.StringWriter;
 import java.util.HashMap;
 import java.util.Map;
-import javax.json.*;
+
+import jakarta.json.*;
 
 /**
  * Utility class for encoding and decoding demographic data into JSON. Encapsulates JSON serialization and
