@@ -1,108 +1,80 @@
 <#import "template.ftl" as layout>
+<#import "field.ftl" as field>
+<#import "user-profile-commons.ftl" as userProfileCommons>
+<#import "register-commons.ftl" as registerCommons>
+<#import "password-validation.ftl" as validator>
 <#if demographicRequired??>
     <#import "demographic-registration.ftl" as demographic>
 </#if>
-<@layout.registrationLayout; section>
+<@layout.registrationLayout displayMessage=messagesPerField.exists('global') displayRequiredFields=true; section>
+	<!-- template: register.ftl -->
+
     <#if section = "header">
-        ${msg("registerTitle")}
+        <#if messageHeader??>
+            ${kcSanitize(msg("${messageHeader}"))?no_esc}
+        <#else>
+            ${msg("registerTitle")}
+        </#if>
     <#elseif section = "form">
 	    <form id="kc-register-form" class="${properties.kcFormClass!}" action="${url.registrationAction}"
-	          method="post">
-                <#--
-		<div class="${properties.kcFormGroupClass!} ${messagesPerField.printIfExists('firstName',properties.kcFormGroupErrorClass!)}">
-		    <div class="${properties.kcLabelWrapperClass!}">
-			<label for="firstName" class="${properties.kcLabelClass!}">${msg("firstName")}</label>
-		    </div>
-		    <div class="${properties.kcInputWrapperClass!}">
-			<input type="text" id="firstName" class="${properties.kcInputClass!}" name="firstName" value="${(register.formData.firstName!'')}" />
-		    </div>
-		</div>
-
-		<div class="${properties.kcFormGroupClass!} ${messagesPerField.printIfExists('lastName',properties.kcFormGroupErrorClass!)}">
-		    <div class="${properties.kcLabelWrapperClass!}">
-			<label for="lastName" class="${properties.kcLabelClass!}">${msg("lastName")}</label>
-		    </div>
-		    <div class="${properties.kcInputWrapperClass!}">
-			<input type="text" id="lastName" class="${properties.kcInputClass!}" name="lastName" value="${(register.formData.lastName!'')}" />
-		    </div>
-		</div>
-		-->
-
-		    <div class="${properties.kcFormGroupClass!} ${messagesPerField.printIfExists('email',properties.kcFormGroupErrorClass!)}">
-			    <div class="${properties.kcLabelWrapperClass!}">
-				    <label for="email" class="${properties.kcLabelClass!}">${msg("email")}</label>
-			    </div>
-			    <div class="${properties.kcInputWrapperClass!}">
-				    <input type="text" id="email" class="${properties.kcInputClass!}" name="email"
-				           value="${(register.formData.email!'')}" autocomplete="email"
-				           pattern="[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*"
-				           required/>
-			    </div>
-		    </div>
-
-                <#if !realm.registrationEmailAsUsername>
-			<div class="${properties.kcFormGroupClass!} ${messagesPerField.printIfExists('username',properties.kcFormGroupErrorClass!)}">
-				<div class="${properties.kcLabelWrapperClass!}">
-					<label for="username"
-					       class="${properties.kcLabelClass!}">${msg("username")}</label>
-				</div>
-				<div class="${properties.kcInputWrapperClass!}">
-					<input type="text" id="username" class="${properties.kcInputClass!}"
-					       name="username" value="${(register.formData.username!'')}"
-					       autocomplete="username"/>
-				</div>
-			</div>
-                </#if>
-
-                <#if passwordRequired??>
-			<div class="${properties.kcFormGroupClass!} ${messagesPerField.printIfExists('password',properties.kcFormGroupErrorClass!)}">
-				<div class="${properties.kcLabelWrapperClass!}">
-					<label for="password"
-					       class="${properties.kcLabelClass!}">${msg("password")}</label>
-				</div>
-				<div class="${properties.kcInputWrapperClass!}">
-					<input type="password" id="password" class="${properties.kcInputClass!}"
-					       name="password" autocomplete="new-password"/>
-				</div>
-			</div>
-
-			<div class="${properties.kcFormGroupClass!} ${messagesPerField.printIfExists('password-confirm',properties.kcFormGroupErrorClass!)}">
-				<div class="${properties.kcLabelWrapperClass!}">
-					<label for="password-confirm"
-					       class="${properties.kcLabelClass!}">${msg("passwordConfirm")}</label>
-				</div>
-				<div class="${properties.kcInputWrapperClass!}">
-					<input type="password" id="password-confirm" class="${properties.kcInputClass!}"
-					       name="password-confirm"/>
-				</div>
-			</div>
-                </#if>
+	          method="post" novalidate="novalidate">
+                <@userProfileCommons.userProfileFormFields; callback, attribute>
+                    <#if callback = "afterField">
+                    <#-- render password fields just under the username or email (if used as username) -->
+                        <#if passwordRequired?? && (attribute.name == 'username' || (attribute.name == 'email' && realm.registrationEmailAsUsername))>
+                            <@field.password name="password" required=true label=msg("password") autocomplete="new-password" />
+                            <@field.password name="password-confirm" required=true label=msg("passwordConfirm") autocomplete="new-password" />
+                        </#if>
+                    </#if>
+                </@userProfileCommons.userProfileFormFields>
 
                 <#if demographicRequired??>
                     <@demographic.demographicRegistration />
                 </#if>
 
-                <#if recaptchaRequired??>
+                <@registerCommons.termsAcceptance/>
+
+                <#if recaptchaRequired?? && (recaptchaVisible!false)>
 			<div class="form-group">
 				<div class="${properties.kcInputWrapperClass!}">
-					<div class="g-recaptcha" data-size="compact"
-					     data-sitekey="${recaptchaSiteKey}"></div>
+					<div class="g-recaptcha" data-size="compact" data-sitekey="${recaptchaSiteKey}"
+					     data-action="${recaptchaAction}"></div>
 				</div>
 			</div>
                 </#if>
 
-		    <div class="${properties.kcFormGroupClass!}">
-			    <div id="kc-form-options" class="${properties.kcFormOptionsClass!}">
+                <#if recaptchaRequired?? && !(recaptchaVisible!false)>
+			<script>
+                            function onSubmitRecaptcha(token) {
+                                document.getElementById("kc-register-form").requestSubmit();
+                            }
+			</script>
+			<div id="kc-form-buttons" class="${properties.kcFormButtonsClass!}">
+				<button class="${properties.kcButtonClass!} ${properties.kcButtonPrimaryClass!} ${properties.kcButtonBlockClass!} ${properties.kcButtonLargeClass!} g-recaptcha"
+				        data-sitekey="${recaptchaSiteKey}" data-callback="onSubmitRecaptcha"
+				        data-action="${recaptchaAction}" type="submit">
+                                    ${msg("doRegister")}
+				</button>
+			</div>
+                <#else>
+			<div id="kc-form-buttons" class="${properties.kcFormButtonsClass!}">
+				<input class="${properties.kcButtonClass!} ${properties.kcButtonPrimaryClass!} ${properties.kcButtonBlockClass!} ${properties.kcButtonLargeClass!}"
+				       type="submit" value="${msg("doRegister")}"/>
+			</div>
+                </#if>
+
+		    <div class="${properties.kcFormGroupClass!} pf-v5-c-login__main-footer-band">
+			    <div id="kc-form-options"
+			         class="${properties.kcFormOptionsClass!} pf-v5-c-login__main-footer-band-item">
 				    <div class="${properties.kcFormOptionsWrapperClass!}">
 					    <span><a href="${url.loginUrl}">${kcSanitize(msg("backToLogin"))?no_esc}</a></span>
 				    </div>
 			    </div>
-
-			    <div id="kc-form-buttons" class="${properties.kcFormButtonsClass!}">
-				    <input class="${properties.kcButtonClass!} ${properties.kcButtonPrimaryClass!} ${properties.kcButtonBlockClass!} ${properties.kcButtonLargeClass!}"
-				           type="submit" value="${msg("doRegister")}"/>
-			    </div>
 		    </div>
+
 	    </form>
+
+        <@validator.templates/>
+        <@validator.script field="password"/>
     </#if>
 </@layout.registrationLayout>
