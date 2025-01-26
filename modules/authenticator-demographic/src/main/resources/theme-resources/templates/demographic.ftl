@@ -1,5 +1,5 @@
-<#import "select.ftl" as layout>
-<@layout.registrationLayout; section>
+<#import "template.ftl" as layout>
+<@layout.registrationLayout displayInfo=true; section>
     <#if section = "title">
         ${msg("loginTitle",realm.name)}
     <#elseif section = "header">
@@ -20,38 +20,61 @@
 		    </div>
 
 		    <div class="${properties.kcFormGroupClass!}">
-			    <label for="lastName"
-			           class="${properties.kcLabelClass!}">${msg("lastName", "Last Name")}</label>
-			    <input type="text" id="lastName" name="lastName" class="${properties.kcInputClass!}"
-			           required/>
-		    </div>
-
-
-		    <div class="${properties.kcFormGroupClass!}">
-			    <label for="dob"
-			           class="${properties.kcLabelClass!}">${msg("dateOfBirth", "Date of Birth")}</label>
-			    <input type="date" id="dob" name="dob" class="${properties.kcInputClass!}" required/>
+			    <div class="${properties.kcLabelWrapperClass!}">
+				    <label for="lastName"
+				           class="${properties.kcLabelClass!}">${msg("lastName", "Last Name2")}</label>
+			    </div>
+			    <div class="${properties.kcInputWrapperClass!}">
+				    <input type="text" id="lastName" name="lastName" class="${properties.kcInputClass!}"
+				           required/>
+			    </div>
 		    </div>
 
 		    <div class="${properties.kcFormGroupClass!}">
-			    <label for="address"
-			           class="${properties.kcLabelClass!}">${msg("address", "Address")}</label>
+			    <div class="${properties.kcLabelWrapperClass!}">
+				    <label for="address"
+				           class="${properties.kcLabelClass!}">${msg("address", "Address")}</label>
+			    </div>
+			    <div class="${properties.kcInputWrapperClass!}">
 			    <textarea id="address" name="address" class="${properties.kcInputClass!}" rows="3"
 			              required></textarea>
+			    </div>
+		    </div>
+
+
+		    <div class="${properties.kcFormGroupClass!}">
+			    <div class="${properties.kcLabelWrapperClass!}">
+				    <label for="dob"
+				           class="${properties.kcLabelClass!}">${msg("dateOfBirth", "Date of Birth")}</label>
+			    </div>
+			    <div class="${properties.kcInputWrapperClass!}">
+				    <input type="date" id="dob" name="dob" class="${properties.kcInputClass!}"
+				           required/>
+			    </div>
 		    </div>
 
 		    <div class="${properties.kcFormGroupClass!}">
-			    <label for="phoneNumber"
-			           class="${properties.kcLabelClass!}">${msg("phoneNumber", "Phone Number")}</label>
-			    <input type="tel" id="phoneNumber" name="phoneNumber" class="${properties.kcInputClass!}"
-			           required/>
+			    <div class="${properties.kcLabelWrapperClass!}">
+				    <label for="phoneNumber"
+				           class="${properties.kcLabelClass!}">${msg("phoneNumber", "Phone Number")}</label>
+			    </div>
+			    <div class="${properties.kcInputWrapperClass!}">
+				    <input type="tel" id="phoneNumber" name="phoneNumber"
+				           class="${properties.kcInputClass!}"
+				           required/>
+			    </div>
 		    </div>
 
 		    <div class="${properties.kcFormGroupClass!}">
-			    <label for="age" class="${properties.kcLabelClass!}">${msg("age", "Age")}</label>
-			    <input type="number" id="age" name="age" class="${properties.kcInputClass!}" min="0"
-			           required/>
+			    <div class="${properties.kcLabelWrapperClass!}">
+				    <label for="age" class="${properties.kcLabelClass!}">${msg("age", "Age")}</label>
+			    </div>
+			    <div class="${properties.kcInputWrapperClass!}">
+				    <input type="number" id="age" name="age" class="${properties.kcInputClass!}" min="0"
+				           required/>
+			    </div>
 		    </div>
+
 
 		    <div class="${properties.kcFormGroupClass!}">
 			    <label for="gender" class="${properties.kcLabelClass!}">${msg("gender", "Gender")}</label>

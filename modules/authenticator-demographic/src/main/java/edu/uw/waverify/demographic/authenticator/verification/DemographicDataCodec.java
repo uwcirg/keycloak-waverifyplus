@@ -1,11 +1,9 @@
 package edu.uw.waverify.demographic.authenticator.verification;
 
-import java.io.StringReader;
-import java.io.StringWriter;
-import java.util.HashMap;
 import java.util.Map;
 
-import jakarta.json.*;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * Utility class for encoding and decoding demographic data into JSON. Encapsulates JSON serialization and
@@ -13,6 +11,8 @@ import jakarta.json.*;
  */
 public
 class DemographicDataCodec {
+
+	private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper( );
 
 	/**
 	 * Decodes a JSON string into a map containing the "userId" and "demographics".
@@ -25,14 +25,10 @@ class DemographicDataCodec {
 	public static
 	Map< String, Object > decode( String json ) {
 
-		try ( JsonReader jsonReader = Json.createReader( new StringReader( json ) ) ) {
-			JsonObject            jsonObject = jsonReader.readObject( );
-			Map< String, Object > result     = new HashMap<>( );
-
-			var valid = jsonObject.getBoolean( "valid" );
-			result.put( "valid", valid );
-
-			return result;
+		try {
+			return OBJECT_MAPPER.readValue( json, new TypeReference< Map< String, Object > >( ) { } );
+		} catch ( Exception e ) {
+			throw new RuntimeException( "Failed to decode JSON string.", e );
 		}
 	}
 
@@ -47,17 +43,11 @@ class DemographicDataCodec {
 	public static
 	String encode( Map< String, String > demographics ) {
 
-		JsonObjectBuilder builder = Json.createObjectBuilder( );
-
-		demographics.forEach( builder::add );
-
-		JsonObject jsonObject = builder.build( );
-
-		StringWriter stringWriter = new StringWriter( );
-		try ( JsonWriter jsonWriter = Json.createWriter( stringWriter ) ) {
-			jsonWriter.writeObject( jsonObject );
+		try {
+			return OBJECT_MAPPER.writeValueAsString( demographics );
+		} catch ( Exception e ) {
+			throw new RuntimeException( "Failed to encode demographic data.", e );
 		}
-		return stringWriter.toString( );
 	}
 
 }

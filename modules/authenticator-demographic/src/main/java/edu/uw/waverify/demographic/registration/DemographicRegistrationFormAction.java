@@ -29,8 +29,9 @@ class DemographicRegistrationFormAction implements FormAction {
 	public
 	void buildPage( FormContext formContext, LoginFormsProvider loginFormsProvider ) {
 
-		loginFormsProvider.setAttribute( "demographicFields", true );
+		loginFormsProvider.setAttribute( "demographicRequired", true );
 	}
+
 
 	/**
 	 * Validates the demographic data submitted during registration.

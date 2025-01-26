@@ -1,55 +1,59 @@
-<div class="login">
-	<h1>${messages["registerTitle"]}</h1>
-	<form id="registration-form" action="${url.registerAction}" method="post">
-		<div class="form-group">
-			<label for="firstName">${messages["firstName"]}</label>
-			<input type="text" id="firstName" name="firstName" value="${user.firstName!}"
-			       class="form-control" required/>
-		</div>
+<#import "template.ftl" as layout>
+<@layout.registrationLayout displayMessage=messagesPerField.exists('global') displayRequiredFields=true; section>
+    <#if section = "header">
+        <#if messageHeader??>
+            ${kcSanitize(msg("${messageHeader}"))?no_esc}
+        <#else>
+            ${msg("registerTitle")}
+        </#if>
+    <#elseif section = "form">
+	    <form id="kc-register-form" class="${properties.kcFormClass!}" action="${url.registrationAction}"
+	          method="post">
+		    <div class="${properties.kcFormGroupClass!}">
+			    <div class="${properties.kcLabelWrapperClass!}">
+				    <label for="firstName"
+				           class="${properties.kcLabelClass!}">${msg("firstName", "First Name")}</label>
+			    </div>
+			    <div class="${properties.kcInputWrapperClass!}">
+				    <input type="text" id="firstName" name="firstName"
+				           class="${properties.kcInputClass!}"
+				           required/>
+			    </div>
+		    </div>
 
-		<div class="form-group">
-			<label for="lastName">${messages["lastName"]}</label>
-			<input type="text" id="lastName" name="lastName" value="${user.lastName!}" class="form-control"
-			       required/>
-		</div>
+		    <div class="${properties.kcFormGroupClass!}">
+			    <div class="${properties.kcLabelWrapperClass!}">
+				    <label for="lastName"
+				           class="${properties.kcLabelClass!}">${msg("lastName", "Last Name2")}</label>
+			    </div>
+			    <div class="${properties.kcInputWrapperClass!}">
+				    <input type="text" id="lastName" name="lastName" class="${properties.kcInputClass!}"
+				           required/>
+			    </div>
+		    </div>
 
-		<div class="form-group">
-			<label for="dob">${messages["dateOfBirth"]}</label>
-			<input type="date" id="dob" name="dob" class="form-control" required/>
-		</div>
+		    <div class="${properties.kcFormGroupClass!}">
+			    <div class="${properties.kcLabelWrapperClass!}">
+				    <label for="dob"
+				           class="${properties.kcLabelClass!}">${msg("dateOfBirth", "Date of Birth")}</label>
+			    </div>
+			    <div class="${properties.kcInputWrapperClass!}">
+				    <input type="date" id="dob" name="dob" class="${properties.kcInputClass!}"
+				           required/>
+			    </div>
+		    </div>
 
-		<div class="form-group">
-			<label for="address">${messages["address"]}</label>
-			<textarea id="address" name="address" class="form-control" rows="3" required></textarea>
-		</div>
-
-		<div class="form-group">
-			<label for="phoneNumber">${messages["phoneNumber"]}</label>
-			<input type="tel" id="phoneNumber" name="phoneNumber" class="form-control" required/>
-		</div>
-
-		<div class="form-group">
-			<label for="age">${messages["age"]}</label>
-			<input type="number" id="age" name="age" class="form-control" min="0" required/>
-		</div>
-
-		<div class="form-group">
-			<label for="gender">${messages["gender"]}</label>
-			<select id="gender" name="gender" class="form-control" required>
-				<option value="">${messages["selectGender"]}</option>
-				<option value="male">${messages["male"]}</option>
-				<option value="female">${messages["female"]}</option>
-				<option value="other">${messages["other"]}</option>
-			</select>
-		</div>
-
-		<div class="form-group">
-			<label for="location">${messages["location"]}</label>
-			<input type="text" id="location" name="location" class="form-control" required/>
-		</div>
-
-		<div class="form-group">
-			<button type="submit" class="btn btn-primary">${messages["doRegister"]}</button>
-		</div>
-	</form>
-</div>
+		    <div class="${properties.kcFormGroupClass!}">
+			    <div class="${properties.kcLabelWrapperClass!}">
+				    <label for="phoneNumber"
+				           class="${properties.kcLabelClass!}">${msg("phoneNumber", "Phone Number")}</label>
+			    </div>
+			    <div class="${properties.kcInputWrapperClass!}">
+				    <input type="tel" id="phoneNumber" name="phoneNumber"
+				           class="${properties.kcInputClass!}"
+				           required/>
+			    </div>
+		    </div>
+	    </form>
+    </#if>
+</@layout.registrationLayout>
