@@ -32,18 +32,6 @@
 
 		    <div class="${properties.kcFormGroupClass!}">
 			    <div class="${properties.kcLabelWrapperClass!}">
-				    <label for="address"
-				           class="${properties.kcLabelClass!}">${msg("address", "Address")}</label>
-			    </div>
-			    <div class="${properties.kcInputWrapperClass!}">
-			    <textarea id="address" name="address" class="${properties.kcInputClass!}" rows="3"
-			              required></textarea>
-			    </div>
-		    </div>
-
-
-		    <div class="${properties.kcFormGroupClass!}">
-			    <div class="${properties.kcLabelWrapperClass!}">
 				    <label for="dob"
 				           class="${properties.kcLabelClass!}">${msg("dateOfBirth", "Date of Birth")}</label>
 			    </div>
@@ -63,34 +51,6 @@
 				           class="${properties.kcInputClass!}"
 				           required/>
 			    </div>
-		    </div>
-
-		    <div class="${properties.kcFormGroupClass!}">
-			    <div class="${properties.kcLabelWrapperClass!}">
-				    <label for="age" class="${properties.kcLabelClass!}">${msg("age", "Age")}</label>
-			    </div>
-			    <div class="${properties.kcInputWrapperClass!}">
-				    <input type="number" id="age" name="age" class="${properties.kcInputClass!}" min="0"
-				           required/>
-			    </div>
-		    </div>
-
-
-		    <div class="${properties.kcFormGroupClass!}">
-			    <label for="gender" class="${properties.kcLabelClass!}">${msg("gender", "Gender")}</label>
-			    <select id="gender" name="gender" class="${properties.kcInputClass!}" required>
-				    <option value="">${msg("selectGender", "Select Gender")}</option>
-				    <option value="male">${msg("male", "Male")}</option>
-				    <option value="female">${msg("female", "Female")}</option>
-				    <option value="other">${msg("other", "Other")}</option>
-			    </select>
-		    </div>
-
-		    <div class="${properties.kcFormGroupClass!}">
-			    <label for="location"
-			           class="${properties.kcLabelClass!}">${msg("location", "Location")}</label>
-			    <input type="text" id="location" name="location" class="${properties.kcInputClass!}"
-			           required/>
 		    </div>
 
 		    <div id="kc-form-buttons" class="${properties.kcFormButtonsClass!}">
