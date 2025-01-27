@@ -2,6 +2,8 @@ package edu.uw.waverify.demographic.authenticator.verification;
 
 import java.util.Map;
 
+import org.keycloak.models.KeycloakSession;
+
 import jakarta.ws.rs.client.*;
 import jakarta.ws.rs.core.Response;
 import org.junit.jupiter.api.BeforeEach;
@@ -26,21 +28,22 @@ class DemographicVerificationServiceImplTest {
 	@Mock
 	private Response mockResponse;
 
+	@Mock
+	private KeycloakSession mockSession;
+
 	private DemographicVerificationServiceImpl service;
 
 	@BeforeEach
 	void setUp( ) {
 
 		MockitoAnnotations.openMocks( this );
-		service = new DemographicVerificationServiceImpl( );
-		service.setClient( mockClient );
+		service = new DemographicVerificationServiceImpl( mockSession );
 	}
 
 	@Test
 	void testVerify_InvalidDemographics_EmptyDemographics( ) {
 
 		boolean result = service.verify( Map.of( ) );
-
 		assertFalse( result, "Demographic verification should return false for empty demographics." );
 	}
 
@@ -48,7 +51,6 @@ class DemographicVerificationServiceImplTest {
 	void testVerify_InvalidDemographics_NullDemographics( ) {
 
 		boolean result = service.verify( null );
-
 		assertFalse( result, "Demographic verification should return false for null demographics." );
 	}
 
@@ -87,8 +89,8 @@ class DemographicVerificationServiceImplTest {
 	@Test
 	void testVerify_ValidDemographics_SuccessfulResponse( ) {
 
-		Map< String, String > demographics = Map.of( "firstName", "John", "lastName", "Doe" );
-		String                requestBody  = DemographicDataCodec.encode( demographics );
+		Map< String, String > demographics = Map.of( "firstName", "John", "lastName", "Doe", "dob", "1990-01-01" );
+		String                requestBody  = "{\"firstName\":\"John\",\"lastName\":\"Doe\",\"dob\":\"1990-01-01\"}";
 		String                responseBody = "{\"valid\":true}";
 
 		when( mockClient.target( service.getBaseUrl( ) ) ).thenReturn( mockTarget );
@@ -103,6 +105,7 @@ class DemographicVerificationServiceImplTest {
 		boolean result = service.verify( demographics );
 
 		System.out.println( "Verification result: " + result );
+
 		assertTrue( result, "Demographic verification should return true for valid input." );
 		verify( mockBuilder ).post( eq( Entity.entity( requestBody, "application/json" ) ) );
 	}

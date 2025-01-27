@@ -14,7 +14,7 @@ class ValidationController {
 
 	private
 	boolean isDataValid( ValidationRequest request ) {
-		// Basic validation logic (can be extended for specific rules)
+
 		return !request.getFirstName( )
 		               .isBlank( ) && !request.getLastName( )
 		                                      .isBlank( ) && request.getDob( )

@@ -34,7 +34,7 @@ class DemographicAuthenticatorFactory implements AuthenticatorFactory, Configura
 
 	@Setter
 	@Getter
-	private static DemographicVerificationService verificationService = new DemographicVerificationServiceImpl( );
+	private static DemographicVerificationService verificationService;
 
 	static {
 		ProviderConfigProperty property = new ProviderConfigProperty( );
@@ -58,6 +58,9 @@ class DemographicAuthenticatorFactory implements AuthenticatorFactory, Configura
 	Authenticator create( KeycloakSession session ) {
 
 		try {
+			if ( verificationService == null ) {
+				verificationService = new DemographicVerificationServiceImpl( session );
+			}
 			return new DemographicAuthenticatorImpl( session, verificationService );
 		} catch ( Exception e ) {
 			log.error( "Error creating DemographicAuthenticator", e );
@@ -104,13 +107,9 @@ class DemographicAuthenticatorFactory implements AuthenticatorFactory, Configura
 	public
 	void close( ) {
 
+		verificationService = null;
 	}
 
-	/**
-	 * Returns the unique identifier for this authenticator factory.
-	 *
-	 * @return The provider ID.
-	 */
 	@Override
 	public
 	String getId( ) {
@@ -118,11 +117,6 @@ class DemographicAuthenticatorFactory implements AuthenticatorFactory, Configura
 		return PROVIDER_ID;
 	}
 
-	/**
-	 * Provides the display type for this authenticator.
-	 *
-	 * @return The display type.
-	 */
 	@Override
 	public
 	String getDisplayType( ) {
@@ -130,11 +124,6 @@ class DemographicAuthenticatorFactory implements AuthenticatorFactory, Configura
 		return "Demographic Validation";
 	}
 
-	/**
-	 * Provides the reference category for this authenticator.
-	 *
-	 * @return The reference category.
-	 */
 	@Override
 	public
 	String getReferenceCategory( ) {
@@ -142,11 +131,6 @@ class DemographicAuthenticatorFactory implements AuthenticatorFactory, Configura
 		return "Demographic Validation";
 	}
 
-	/**
-	 * Indicates whether this authenticator is configurable.
-	 *
-	 * @return {@code true} if configurable, otherwise {@code false}.
-	 */
 	@Override
 	public
 	boolean isConfigurable( ) {
@@ -154,11 +138,6 @@ class DemographicAuthenticatorFactory implements AuthenticatorFactory, Configura
 		return true;
 	}
 
-	/**
-	 * Returns the available requirement choices for this authenticator.
-	 *
-	 * @return An array of {@link Requirement}.
-	 */
 	@Override
 	public
 	Requirement[] getRequirementChoices( ) {
@@ -166,11 +145,6 @@ class DemographicAuthenticatorFactory implements AuthenticatorFactory, Configura
 		return REQUIREMENT_CHOICES;
 	}
 
-	/**
-	 * Indicates whether user setup is allowed.
-	 *
-	 * @return {@code true} if user setup is allowed, otherwise {@code false}.
-	 */
 	@Override
 	public
 	boolean isUserSetupAllowed( ) {
@@ -178,11 +152,6 @@ class DemographicAuthenticatorFactory implements AuthenticatorFactory, Configura
 		return true;
 	}
 
-	/**
-	 * Provides the help text for this authenticator.
-	 *
-	 * @return The help text.
-	 */
 	@Override
 	public
 	String getHelpText( ) {
@@ -190,11 +159,6 @@ class DemographicAuthenticatorFactory implements AuthenticatorFactory, Configura
 		return "Demographic validation authenticator for verifying user demographic information.";
 	}
 
-	/**
-	 * Retrieves metadata for configuration properties supported by this factory.
-	 *
-	 * @return A list of {@link ProviderConfigProperty}.
-	 */
 	@Override
 	public
 	List< ProviderConfigProperty > getConfigProperties( ) {

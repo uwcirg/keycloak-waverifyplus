@@ -22,8 +22,7 @@ class ValidationRequest {
 
 		return dob;
 	}
-
-	// Getters and setters
+	
 	public
 	String getFirstName( ) {
 

@@ -2,10 +2,13 @@ package edu.uw.waverify.demographic.authenticator.verification;
 
 import java.util.Map;
 
+import org.keycloak.models.KeycloakSession;
+
 import edu.uw.waverify.mvp.MockVpApplication;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.test.context.ActiveProfiles;
@@ -27,7 +30,9 @@ class DemographicVerificationServiceIntegrationTest {
 	@BeforeEach
 	void setUp( ) {
 
-		service = new DemographicVerificationServiceImpl( );
+		KeycloakSession mockSession = Mockito.mock( KeycloakSession.class );
+
+		service = new DemographicVerificationServiceImpl( mockSession );
 		service.setBaseUrl( "http://localhost:" + port + "/api/validation" );
 	}
 

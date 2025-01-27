@@ -18,6 +18,18 @@
 	height: 2.5em;
 }
 
+#header h1 {
+	margin-bottom: 0;
+	line-height: 3em;
+	padding-left: 1em;
+}
+
+@media (min-width: 1200px) {
+	#header h1 {
+		font-size: 1.5rem;
+	}
+}
+
 #kc-header {
 	margin-top: var(--header-height);
 	text-align: center;

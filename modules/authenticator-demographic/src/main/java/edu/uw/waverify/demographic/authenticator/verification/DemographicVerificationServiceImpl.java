@@ -2,40 +2,36 @@ package edu.uw.waverify.demographic.authenticator.verification;
 
 import java.util.Map;
 
-import jakarta.ws.rs.client.*;
-import jakarta.ws.rs.core.MediaType;
-import jakarta.ws.rs.core.Response;
+import org.keycloak.broker.provider.util.SimpleHttp;
+import org.keycloak.models.KeycloakSession;
+
 import lombok.Getter;
 import lombok.Setter;
+import lombok.extern.jbosslog.JBossLog;
 
 /**
  * Implementation of the DemographicVerificationService interface. This class provides the logic for verifying
- * demographic information by interacting with the mock-vp server using jakarta.ws.rs.client.
+ * demographic information by interacting with the mock-vp server using Keycloak's SimpleHttp utility.
  */
 @Setter
 @Getter
+@JBossLog
 public
-class DemographicVerificationServiceImpl implements DemographicVerificationService, AutoCloseable {
+class DemographicVerificationServiceImpl implements DemographicVerificationService {
 
-	private Client client;
-	public  String baseUrl = "http://mock-vp-server/verify";
-
-	/**
-	 * Default constructor initializing the JAX-RS client.
-	 */
-	public
-	DemographicVerificationServiceImpl( ) {
-
-	}
+	private final KeycloakSession session;
+	private       String          baseUrl = "http://mock-vp-server/verify";
 
 	/**
-	 * Closes the JAX-RS client.
+	 * Constructor initializing the service with a Keycloak session.
+	 *
+	 * @param session
+	 * 		the Keycloak session, used to configure HTTP requests.
 	 */
-	@Override
 	public
-	void close( ) {
+	DemographicVerificationServiceImpl( KeycloakSession session ) {
 
-		client.close( );
+		this.session = session;
 	}
 
 	/**
@@ -54,31 +50,18 @@ class DemographicVerificationServiceImpl implements DemographicVerificationServi
 		try {
 			String requestBody = DemographicDataCodec.encode( demographics );
 
-			Response response = getClient( ).target( baseUrl )
-			                                .request( MediaType.APPLICATION_JSON )
-			                                .post( Entity.entity( requestBody, MediaType.APPLICATION_JSON ) );
+			String responseBody = SimpleHttp.doPost( baseUrl, session )
+			                                .header( "Content-Type", "application/json" )
+			                                .json( requestBody )
+			                                .asString( );
 
-			if ( response.getStatus( ) == 200 ) {
-				String                responseBody    = response.readEntity( String.class );
-				Map< String, Object > decodedResponse = DemographicDataCodec.decode( responseBody );
-				return Boolean.TRUE.equals( decodedResponse.get( "valid" ) );
-			} else {
-				System.err.println( "Error: Received status code " + response.getStatus( ) );
-			}
+			Map< String, Object > decodedResponse = DemographicDataCodec.decode( responseBody );
+			return Boolean.TRUE.equals( decodedResponse.get( "valid" ) );
+
 		} catch ( Exception e ) {
-			System.err.println( "Error during demographic verification: " + e.getMessage( ) );
+			log.error( "Error during demographic verification: " + e.getMessage( ) );
 		}
-
 		return false;
-	}
-
-	private
-	Client getClient( ) {
-
-		if ( this.client == null ) {
-			this.client = ClientBuilder.newClient( );
-		}
-		return this.client;
 	}
 
 }

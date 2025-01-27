@@ -45,15 +45,18 @@
 
 	<header id="header" class="container-fluid text-center py-2 m-0">
 		<img src="${url.resourcesPath}/${properties.headerLogo}"
-		     alt="Clinical Informatics Research Group" class="img-fluid mx-auto d-block"
+		     alt="${properties.headerLogoAlt}" class="img-fluid d-block"
 		     style="max-height: 80px;">
+            <#if properties.headerTitle??>
+		    <h1>${properties.headerTitle}</h1>
+            </#if>
 	</header>
 
 	<main class="kc-login-form container-fluid p-0">
 		<div class="${properties.kcFormCardClass!}">
 			<header class="${properties.kcFormHeaderClass!} kc-header-form">
 				<div class="text-center">
-					<img src="${url.resourcesPath}/img/Signature_Center_Purple_Hex.png"
+					<img src="${url.resourcesPath}/${properties.formHeaderLogo}"
 					     alt="UW Signature Logo" class="img-fluid mx-auto d-block">
 				</div>
                             <#if realm.internationalizationEnabled && locale.supported?size gt 1>
