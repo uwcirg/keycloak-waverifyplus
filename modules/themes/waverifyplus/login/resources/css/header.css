@@ -60,3 +60,7 @@
 	right: 0;
 	bottom: 0;
 }
+
+.select-auth-container {
+	list-style-type: none;
+}
