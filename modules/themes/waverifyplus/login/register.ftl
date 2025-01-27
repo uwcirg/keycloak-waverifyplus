@@ -6,7 +6,7 @@
 <#if demographicRequired??>
     <#import "demographic-registration.ftl" as demographic>
 </#if>
-<@layout.registrationLayout displayMessage=messagesPerField.exists('global') displayRequiredFields=true; section>
+<@layout.registrationLayout displayMessage=messagesPerField.exists('global') displayRequiredFields=false; section>
 	<!-- template: register.ftl -->
 
     <#if section = "header">
