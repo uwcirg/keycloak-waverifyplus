@@ -45,8 +45,7 @@
 
 	<header id="header" class="container-fluid text-center py-2 m-0">
 		<img src="${url.resourcesPath}/${properties.headerLogo}"
-		     alt="${properties.headerLogoAlt}" class="img-fluid d-block"
-		     style="max-height: 80px;">
+		     alt="${properties.headerLogoAlt}" class="img-fluid d-block">
             <#if properties.headerTitle??>
 		    <h1>${properties.headerTitle}</h1>
             </#if>
@@ -160,12 +159,7 @@
                                     <#if auth?has_content && auth.showTryAnotherWayLink()>
 					    <form id="kc-select-try-another-way-form"
 					          action="${url.loginAction}" method="post">
-						    <div class="${properties.kcFormGroupClass!}">
-							    <input type="hidden" name="tryAnotherWay"
-							           value="on"/>
-							    <a href="#" id="try-another-way"
-							       onclick="document.forms['kc-select-try-another-way-form'].submit();return false;">${msg("doTryAnotherWay")}</a>
-						    </div>
+                                                <@buttons.tryAnotherWay />
 					    </form>
                                     </#if>
 

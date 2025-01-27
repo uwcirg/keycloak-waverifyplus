@@ -1,4 +1,5 @@
 <#import "template.ftl" as layout>
+<#import "buttons.ftl" as buttons>
 <@layout.registrationLayout displayInfo=true; section>
     <#if section = "title">
         ${msg("loginTitle",realm.name)}
@@ -60,10 +61,7 @@
 		    </div>
 
 		    <div id="kc-form-buttons" class="${properties.kcFormButtonsClass!}">
-			    <div class="${properties.kcFormButtonsWrapperClass!}">
-				    <input class="${properties.kcButtonClass!} ${properties.kcButtonPrimaryClass!} ${properties.kcButtonBlockClass!} ${properties.kcButtonLargeClass!}"
-				           name="login" id="kc-login" type="submit" value="${msg("doLogIn")}"/>
-			    </div>
+                        <@buttons.loginButton />
 		    </div>
 	    </form>
     </#if>
