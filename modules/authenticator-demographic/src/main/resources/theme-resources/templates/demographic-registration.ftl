@@ -1,30 +1,6 @@
 <#macro demographicRegistration>
 	<div class="${properties.kcFormGroupClass!}">
 		<div class="${properties.kcLabelWrapperClass!}">
-			<label for="firstName" class="${properties.kcLabelClass!}">
-                            ${msg("firstName", "First Name")}
-			</label>
-		</div>
-		<div class="${properties.kcInputWrapperClass!}">
-			<input type="text" id="firstName" name="firstName" class="${properties.kcInputClass!}"
-			       required/>
-		</div>
-	</div>
-
-	<div class="${properties.kcFormGroupClass!}">
-		<div class="${properties.kcLabelWrapperClass!}">
-			<label for="lastName" class="${properties.kcLabelClass!}">
-                            ${msg("lastName", "Last Name")}
-			</label>
-		</div>
-		<div class="${properties.kcInputWrapperClass!}">
-			<input type="text" id="lastName" name="lastName" class="${properties.kcInputClass!}"
-			       required/>
-		</div>
-	</div>
-
-	<div class="${properties.kcFormGroupClass!}">
-		<div class="${properties.kcLabelWrapperClass!}">
 			<label for="dob" class="${properties.kcLabelClass!}">
                             ${msg("dateOfBirth", "Date of Birth")}
 			</label>
