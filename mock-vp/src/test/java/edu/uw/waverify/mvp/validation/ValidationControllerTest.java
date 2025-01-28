@@ -12,42 +12,45 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc
-public class ValidationControllerTest {
+public
+class ValidationControllerTest {
 
 	@Autowired
 	private MockMvc mockMvc;
 
 	@Test
-	void shouldReturnValidResponseForValidData() throws Exception {
-		// JSON payload representing valid form data
-		String requestBody = """
-            {
-                "firstName": "John",
-                "lastName": "Doe",
-                "dob": "1990-01-01"
-            }
-            """;
+	void shouldReturnBadRequestForInvalidData( ) throws Exception {
 
-		mockMvc.perform(MockMvcRequestBuilders.post("/api/validation")
-		                                      .contentType(MediaType.APPLICATION_JSON)
-		                                      .content(requestBody))
-		       .andExpect(status().isOk())
-		       .andExpect(jsonPath("$.valid").value(true));
+		String requestBody = """
+				{
+				    "firstName": "",
+				    "lastName": "",
+				    "dob": "1990-01-01"
+				}
+				""";
+
+		mockMvc.perform( MockMvcRequestBuilders.post( "/api/validation" )
+		                                       .contentType( MediaType.APPLICATION_JSON )
+		                                       .content( requestBody ) )
+		       .andExpect( status( ).isBadRequest( ) );
 	}
 
 	@Test
-	void shouldReturnBadRequestForInvalidData() throws Exception {
-		String requestBody = """
-            {
-                "firstName": "",
-                "lastName": "",
-                "dob": "1990-01-01"
-            }
-            """;
+	void shouldReturnValidResponseForValidData( ) throws Exception {
 
-		mockMvc.perform(MockMvcRequestBuilders.post("/api/validation")
-		                                      .contentType(MediaType.APPLICATION_JSON)
-		                                      .content(requestBody))
-		       .andExpect(status().isBadRequest());
+		String requestBody = """
+				{
+				    "firstName": "John",
+				    "lastName": "Doe",
+				    "dob": "1990-01-01"
+				}
+				""";
+
+		mockMvc.perform( MockMvcRequestBuilders.post( "/api/validation" )
+		                                       .contentType( MediaType.APPLICATION_JSON )
+		                                       .content( requestBody ) )
+		       .andExpect( status( ).isOk( ) )
+		       .andExpect( jsonPath( "$.valid" ).value( true ) );
 	}
+
 }

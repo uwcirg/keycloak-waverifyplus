@@ -2,6 +2,8 @@ package edu.uw.waverify.mvp.validation;
 
 import java.time.LocalDate;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.*;
 
 public
@@ -17,12 +19,21 @@ class ValidationRequest {
 	@Past(message = "Date of birth must be in the past.")
 	private LocalDate dob;
 
+	@JsonCreator
+	public
+	ValidationRequest( @JsonProperty("firstName") String firstName, @JsonProperty("lastName") String lastName, @JsonProperty("dob") LocalDate dob ) {
+
+		this.firstName = firstName;
+		this.lastName = lastName;
+		this.dob = dob;
+	}
+
 	public
 	LocalDate getDob( ) {
 
 		return dob;
 	}
-	
+
 	public
 	String getFirstName( ) {
 

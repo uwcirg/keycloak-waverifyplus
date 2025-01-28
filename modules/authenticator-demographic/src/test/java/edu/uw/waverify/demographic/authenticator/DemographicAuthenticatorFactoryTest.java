@@ -1,5 +1,6 @@
 package edu.uw.waverify.demographic.authenticator;
 
+import org.keycloak.Config;
 import org.keycloak.models.KeycloakSession;
 import org.keycloak.models.KeycloakSessionFactory;
 
@@ -11,7 +12,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 class DemographicAuthenticatorFactoryTest {
 
@@ -21,6 +22,9 @@ class DemographicAuthenticatorFactoryTest {
 	@Mock
 	private KeycloakSessionFactory mockSessionFactory;
 
+	@Mock
+	private Config.Scope configScope;
+
 	private DemographicAuthenticatorFactory factory;
 
 	@BeforeEach
@@ -28,20 +32,23 @@ class DemographicAuthenticatorFactoryTest {
 
 		MockitoAnnotations.openMocks( this );
 		factory = new DemographicAuthenticatorFactory( );
+		factory.init( configScope );
+
+		var baseUrl = "http://localhost:8080/api/validation";
+		when( configScope.get( "baseUrl" ) ).thenReturn( baseUrl );
+
+		// Setup session factory mock
+		when( mockSessionFactory.create( ) ).thenReturn( mockSession );
 	}
 
 	@Test
 	void testClose_NoOp( ) {
 
-		factory.close( );
-
-		// No specific action expected; just ensure no exceptions occur
+		assertDoesNotThrow( ( ) -> factory.close( ) );
 	}
 
 	@Test
 	void testCreate_ReturnsDemographicProvider( ) {
-
-		DemographicAuthenticatorFactory.setVerificationService( mock( DemographicVerificationService.class ) );
 
 		var provider = factory.create( mockSession );
 
@@ -53,35 +60,35 @@ class DemographicAuthenticatorFactoryTest {
 	void testGetConfigMetadata_ReturnsEmptyList( ) {
 
 		assertTrue( factory.getConfigMetadata( )
-		                   .isEmpty( ), "Expected an empty configuration metadata list" );
+		                   .isEmpty( ), "Configuration metadata should be empty" );
 	}
 
 	@Test
 	void testGetId_ReturnsCorrectId( ) {
 
-		assertEquals( DemographicAuthenticatorFactory.PROVIDER_ID, factory.getId( ) );
+		assertEquals( DemographicAuthenticatorFactory.PROVIDER_ID, factory.getId( ), "Factory ID should match expected constant" );
 	}
 
 	@Test
 	void testInit_SetsVerificationService( ) {
 
-		factory.init( null );
-		var verificationService = DemographicAuthenticatorFactory.getVerificationService( );
-		assertInstanceOf( DemographicVerificationService.class, verificationService );
+		var provider = factory.create( mockSession );
+		var service  = provider.getVerificationService( );
+
+		assertNotNull( service, "Verification service must be initialized" );
+		assertInstanceOf( DemographicVerificationService.class, service, "Service should be correct implementation type" );
 	}
 
 	@Test
 	void testOrder_ReturnsZero( ) {
 
-		assertEquals( 0, factory.order( ), "Order should return 0 as default priority" );
+		assertEquals( 0, factory.order( ), "Default order should be 0" );
 	}
 
 	@Test
 	void testPostInit_NoOp( ) {
 
-		factory.postInit( mockSessionFactory );
-
-		// No specific action expected; just ensure no exceptions occur
+		assertDoesNotThrow( ( ) -> factory.postInit( mockSessionFactory ) );
 	}
 
 }

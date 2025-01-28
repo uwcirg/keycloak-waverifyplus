@@ -20,7 +20,12 @@ dependencies {
 	compileOnly 'org.keycloak:keycloak-server-spi:26.1.0'
 	compileOnly 'org.keycloak:keycloak-services:26.1.0'
 
+	testImplementation 'org.keycloak:keycloak-server-spi:26.1.0'
+	testImplementation 'org.keycloak:keycloak-services:26.1.0'
+
 	integrationTestImplementation project(':mock-vp')
+	integrationTestImplementation 'org.apache.httpcomponents.client5:httpclient5:5.3'
+	integrationTestImplementation 'org.apache.httpcomponents.core5:httpcore5:5.2'
 	integrationTestImplementation 'org.springframework.boot:spring-boot-starter-test:3.3.4'
 }
 

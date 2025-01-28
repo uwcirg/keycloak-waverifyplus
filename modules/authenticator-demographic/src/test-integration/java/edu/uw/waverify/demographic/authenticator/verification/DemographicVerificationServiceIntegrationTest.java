@@ -1,11 +1,16 @@
 package edu.uw.waverify.demographic.authenticator.verification;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Map;
 
+import org.keycloak.connections.httpclient.HttpClientProvider;
 import org.keycloak.models.KeycloakSession;
 
 import edu.uw.waverify.mvp.MockVpApplication;
 
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -32,9 +37,51 @@ class DemographicVerificationServiceIntegrationTest {
 
 		KeycloakSession mockSession = Mockito.mock( KeycloakSession.class );
 
-		service = new DemographicVerificationServiceImpl( mockSession );
-		service.setBaseUrl( "http://localhost:" + port + "/api/validation" );
+		CloseableHttpClient httpClient = HttpClients.createDefault( );
+
+		HttpClientProvider realHttpClientProvider = new HttpClientProvider( ) {
+			@Override
+			public
+			void close( ) {
+
+			}
+
+			@Override
+			public
+			CloseableHttpClient getHttpClient( ) {
+
+				return httpClient;
+			}
+
+			@Override
+			public
+			int postText( String s, String s1 ) throws IOException {
+
+				return 0;
+			}
+
+			@Override
+			public
+			String getString( String s ) throws IOException {
+
+				return "";
+			}
+
+			@Override
+			public
+			InputStream getInputStream( String url ) {
+
+				throw new UnsupportedOperationException( "getInputStream is not implemented for testing" );
+			}
+		};
+
+		Mockito.when( mockSession.getProvider( HttpClientProvider.class ) )
+		       .thenReturn( realHttpClientProvider );
+
+		var baseUrl = "http://localhost:" + port + "/api/validation";
+		service = new DemographicVerificationServiceImpl( mockSession, baseUrl );
 	}
+
 
 	@Test
 	void testInvalidDemographics_BlankName( ) {

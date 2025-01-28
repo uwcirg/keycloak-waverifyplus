@@ -8,8 +8,11 @@ import org.keycloak.authentication.AuthenticationFlowError;
 import org.keycloak.models.*;
 
 import edu.uw.waverify.demographic.authenticator.verification.DemographicVerificationService;
+import edu.uw.waverify.demographic.authenticator.verification.DemographicVerificationServiceImpl;
 
 import jakarta.ws.rs.core.Response;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * Implementation of the DemographicAuthenticator interface. Handles the core demographic validation logic.
@@ -17,22 +20,26 @@ import jakarta.ws.rs.core.Response;
 public
 class DemographicAuthenticatorImpl implements DemographicAuthenticator {
 
-	private final KeycloakSession                session;
-	private final DemographicVerificationService verificationService;
+	private final KeycloakSession session;
+
+	@Setter
+	@Getter
+	private DemographicVerificationService verificationService;
 
 	/**
 	 * Constructor to initialize the Keycloak session and demographic verification service.
 	 *
 	 * @param session
 	 * 		The KeycloakSession instance.
-	 * @param verificationService
-	 * 		The service handling demographic verification logic.
+	 * @param baseUrl
+	 * 		URL for the service handling demographic verification logic.
 	 */
 	public
-	DemographicAuthenticatorImpl( KeycloakSession session, DemographicVerificationService verificationService ) {
+	DemographicAuthenticatorImpl( KeycloakSession session, String baseUrl ) {
 
 		this.session = session;
-		this.verificationService = verificationService;
+		verificationService = new DemographicVerificationServiceImpl( session, baseUrl );
+
 	}
 
 	@Override
@@ -85,7 +92,8 @@ class DemographicAuthenticatorImpl implements DemographicAuthenticator {
 	@Override
 	public
 	void close( ) {
-		// No specific cleanup logic is needed for this implementation.
+
+		verificationService = null;
 	}
 
 	/**

@@ -20,7 +20,7 @@ public
 class DemographicVerificationServiceImpl implements DemographicVerificationService {
 
 	private final KeycloakSession session;
-	private       String          baseUrl = "http://mock-vp-server/verify";
+	private       String          baseUrl;
 
 	/**
 	 * Constructor initializing the service with a Keycloak session.
@@ -29,9 +29,10 @@ class DemographicVerificationServiceImpl implements DemographicVerificationServi
 	 * 		the Keycloak session, used to configure HTTP requests.
 	 */
 	public
-	DemographicVerificationServiceImpl( KeycloakSession session ) {
+	DemographicVerificationServiceImpl( KeycloakSession session, String baseUrl ) {
 
 		this.session = session;
+		this.baseUrl = baseUrl;
 	}
 
 	/**
@@ -49,13 +50,14 @@ class DemographicVerificationServiceImpl implements DemographicVerificationServi
 
 		try {
 			String requestBody = DemographicDataCodec.encode( demographics );
-
+			log.error( requestBody );
 			String responseBody = SimpleHttp.doPost( baseUrl, session )
 			                                .header( "Content-Type", "application/json" )
 			                                .json( requestBody )
 			                                .asString( );
 
 			Map< String, Object > decodedResponse = DemographicDataCodec.decode( responseBody );
+			log.error( responseBody );
 			return Boolean.TRUE.equals( decodedResponse.get( "valid" ) );
 
 		} catch ( Exception e ) {

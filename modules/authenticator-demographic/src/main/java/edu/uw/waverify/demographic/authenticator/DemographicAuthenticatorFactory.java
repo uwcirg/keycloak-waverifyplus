@@ -4,16 +4,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.keycloak.Config;
-import org.keycloak.authentication.*;
+import org.keycloak.authentication.AuthenticatorFactory;
+import org.keycloak.authentication.ConfigurableAuthenticatorFactory;
 import org.keycloak.models.KeycloakSession;
 import org.keycloak.models.KeycloakSessionFactory;
 import org.keycloak.provider.ProviderConfigProperty;
 
-import edu.uw.waverify.demographic.authenticator.verification.DemographicVerificationService;
-import edu.uw.waverify.demographic.authenticator.verification.DemographicVerificationServiceImpl;
-
-import lombok.Getter;
-import lombok.Setter;
 import lombok.extern.jbosslog.JBossLog;
 
 import static org.keycloak.models.AuthenticationExecutionModel.Requirement;
@@ -32,9 +28,7 @@ class DemographicAuthenticatorFactory implements AuthenticatorFactory, Configura
 	public static final  String                         VERIFICATION_TIMEOUT = "verification.timeout";
 	public static final  String                         PROVIDER_ID          = "demographic-validation-authenticator";
 
-	@Setter
-	@Getter
-	private static DemographicVerificationService verificationService;
+	private String baseUrl;
 
 	static {
 		ProviderConfigProperty property = new ProviderConfigProperty( );
@@ -55,13 +49,10 @@ class DemographicAuthenticatorFactory implements AuthenticatorFactory, Configura
 	 */
 	@Override
 	public
-	Authenticator create( KeycloakSession session ) {
+	DemographicAuthenticator create( KeycloakSession session ) {
 
 		try {
-			if ( verificationService == null ) {
-				verificationService = new DemographicVerificationServiceImpl( session );
-			}
-			return new DemographicAuthenticatorImpl( session, verificationService );
+			return new DemographicAuthenticatorImpl( session, baseUrl );
 		} catch ( Exception e ) {
 			log.error( "Error creating DemographicAuthenticator", e );
 			throw new RuntimeException( "Failed to create DemographicAuthenticator", e );
@@ -79,6 +70,7 @@ class DemographicAuthenticatorFactory implements AuthenticatorFactory, Configura
 	void init( Config.Scope config ) {
 
 		if ( config != null ) {
+			baseUrl = config.get( "baseUrl" );
 			String timeout = config.get( VERIFICATION_TIMEOUT );
 			if ( timeout != null && !timeout.matches( "\\d+" ) ) {
 				throw new IllegalArgumentException( "Invalid timeout value. Must be a positive integer." );
@@ -107,7 +99,6 @@ class DemographicAuthenticatorFactory implements AuthenticatorFactory, Configura
 	public
 	void close( ) {
 
-		verificationService = null;
 	}
 
 	@Override

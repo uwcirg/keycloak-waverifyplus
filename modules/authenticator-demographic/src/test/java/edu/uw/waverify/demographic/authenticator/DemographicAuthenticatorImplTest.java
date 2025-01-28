@@ -28,7 +28,9 @@ class DemographicAuthenticatorImplTest {
 	void setUp( ) {
 
 		MockitoAnnotations.openMocks( this );
-		provider = new DemographicAuthenticatorImpl( mockSession, mockVerificationService );
+		var baseUrl = "http://localhost:8080/api/validation";
+		provider = new DemographicAuthenticatorImpl( mockSession, baseUrl );
+		provider.setVerificationService( mockVerificationService );
 	}
 
 	@Test

@@ -19,7 +19,7 @@ class DemographicProviderTest {
 	@Mock
 	private KeycloakSession mockSession;
 
-	private DemographicAuthenticator demographicAuthenticator;
+	private DemographicAuthenticatorImpl demographicAuthenticator;
 
 	/**
 	 * Sets up the test environment by initializing the DemographicAuthenticator with a mock session and a mock
@@ -31,8 +31,8 @@ class DemographicProviderTest {
 		MockitoAnnotations.openMocks( this );
 		var verificationService = new MockDemographicVerificationService( );
 		var providerFactory     = new DemographicAuthenticatorFactory( );
-		DemographicAuthenticatorFactory.setVerificationService( verificationService );
-		demographicAuthenticator = ( DemographicAuthenticator ) providerFactory.create( mockSession );
+		demographicAuthenticator = ( DemographicAuthenticatorImpl ) providerFactory.create( mockSession );
+		demographicAuthenticator.setVerificationService( verificationService );
 	}
 
 	/**

@@ -4,6 +4,8 @@ import java.util.Map;
 
 import org.keycloak.authentication.Authenticator;
 
+import edu.uw.waverify.demographic.authenticator.verification.DemographicVerificationService;
+
 /**
  * Interface defining the contract for demographic validation providers. Implementations of this interface are
  * responsible for validating user-provided demographic information to ensure accuracy and compliance with
@@ -11,6 +13,8 @@ import org.keycloak.authentication.Authenticator;
  */
 public
 interface DemographicAuthenticator extends Authenticator {
+
+	DemographicVerificationService getVerificationService( );
 
 	/**
 	 * Validates demographic information provided by the user.

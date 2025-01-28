@@ -2,34 +2,29 @@ package edu.uw.waverify.demographic.authenticator.verification;
 
 import java.util.Map;
 
+import org.keycloak.broker.provider.util.SimpleHttp;
+import org.keycloak.connections.httpclient.HttpClientProvider;
 import org.keycloak.models.KeycloakSession;
 
-import jakarta.ws.rs.client.*;
-import jakarta.ws.rs.core.Response;
+import org.apache.http.impl.client.CloseableHttpClient;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.*;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 class DemographicVerificationServiceImplTest {
 
 	@Mock
-	private Client mockClient;
-
-	@Mock
-	private WebTarget mockTarget;
-
-	@Mock
-	private Invocation.Builder mockBuilder;
-
-	@Mock
-	private Response mockResponse;
-
-	@Mock
 	private KeycloakSession mockSession;
+
+	@Mock
+	private HttpClientProvider mockHttpClientProvider;
+
+	@Mock
+	private CloseableHttpClient mockCloseableHttpClient;
 
 	private DemographicVerificationServiceImpl service;
 
@@ -37,77 +32,93 @@ class DemographicVerificationServiceImplTest {
 	void setUp( ) {
 
 		MockitoAnnotations.openMocks( this );
-		service = new DemographicVerificationServiceImpl( mockSession );
+		var baseUrl = "http://localhost:8080/api/validation";
+		service = new DemographicVerificationServiceImpl( mockSession, baseUrl );
 	}
 
 	@Test
 	void testVerify_InvalidDemographics_EmptyDemographics( ) {
 
 		boolean result = service.verify( Map.of( ) );
-		assertFalse( result, "Demographic verification should return false for empty demographics." );
+		assertFalse( result );
 	}
 
 	@Test
 	void testVerify_InvalidDemographics_NullDemographics( ) {
 
 		boolean result = service.verify( null );
-		assertFalse( result, "Demographic verification should return false for null demographics." );
+		assertFalse( result );
 	}
 
 	@Test
-	void testVerify_ServerErrorResponse( ) {
+	void testVerify_ServerErrorResponse( ) throws Exception {
+		// Setup HTTP mocks only for this test
+		when( mockSession.getProvider( HttpClientProvider.class ) ).thenReturn( mockHttpClientProvider );
+		when( mockHttpClientProvider.getHttpClient( ) ).thenReturn( mockCloseableHttpClient );
 
 		Map< String, String > demographics = Map.of( "firstName", "John", "lastName", "Doe" );
 
-		when( mockClient.target( service.getBaseUrl( ) ) ).thenReturn( mockTarget );
-		when( mockTarget.request( "application/json" ) ).thenReturn( mockBuilder );
-		when( mockBuilder.post( any( ) ) ).thenReturn( mockResponse );
-		when( mockResponse.getStatus( ) ).thenReturn( 500 );
+		try ( MockedStatic< SimpleHttp > simpleHttpMock = Mockito.mockStatic( SimpleHttp.class ) ) {
+			SimpleHttp mockSimpleHttp = mock( SimpleHttp.class );
 
-		boolean result = service.verify( demographics );
+			simpleHttpMock.when( ( ) -> SimpleHttp.doPost( any( ), eq( mockSession ) ) )
+			              .thenReturn( mockSimpleHttp );
 
-		assertFalse( result, "Demographic verification should return false for server errors." );
+			when( mockSimpleHttp.header( anyString( ), anyString( ) ) ).thenReturn( mockSimpleHttp );
+			when( mockSimpleHttp.json( anyString( ) ) ).thenReturn( mockSimpleHttp );
+			when( mockSimpleHttp.asString( ) ).thenThrow( new RuntimeException( "Server error" ) );
+
+			boolean result = service.verify( demographics );
+			assertFalse( result );
+		}
 	}
 
 	@Test
-	void testVerify_UnexpectedResponseFormat( ) {
+	void testVerify_UnexpectedResponseFormat( ) throws Exception {
+		// Setup HTTP mocks only for this test
+		when( mockSession.getProvider( HttpClientProvider.class ) ).thenReturn( mockHttpClientProvider );
+		when( mockHttpClientProvider.getHttpClient( ) ).thenReturn( mockCloseableHttpClient );
 
 		Map< String, String > demographics = Map.of( "firstName", "John", "lastName", "Doe" );
-		String                responseBody = "{\"unexpectedKey\":true}";
 
-		when( mockClient.target( service.getBaseUrl( ) ) ).thenReturn( mockTarget );
-		when( mockTarget.request( "application/json" ) ).thenReturn( mockBuilder );
-		when( mockBuilder.post( any( ) ) ).thenReturn( mockResponse );
-		when( mockResponse.getStatus( ) ).thenReturn( 200 );
-		when( mockResponse.readEntity( String.class ) ).thenReturn( responseBody );
+		try ( MockedStatic< SimpleHttp > simpleHttpMock = Mockito.mockStatic( SimpleHttp.class ) ) {
+			SimpleHttp mockSimpleHttp = mock( SimpleHttp.class );
 
-		boolean result = service.verify( demographics );
+			simpleHttpMock.when( ( ) -> SimpleHttp.doPost( any( ), eq( mockSession ) ) )
+			              .thenReturn( mockSimpleHttp );
 
-		assertFalse( result, "Demographic verification should return false for unexpected response format." );
+			when( mockSimpleHttp.header( anyString( ), anyString( ) ) ).thenReturn( mockSimpleHttp );
+			when( mockSimpleHttp.json( anyString( ) ) ).thenReturn( mockSimpleHttp );
+			when( mockSimpleHttp.asString( ) ).thenReturn( "{\"unexpectedKey\":true}" );
+
+			boolean result = service.verify( demographics );
+			assertFalse( result );
+		}
 	}
 
 	@Test
-	void testVerify_ValidDemographics_SuccessfulResponse( ) {
+	void testVerify_ValidDemographics_SuccessfulResponse( ) throws Exception {
+		// Setup HTTP mocks only for this test
+		when( mockSession.getProvider( HttpClientProvider.class ) ).thenReturn( mockHttpClientProvider );
+		when( mockHttpClientProvider.getHttpClient( ) ).thenReturn( mockCloseableHttpClient );
 
 		Map< String, String > demographics = Map.of( "firstName", "John", "lastName", "Doe", "dob", "1990-01-01" );
-		String                requestBody  = "{\"firstName\":\"John\",\"lastName\":\"Doe\",\"dob\":\"1990-01-01\"}";
-		String                responseBody = "{\"valid\":true}";
 
-		when( mockClient.target( service.getBaseUrl( ) ) ).thenReturn( mockTarget );
-		when( mockTarget.request( "application/json" ) ).thenReturn( mockBuilder );
-		when( mockBuilder.post( any( ) ) ).thenReturn( mockResponse );
-		when( mockResponse.getStatus( ) ).thenReturn( 200 );
-		when( mockResponse.readEntity( String.class ) ).thenReturn( responseBody );
+		try ( MockedStatic< SimpleHttp > simpleHttpMock = Mockito.mockStatic( SimpleHttp.class ) ) {
+			SimpleHttp mockSimpleHttp = mock( SimpleHttp.class );
 
-		System.out.println( "Request body: " + requestBody );
-		System.out.println( "Mocked response body: " + responseBody );
+			simpleHttpMock.when( ( ) -> SimpleHttp.doPost( any( ), eq( mockSession ) ) )
+			              .thenReturn( mockSimpleHttp );
 
-		boolean result = service.verify( demographics );
+			when( mockSimpleHttp.header( eq( "Content-Type" ), eq( "application/json" ) ) ).thenReturn( mockSimpleHttp );
+			when( mockSimpleHttp.json( contains( "\"firstName\":\"John\"" ) ) ).thenReturn( mockSimpleHttp );
+			when( mockSimpleHttp.asString( ) ).thenReturn( "{\"valid\":true}" );
 
-		System.out.println( "Verification result: " + result );
+			boolean result = service.verify( demographics );
+			assertTrue( result );
 
-		assertTrue( result, "Demographic verification should return true for valid input." );
-		verify( mockBuilder ).post( eq( Entity.entity( requestBody, "application/json" ) ) );
+			verify( mockSimpleHttp ).json( argThat( ( String json ) -> json.contains( "John" ) && json.contains( "Doe" ) && json.contains( "1990-01-01" ) ) );
+		}
 	}
 
 }
