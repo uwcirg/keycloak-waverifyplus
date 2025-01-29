@@ -18,14 +18,12 @@ class DemographicVerificationServiceTest {
 	 */
 	@Test
 	void testVerify_ShouldReturnFalse_WhenDemographicsAreInvalid( ) {
-		// Arrange: Mock the service and prepare test data
+
 		DemographicVerificationService service      = mock( DemographicVerificationService.class );
 		Map< String, String >          demographics = Map.of( ); // Empty demographics
 
-		// Mock the behavior for invalid input
 		when( service.verify( demographics ) ).thenReturn( false );
 
-		// Act & Assert: Verify that the method returns false
 		assertFalse( service.verify( demographics ), "verify should return false for invalid demographics" );
 		verify( service ).verify( demographics ); // Ensure the method was called
 	}
@@ -35,14 +33,12 @@ class DemographicVerificationServiceTest {
 	 */
 	@Test
 	void testVerify_ShouldReturnTrue_WhenDemographicsAreValid( ) {
-		// Arrange: Mock the service and prepare test data
+
 		DemographicVerificationService service      = mock( DemographicVerificationService.class );
 		Map< String, String >          demographics = Map.of( "firstName", "John", "lastName", "Doe" );
 
-		// Mock the behavior for valid input
 		when( service.verify( demographics ) ).thenReturn( true );
 
-		// Act & Assert: Verify that the method returns true
 		assertTrue( service.verify( demographics ), "verify should return true for valid demographics" );
 		verify( service ).verify( demographics ); // Ensure the method was called
 	}

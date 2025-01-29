@@ -37,7 +37,6 @@ class DemographicAuthenticatorFactoryTest {
 		var baseUrl = "http://localhost:8080/api/validation";
 		when( configScope.get( "baseUrl" ) ).thenReturn( baseUrl );
 
-		// Setup session factory mock
 		when( mockSessionFactory.create( ) ).thenReturn( mockSession );
 	}
 

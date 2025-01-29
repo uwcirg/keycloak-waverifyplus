@@ -12,7 +12,11 @@ import org.keycloak.provider.ProviderConfigProperty;
 import static org.keycloak.models.AuthenticationExecutionModel.Requirement.*;
 
 /**
- * Factory class for creating instances of {@link DemographicRegistrationFormAction}.
+ * Factory class responsible for creating instances of {@link DemographicRegistrationFormAction}.
+ * <p>
+ * This factory integrates with Keycloak's form-based authentication and enables the collection of demographic data
+ * during user registration.
+ * </p>
  */
 public
 class DemographicRegistrationFormActionFactory implements FormActionFactory {
@@ -21,12 +25,12 @@ class DemographicRegistrationFormActionFactory implements FormActionFactory {
 	private static final List< ProviderConfigProperty > CONFIG_PROPERTIES = new ArrayList<>( );
 
 	/**
-	 * Creates an instance of {@link DemographicRegistrationFormAction}.
+	 * Creates a new instance of {@link DemographicRegistrationFormAction}.
 	 *
 	 * @param session
 	 * 		the Keycloak session.
 	 *
-	 * @return a new instance of {@link DemographicRegistrationFormAction}.
+	 * @return a new {@link DemographicRegistrationFormAction} instance.
 	 */
 	@Override
 	public
@@ -36,7 +40,7 @@ class DemographicRegistrationFormActionFactory implements FormActionFactory {
 	}
 
 	/**
-	 * Initializes any necessary configurations.
+	 * Initializes the factory with configuration parameters.
 	 *
 	 * @param scope
 	 * 		the Keycloak configuration scope.
@@ -44,11 +48,11 @@ class DemographicRegistrationFormActionFactory implements FormActionFactory {
 	@Override
 	public
 	void init( Config.Scope scope ) {
-
+		// No initialization required
 	}
 
 	/**
-	 * Post-initialization tasks.
+	 * Performs post-initialization tasks.
 	 *
 	 * @param factory
 	 * 		the Keycloak session factory.
@@ -56,20 +60,20 @@ class DemographicRegistrationFormActionFactory implements FormActionFactory {
 	@Override
 	public
 	void postInit( KeycloakSessionFactory factory ) {
-
+		// No post-initialization required
 	}
 
 	/**
-	 * Cleans up resources during shutdown.
+	 * Cleans up resources when the factory is shut down.
 	 */
 	@Override
 	public
 	void close( ) {
-
+		// No cleanup required
 	}
 
 	/**
-	 * Returns the provider ID for this form action factory.
+	 * Returns the unique provider ID for this factory.
 	 *
 	 * @return the provider ID as a string.
 	 */
@@ -81,9 +85,9 @@ class DemographicRegistrationFormActionFactory implements FormActionFactory {
 	}
 
 	/**
-	 * Returns the display type for this form action.
+	 * Returns the display name for this form action.
 	 *
-	 * @return the display type as a string.
+	 * @return the display name as a string.
 	 */
 	@Override
 	public
@@ -107,7 +111,7 @@ class DemographicRegistrationFormActionFactory implements FormActionFactory {
 	/**
 	 * Indicates whether this form action is configurable.
 	 *
-	 * @return {@code false} as this action requires no configuration.
+	 * @return {@code false} as no additional configuration is needed.
 	 */
 	@Override
 	public
@@ -117,7 +121,7 @@ class DemographicRegistrationFormActionFactory implements FormActionFactory {
 	}
 
 	/**
-	 * Returns the possible requirement choices for this form action.
+	 * Defines the requirement choices available for this form action.
 	 *
 	 * @return an array of possible requirement choices.
 	 */
@@ -129,9 +133,9 @@ class DemographicRegistrationFormActionFactory implements FormActionFactory {
 	}
 
 	/**
-	 * Indicates whether this form action allows user setup.
+	 * Indicates whether user setup is allowed for this form action.
 	 *
-	 * @return {@code false} as user setup is not allowed.
+	 * @return {@code false} as user setup is not applicable.
 	 */
 	@Override
 	public
@@ -141,7 +145,7 @@ class DemographicRegistrationFormActionFactory implements FormActionFactory {
 	}
 
 	/**
-	 * Returns the help text for this form action.
+	 * Provides a brief description of this form action.
 	 *
 	 * @return the help text as a string.
 	 */
@@ -153,7 +157,7 @@ class DemographicRegistrationFormActionFactory implements FormActionFactory {
 	}
 
 	/**
-	 * Returns configuration properties for this form action.
+	 * Retrieves the configuration properties for this form action.
 	 *
 	 * @return an empty list as no configuration properties are defined.
 	 */

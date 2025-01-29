@@ -1,11 +1,13 @@
 package edu.uw.waverify.demographic.authenticator.verification;
 
+import java.io.IOException;
 import java.util.Map;
 
 import org.keycloak.broker.provider.util.SimpleHttp;
 import org.keycloak.connections.httpclient.HttpClientProvider;
 import org.keycloak.models.KeycloakSession;
 
+import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -52,7 +54,7 @@ class DemographicVerificationServiceImplTest {
 
 	@Test
 	void testVerify_ServerErrorResponse( ) throws Exception {
-		// Setup HTTP mocks only for this test
+
 		when( mockSession.getProvider( HttpClientProvider.class ) ).thenReturn( mockHttpClientProvider );
 		when( mockHttpClientProvider.getHttpClient( ) ).thenReturn( mockCloseableHttpClient );
 
@@ -75,7 +77,7 @@ class DemographicVerificationServiceImplTest {
 
 	@Test
 	void testVerify_UnexpectedResponseFormat( ) throws Exception {
-		// Setup HTTP mocks only for this test
+
 		when( mockSession.getProvider( HttpClientProvider.class ) ).thenReturn( mockHttpClientProvider );
 		when( mockHttpClientProvider.getHttpClient( ) ).thenReturn( mockCloseableHttpClient );
 
@@ -98,7 +100,7 @@ class DemographicVerificationServiceImplTest {
 
 	@Test
 	void testVerify_ValidDemographics_SuccessfulResponse( ) throws Exception {
-		// Setup HTTP mocks only for this test
+
 		when( mockSession.getProvider( HttpClientProvider.class ) ).thenReturn( mockHttpClientProvider );
 		when( mockHttpClientProvider.getHttpClient( ) ).thenReturn( mockCloseableHttpClient );
 
@@ -111,13 +113,38 @@ class DemographicVerificationServiceImplTest {
 			              .thenReturn( mockSimpleHttp );
 
 			when( mockSimpleHttp.header( eq( "Content-Type" ), eq( "application/json" ) ) ).thenReturn( mockSimpleHttp );
-			when( mockSimpleHttp.json( contains( "\"firstName\":\"John\"" ) ) ).thenReturn( mockSimpleHttp );
+			when( mockSimpleHttp.entity( argThat( entity -> {
+				if ( entity instanceof StringEntity stringEntity ) {
+					String entityContent = null;
+					try {
+						entityContent = new String( stringEntity.getContent( )
+						                                        .readAllBytes( ) );
+					} catch ( IOException e ) {
+						throw new RuntimeException( e );
+					}
+					return entityContent.contains( "\"firstName\":\"John\"" ) && entityContent.contains( "\"lastName\":\"Doe\"" ) && entityContent.contains( "\"dob\":\"1990-01-01\"" );
+				}
+				return false;
+			} ) ) ).thenReturn( mockSimpleHttp );
+
 			when( mockSimpleHttp.asString( ) ).thenReturn( "{\"valid\":true}" );
 
 			boolean result = service.verify( demographics );
 			assertTrue( result );
 
-			verify( mockSimpleHttp ).json( argThat( ( String json ) -> json.contains( "John" ) && json.contains( "Doe" ) && json.contains( "1990-01-01" ) ) );
+			verify( mockSimpleHttp ).entity( argThat( entity -> {
+				if ( entity instanceof StringEntity stringEntity ) {
+					String entityContent = null;
+					try {
+						entityContent = new String( stringEntity.getContent( )
+						                                        .readAllBytes( ) );
+					} catch ( IOException e ) {
+						throw new RuntimeException( e );
+					}
+					return entityContent.contains( "\"firstName\":\"John\"" ) && entityContent.contains( "\"lastName\":\"Doe\"" ) && entityContent.contains( "\"dob\":\"1990-01-01\"" );
+				}
+				return false;
+			} ) );
 		}
 	}
 

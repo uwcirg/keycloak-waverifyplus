@@ -15,12 +15,12 @@ class DemographicDataCodec {
 	private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper( );
 
 	/**
-	 * Decodes a JSON string into a map containing the "userId" and "demographics".
+	 * Decodes a JSON string into a map containing "demographics".
 	 *
 	 * @param json
 	 * 		The JSON string to decode.
 	 *
-	 * @return A map containing the decoded "userId" and "demographics".
+	 * @return A map containing the decoded "demographics".
 	 */
 	public static
 	Map< String, Object > decode( String json ) {

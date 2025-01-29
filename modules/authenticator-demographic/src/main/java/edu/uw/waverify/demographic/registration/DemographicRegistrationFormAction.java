@@ -7,23 +7,24 @@ import org.keycloak.authentication.*;
 import org.keycloak.forms.login.LoginFormsProvider;
 import org.keycloak.models.*;
 import org.keycloak.models.utils.FormMessage;
-import org.keycloak.sessions.AuthenticationSessionModel;
-
-import jakarta.ws.rs.core.MultivaluedMap;
 
 /**
- * Form action to collect and process demographic information during user registration.
+ * Form action for collecting and processing demographic information during user registration.
+ * <p>
+ * This action ensures that the required demographic fields—first name, last name, and date of birth—are provided during
+ * registration and stores them as user attributes.
+ * </p>
  */
 public
 class DemographicRegistrationFormAction implements FormAction {
 
 	/**
-	 * Builds the registration form page by adding demographic fields.
+	 * Adds demographic attributes to the registration form.
 	 *
 	 * @param formContext
-	 * 		the form context.
+	 * 		the context of the form authentication process.
 	 * @param loginFormsProvider
-	 * 		the provider for rendering login forms.
+	 * 		the provider responsible for rendering the form.
 	 */
 	@Override
 	public
@@ -32,63 +33,61 @@ class DemographicRegistrationFormAction implements FormAction {
 		loginFormsProvider.setAttribute( "demographicRequired", true );
 	}
 
-
 	/**
-	 * Validates the demographic data submitted during registration.
+	 * Validates the demographic information submitted by the user.
 	 *
 	 * @param context
-	 * 		the validation context containing submitted form data.
+	 * 		the validation context containing form data.
 	 */
 	@Override
 	public
 	void validate( ValidationContext context ) {
 
-		MultivaluedMap< String, String > formData = context.getHttpRequest( )
-		                                                   .getDecodedFormParameters( );
-		String age      = formData.getFirst( "age" );
-		String gender   = formData.getFirst( "gender" );
-		String location = formData.getFirst( "location" );
+		var formData = context.getHttpRequest( )
+		                      .getDecodedFormParameters( );
+		var firstName = formData.getFirst( "firstName" );
+		var lastName  = formData.getFirst( "lastName" );
+		var dob       = formData.getFirst( "dob" );
 
-		if ( age == null || age.isEmpty( ) || gender == null || gender.isEmpty( ) || location == null || location.isEmpty( ) ) {
+		if ( firstName == null || firstName.isEmpty( ) || lastName == null || lastName.isEmpty( ) || dob == null || dob.isEmpty( ) ) {
 			List< FormMessage > errors = new ArrayList<>( );
-			errors.add( new FormMessage( null, "Please provide all demographic information." ) );
+			errors.add( new FormMessage( null, "Please provide all required demographic information." ) );
 			context.validationError( formData, errors );
 			return;
 		}
 
 		context.getAuthenticationSession( )
-		       .setAuthNote( "age", age );
+		       .setAuthNote( "firstName", firstName );
 		context.getAuthenticationSession( )
-		       .setAuthNote( "gender", gender );
+		       .setAuthNote( "lastName", lastName );
 		context.getAuthenticationSession( )
-		       .setAuthNote( "location", location );
+		       .setAuthNote( "dob", dob );
 
 		context.success( );
 	}
 
-
 	/**
-	 * Stores demographic data in the user's attributes upon successful validation.
+	 * Stores validated demographic information as user attributes.
 	 *
 	 * @param context
-	 * 		the form context containing user and session data.
+	 * 		the form context containing the user and session data.
 	 */
 	@Override
 	public
 	void success( FormContext context ) {
 
-		AuthenticationSessionModel session = context.getAuthenticationSession( );
-		UserModel                  user    = context.getUser( );
+		var session = context.getAuthenticationSession( );
+		var user    = context.getUser( );
 
-		user.setAttribute( "age", List.of( session.getAuthNote( "age" ) ) );
-		user.setAttribute( "gender", List.of( session.getAuthNote( "gender" ) ) );
-		user.setAttribute( "location", List.of( session.getAuthNote( "location" ) ) );
+		user.setAttribute( "firstName", List.of( session.getAuthNote( "firstName" ) ) );
+		user.setAttribute( "lastName", List.of( session.getAuthNote( "lastName" ) ) );
+		user.setAttribute( "dob", List.of( session.getAuthNote( "dob" ) ) );
 	}
 
 	/**
 	 * Indicates whether this action requires an existing user.
 	 *
-	 * @return {@code false} as this action applies to new user registration.
+	 * @return {@code false} since this action applies to new user registration.
 	 */
 	@Override
 	public
@@ -98,7 +97,7 @@ class DemographicRegistrationFormAction implements FormAction {
 	}
 
 	/**
-	 * Indicates whether this action is configured for the current user.
+	 * Checks if this action is configured for the current user.
 	 *
 	 * @return {@code true} as this action is always applicable.
 	 */
@@ -122,16 +121,16 @@ class DemographicRegistrationFormAction implements FormAction {
 	@Override
 	public
 	void setRequiredActions( KeycloakSession session, RealmModel realm, UserModel user ) {
-		// No required actions need to be set for this form.
+		// No additional required actions.
 	}
 
 	/**
-	 * Closes any resources used by this form action.
+	 * Cleans up resources used by this form action.
 	 */
 	@Override
 	public
 	void close( ) {
-		// No resources to close.
+		// No resources to clean up.
 	}
 
 }
