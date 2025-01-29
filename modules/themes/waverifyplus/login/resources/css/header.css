@@ -64,3 +64,15 @@
 .select-auth-container {
 	list-style-type: none;
 }
+
+.intro {
+	background: #07294C url(../img/bluebackground.png) center center;
+	font-size: 1.1rem;
+	line-height: 2rem;
+	flex: 1 1 auto;
+	padding: 2rem 2rem 1rem 2rem;
+	border: 1px solid rgba(0, 0, 0, .125);
+	border-radius: 1.25rem;
+	color: #fff;
+	margin-bottom: 2rem;
+}

@@ -10,12 +10,14 @@
 	<!-- template: register.ftl -->
 
     <#if section = "header">
+	    <i class="fa-solid fa-virus-covid"></i>
         <#if messageHeader??>
             ${kcSanitize(msg("${messageHeader}"))?no_esc}
         <#else>
             ${msg("registerTitle")}
         </#if>
     <#elseif section = "form">
+        <#include "intro.ftl">
 	    <form id="kc-register-form" class="${properties.kcFormClass!}" action="${url.registrationAction}"
 	          method="post" novalidate="novalidate">
                 <@userProfileCommons.userProfileFormFields; callback, attribute>
@@ -33,6 +35,10 @@
                 </#if>
 
                 <@registerCommons.termsAcceptance/>
+
+                <@field.checkbox name="authorization" label=msg("authorization") required=true>
+                    <#include "authorization.ftl">
+                </@field.checkbox>
 
                 <#if recaptchaRequired?? && (recaptchaVisible!false)>
 			<div class="form-group">

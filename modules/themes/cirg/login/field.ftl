@@ -106,5 +106,6 @@
 			    <span class="${properties.kcCheckboxLabelRequiredClass}" aria-hidden="true">&#42;</span>
                     </#if>
 		</label>
+            <#nested>
 	</div>
 </#macro>

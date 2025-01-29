@@ -26,7 +26,7 @@ class DemographicDataCodec {
 	Map< String, Object > decode( String json ) {
 
 		try {
-			return OBJECT_MAPPER.readValue( json, new TypeReference< Map< String, Object > >( ) { } );
+			return OBJECT_MAPPER.readValue( json, new TypeReference<>( ) { } );
 		} catch ( Exception e ) {
 			throw new RuntimeException( "Failed to decode JSON string.", e );
 		}

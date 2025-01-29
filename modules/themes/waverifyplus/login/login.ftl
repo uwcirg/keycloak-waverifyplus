@@ -6,8 +6,10 @@
 	<!-- template: login.ftl -->
 
     <#if section = "header">
+	    <i class="fa-solid fa-virus-covid"></i>
         ${msg("loginAccountTitle")}
     <#elseif section = "form">
+        <#include "intro.ftl">
 	    <div id="kc-form">
 		    <div id="kc-form-wrapper">
                         <#if realm.password>
@@ -31,6 +33,11 @@
 
 					<input type="hidden" id="id-hidden-input" name="credentialId"
                                                <#if auth.selectedCredential?has_content>value="${auth.selectedCredential}"</#if>/>
+
+                                    <@field.checkbox name="authorization" label=msg("authorization") required=true>
+                                        <#include "authorization.ftl">
+                                    </@field.checkbox>
+
                                     <@buttons.loginButton />
 				</form>
                         </#if>

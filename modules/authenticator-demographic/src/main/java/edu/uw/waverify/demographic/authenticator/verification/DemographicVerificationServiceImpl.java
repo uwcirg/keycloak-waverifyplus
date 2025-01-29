@@ -13,8 +13,12 @@ import org.apache.http.entity.StringEntity;
 import static org.apache.http.entity.ContentType.APPLICATION_JSON;
 
 /**
- * Implementation of the DemographicVerificationService interface. This class provides the logic for verifying
- * demographic information by interacting with the mock-vp server using Keycloak's SimpleHttp utility.
+ * Implementation of the {@link DemographicVerificationService} interface.
+ * <p>
+ * This class verifies demographic information by sending it to the mock-vp server using Keycloak's {@link SimpleHttp}
+ * utility. It interacts with an external verification service and processes responses to determine if the provided
+ * demographics are valid.
+ * </p>
  */
 @Setter
 @Getter
@@ -26,10 +30,12 @@ class DemographicVerificationServiceImpl implements DemographicVerificationServi
 	private       String          baseUrl;
 
 	/**
-	 * Constructor initializing the service with a Keycloak session.
+	 * Constructs a new instance of {@code DemographicVerificationServiceImpl}.
 	 *
 	 * @param session
-	 * 		the Keycloak session, used to configure HTTP requests.
+	 * 		the Keycloak session used for HTTP requests.
+	 * @param baseUrl
+	 * 		the base URL of the verification service.
 	 */
 	public
 	DemographicVerificationServiceImpl( KeycloakSession session, String baseUrl ) {
@@ -39,11 +45,15 @@ class DemographicVerificationServiceImpl implements DemographicVerificationServi
 	}
 
 	/**
-	 * Verifies the provided demographic information for a given user ID by sending it to the mock-vp server.
+	 * Verifies the provided demographic information by sending it to the mock-vp server.
+	 * <p>
+	 * The method encodes the demographic data into JSON, sends an HTTP POST request, and parses the response to check
+	 * if the information is valid.
+	 * </p>
 	 *
 	 * @param demographics
-	 * 		A map containing demographic data where keys represent the attribute names and values represent their
-	 * 		corresponding values.
+	 * 		a map containing demographic data where keys represent attribute names and values represent corresponding
+	 * 		user-provided values.
 	 *
 	 * @return {@code true} if the demographic information is valid, {@code false} otherwise.
 	 */
@@ -52,17 +62,16 @@ class DemographicVerificationServiceImpl implements DemographicVerificationServi
 	boolean verify( Map< String, String > demographics ) {
 
 		try {
-			String requestBody = DemographicDataCodec.encode( demographics );
+			var requestBody = DemographicDataCodec.encode( demographics );
 
-			String responseBody = SimpleHttp.doPost( baseUrl, session )
-			                                .header( "Content-Type", "application/json" )
-			                                .entity( new StringEntity( requestBody, APPLICATION_JSON ) )
-			                                .asString( );
+			var responseBody = SimpleHttp.doPost( baseUrl, session )
+			                             .header( "Content-Type", "application/json" )
+			                             .entity( new StringEntity( requestBody, APPLICATION_JSON ) )
+			                             .asString( );
 
-			Map< String, Object > decodedResponse = DemographicDataCodec.decode( responseBody );
+			var decodedResponse = DemographicDataCodec.decode( responseBody );
 
 			return Boolean.TRUE.equals( decodedResponse.get( "valid" ) );
-
 		} catch ( Exception e ) {
 			log.error( "Error during demographic verification: " + e.getMessage( ) );
 		}

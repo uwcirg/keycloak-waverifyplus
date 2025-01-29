@@ -3,8 +3,8 @@ package edu.uw.waverify.demographic.authenticator.verification;
 import lombok.Data;
 
 /**
- * A data class representing demographic information provided by the user. This class encapsulates personal information
- * such as name, date of birth, email, and phone number.
+ * Represents demographic information provided by the user. This class encapsulates personal details such as name, date
+ * of birth, email, and phone number.
  */
 @Data
 public
@@ -12,12 +12,12 @@ class DemographicData {
 
 	private String firstName;
 	private String lastName;
-	private String dateOfBirth; // Format: YYYY-MM-DD
+	private String dateOfBirth;
 	private String email;
 	private String phoneNumber;
 
 	/**
-	 * Default constructor for creating an empty instance of {@code DemographicData}.
+	 * Creates an empty instance of {@code DemographicData}.
 	 */
 	public
 	DemographicData( ) {
@@ -25,7 +25,7 @@ class DemographicData {
 	}
 
 	/**
-	 * Constructor for initializing all fields of {@code DemographicData}.
+	 * Creates an instance of {@code DemographicData} with all fields initialized.
 	 *
 	 * @param firstName
 	 * 		User's first name.
@@ -49,9 +49,9 @@ class DemographicData {
 	}
 
 	/**
-	 * Converts this {@code DemographicData} instance to a string representation.
+	 * Returns a string representation of this {@code DemographicData} instance.
 	 *
-	 * @return A string containing the field values.
+	 * @return A formatted string containing field values.
 	 */
 	@Override
 	public

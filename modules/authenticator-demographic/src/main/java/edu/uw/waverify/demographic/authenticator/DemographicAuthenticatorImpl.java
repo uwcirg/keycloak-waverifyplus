@@ -17,13 +17,11 @@ import lombok.Setter;
 /**
  * Implementation of the DemographicAuthenticator interface. Handles the core demographic validation logic.
  */
+@Setter
+@Getter
 public
 class DemographicAuthenticatorImpl implements DemographicAuthenticator {
 
-	private final KeycloakSession session;
-
-	@Setter
-	@Getter
 	private DemographicVerificationService verificationService;
 
 	/**
@@ -37,7 +35,6 @@ class DemographicAuthenticatorImpl implements DemographicAuthenticator {
 	public
 	DemographicAuthenticatorImpl( KeycloakSession session, String baseUrl ) {
 
-		this.session = session;
 		verificationService = new DemographicVerificationServiceImpl( session, baseUrl );
 
 	}
@@ -46,6 +43,8 @@ class DemographicAuthenticatorImpl implements DemographicAuthenticator {
 	public
 	void authenticate( AuthenticationFlowContext context ) {
 
+		context.form( )
+		       .setAttribute( "demographicRequired", true );
 		Response challenge = context.form( )
 		                            .createForm( "demographic.ftl" );
 		context.challenge( challenge );
