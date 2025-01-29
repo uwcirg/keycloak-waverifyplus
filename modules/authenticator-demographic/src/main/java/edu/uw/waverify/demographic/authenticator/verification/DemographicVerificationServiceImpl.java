@@ -8,6 +8,9 @@ import org.keycloak.models.KeycloakSession;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.jbosslog.JBossLog;
+import org.apache.http.entity.StringEntity;
+
+import static org.apache.http.entity.ContentType.APPLICATION_JSON;
 
 /**
  * Implementation of the DemographicVerificationService interface. This class provides the logic for verifying
@@ -50,14 +53,14 @@ class DemographicVerificationServiceImpl implements DemographicVerificationServi
 
 		try {
 			String requestBody = DemographicDataCodec.encode( demographics );
-			log.error( requestBody );
+
 			String responseBody = SimpleHttp.doPost( baseUrl, session )
 			                                .header( "Content-Type", "application/json" )
-			                                .json( requestBody )
+			                                .entity( new StringEntity( requestBody, APPLICATION_JSON ) )
 			                                .asString( );
 
 			Map< String, Object > decodedResponse = DemographicDataCodec.decode( responseBody );
-			log.error( responseBody );
+
 			return Boolean.TRUE.equals( decodedResponse.get( "valid" ) );
 
 		} catch ( Exception e ) {

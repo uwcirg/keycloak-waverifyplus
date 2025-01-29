@@ -59,8 +59,8 @@
                 <#else>
 			<div id="kc-form-buttons" class="${properties.kcFormButtonsClass!}">
 				<button class="${properties.kcButtonClass!} ${properties.kcButtonPrimaryClass!} ${properties.kcButtonBlockClass!} ${properties.kcButtonLargeClass!}"
-				        type="submit"/>
-                            ${msg("doRegister")}
+				        type="submit">
+                                    ${msg("doRegister")}
 				</button>
 			</div>
                 </#if>
