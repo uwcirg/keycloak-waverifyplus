@@ -2,6 +2,9 @@
 <#import "field.ftl" as field>
 <#import "buttons.ftl" as buttons>
 <#import "social-providers.ftl" as identityProviders>
+<#if demographicRequired??>
+    <#import "demographic-registration.ftl" as demographic>
+</#if>
 <@layout.registrationLayout displayMessage=!messagesPerField.existsError('username','password') displayInfo=realm.password && realm.registrationAllowed && !registrationDisabled??; section>
 	<!-- template: login.ftl -->
 
@@ -16,23 +19,34 @@
 				<form id="kc-form-login" class="${properties.kcFormClass!}"
 				      onsubmit="login.disabled = true; return true;" action="${url.loginAction}"
 				      method="post" novalidate="novalidate">
+
                                     <#if !usernameHidden??>
                                         <#assign label>
                                             <#if !realm.loginWithEmailAllowed>${msg("username")}<#elseif !realm.registrationEmailAsUsername>${msg("usernameOrEmail")}<#else>${msg("email")}</#if>
                                         </#assign>
-                                        <@field.input name="username" label=label autofocus=true autocomplete="username" value=login.username!'' />
+                                        <#if !realm.loginWithEmailAllowed>
+                                            <@field.input name="username" label=label autofocus=true autocomplete="username" value=login.username!'' />
+                                        <#elseif !realm.registrationEmailAsUsername>${msg("usernameOrEmail")}
+                                            <@field.input name="username" label=label autofocus=true autocomplete="username" value=login.username!'' />
+                                        <#else>
+                                            <@field.input name="email" label=label autofocus=true autocomplete="email" value='' />
+                                        </#if>
                                     </#if>
 
-                                    <@field.password name="password" label=msg("password") forgotPassword=realm.resetPasswordAllowed autofocus=usernameHidden?? autocomplete="current-password" />
+                                    <#if demographicRequired??>
+                                        <@demographic.demographicRegistration />
+                                    <#else>
+                                        <@field.password name="password" label=msg("password") forgotPassword=realm.resetPasswordAllowed autofocus=usernameHidden?? autocomplete="current-password" />
 
-					<div class="${properties.kcFormGroupClass!}">
-                                            <#if realm.rememberMe && !usernameHidden??>
-                                                <@field.checkbox name="rememberMe" label=msg("rememberMe") value=login.rememberMe?? />
-                                            </#if>
-					</div>
+					    <div class="${properties.kcFormGroupClass!}">
+                                                <#if realm.rememberMe && !usernameHidden??>
+                                                    <@field.checkbox name="rememberMe" label=msg("rememberMe") value=login.rememberMe?? />
+                                                </#if>
+					    </div>
 
-					<input type="hidden" id="id-hidden-input" name="credentialId"
-                                               <#if auth.selectedCredential?has_content>value="${auth.selectedCredential}"</#if>/>
+					    <input type="hidden" id="id-hidden-input" name="credentialId"
+                                                   <#if auth.selectedCredential?has_content>value="${auth.selectedCredential}"</#if>/>
+                                    </#if>
 
                                     <@field.checkbox name="authorization" label=msg("authorization") required=true>
                                         <#include "authorization.ftl">

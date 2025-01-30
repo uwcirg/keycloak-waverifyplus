@@ -1,4 +1,7 @@
 <#macro demographicRegistration>
+    <@field.input name="firstName" label="firstName" autofocus=true autocomplete="firstName" value='' />
+    <@field.input name="lastName" label="lastName" autofocus=true autocomplete="lastName" value='' />
+
 	<div class="${properties.kcFormGroupClass!}">
 		<div class="${properties.kcLabelWrapperClass!}">
 			<label for="dob" class="${properties.kcLabelClass!}">

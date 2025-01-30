@@ -1,31 +1,29 @@
 package edu.uw.waverify.demographic.authenticator;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.keycloak.authentication.AuthenticationFlowContext;
 import org.keycloak.authentication.AuthenticationFlowError;
 import org.keycloak.models.*;
 
-import edu.uw.waverify.demographic.authenticator.verification.DemographicVerificationService;
-import edu.uw.waverify.demographic.authenticator.verification.DemographicVerificationServiceImpl;
+import edu.uw.waverify.demographic.authenticator.verification.*;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.extern.jbosslog.JBossLog;
 
 /**
  * Implementation of the {@link DemographicAuthenticator} interface.
  * <p>
- * This class handles demographic authentication within a Keycloak authentication flow. It prompts users for demographic
- * information, validates it using a verification service, and determines whether authentication should proceed.
+ * This class handles demographic authentication within a Keycloak authentication flow. It collects user demographic
+ * data, validates it using a verification service, and determines whether authentication should proceed.
  * </p>
  */
 @Setter
 @Getter
+@JBossLog
 public
 class DemographicAuthenticatorImpl implements DemographicAuthenticator {
 
-	private DemographicVerificationService verificationService;
+	private final DemographicVerificationService verificationService;
 
 	/**
 	 * Constructs a {@code DemographicAuthenticatorImpl} instance with a Keycloak session and a demographic verification
@@ -39,7 +37,7 @@ class DemographicAuthenticatorImpl implements DemographicAuthenticator {
 	public
 	DemographicAuthenticatorImpl( KeycloakSession session, String baseUrl ) {
 
-		verificationService = new DemographicVerificationServiceImpl( session, baseUrl );
+		this.verificationService = new DemographicVerificationServiceImpl( session, baseUrl );
 	}
 
 	/**
@@ -55,7 +53,7 @@ class DemographicAuthenticatorImpl implements DemographicAuthenticator {
 		context.form( )
 		       .setAttribute( "demographicRequired", true );
 		var challenge = context.form( )
-		                       .createForm( "demographic.ftl" );
+		                       .createForm( "login.ftl" );
 		context.challenge( challenge );
 	}
 
@@ -69,14 +67,19 @@ class DemographicAuthenticatorImpl implements DemographicAuthenticator {
 	public
 	void action( AuthenticationFlowContext context ) {
 
-		var validated = validateDemographics( context );
-		if ( !validated ) {
+		var demographicData = DemographicDataHelper.extractFromRequest( context.getHttpRequest( ) );
+
+		if ( !DemographicDataHelper.isValid( demographicData ) ) {
+			log.error( "DemographicData is not valid" );
+			log.error( demographicData );
+
 			var challenge = context.form( )
 			                       .setError( "Demographic validation failed. Please check your details." )
-			                       .createForm( "demographic.ftl" );
+			                       .createForm( "login.ftl" );
 			context.failureChallenge( AuthenticationFlowError.INVALID_CREDENTIALS, challenge );
 			return;
 		}
+		save( context, demographicData );
 		context.success( );
 	}
 
@@ -133,55 +136,44 @@ class DemographicAuthenticatorImpl implements DemographicAuthenticator {
 	@Override
 	public
 	void close( ) {
-
-		verificationService = null;
+		// No specific cleanup required.
 	}
 
-	/**
-	 * Validates the demographic information provided by the user.
-	 *
-	 * @param demographics
-	 * 		a map containing demographic attributes (e.g., firstName, lastName, dateOfBirth).
-	 *
-	 * @return {@code true} if the demographics are valid, {@code false} otherwise.
-	 */
-	@Override
 	public
-	boolean validateDemographics( Map< String, String > demographics ) {
+	void save( AuthenticationFlowContext context, DemographicData demographicData ) {
 
-		if ( demographics == null || demographics.isEmpty( ) ) {
-			return false;
+		var session     = context.getSession( );
+		var realm       = context.getRealm( );
+		var authSession = context.getAuthenticationSession( );
+
+		var email = demographicData.getEmail( );
+		if ( ( email == null || email.isEmpty( ) ) ) {
+			throw new RuntimeException( "Either username or email is required for registration." );
 		}
 
-		var firstName = demographics.get( "firstName" );
-		var lastName  = demographics.get( "lastName" );
+		var user = session.users( )
+		                  .getUserByEmail( realm, email );
 
-		if ( firstName == null || lastName == null ) {
-			return false;
+		if ( user == null ) {
+			user = session.users( )
+			              .addUser( realm, email );
+			user.setEnabled( true );
+			if ( email != null ) {
+				user.setEmail( email );
+				user.setEmailVerified( true );
+			}
 		}
 
-		return verificationService.verify( demographics );
-	}
+		var firstName = authSession.getAuthNote( "firstName" );
+		var lastName  = authSession.getAuthNote( "lastName" );
+		var dob       = authSession.getAuthNote( "dob" );
 
-	/**
-	 * Extracts and validates demographic information from the authentication flow context.
-	 *
-	 * @param context
-	 * 		the authentication flow context.
-	 *
-	 * @return {@code true} if the demographics are valid, {@code false} otherwise.
-	 */
-	private
-	boolean validateDemographics( AuthenticationFlowContext context ) {
+		user.setEmail( email );
+		user.setFirstName( firstName );
+		user.setLastName( lastName );
+		user.setSingleAttribute( "dob", dob );
 
-		var formData = context.getHttpRequest( )
-		                      .getDecodedFormParameters( );
-		var demographics = new HashMap< String, String >( ) {{
-			put( "firstName", formData.getFirst( "firstName" ) );
-			put( "lastName", formData.getFirst( "lastName" ) );
-		}};
-
-		return validateDemographics( demographics );
+		context.setUser( user );
 	}
 
 }

@@ -45,17 +45,23 @@ class DemographicRegistrationFormAction implements FormAction {
 
 		var formData = context.getHttpRequest( )
 		                      .getDecodedFormParameters( );
-		var firstName = formData.getFirst( "firstName" );
-		var lastName  = formData.getFirst( "lastName" );
-		var dob       = formData.getFirst( "dob" );
+		var email       = formData.getFirst( "email" );
+		var firstName   = formData.getFirst( "firstName" );
+		var lastName    = formData.getFirst( "lastName" );
+		var dob         = formData.getFirst( "dob" );
+		var authSession = context.getAuthenticationSession( );
 
-		if ( firstName == null || firstName.isEmpty( ) || lastName == null || lastName.isEmpty( ) || dob == null || dob.isEmpty( ) ) {
+		authSession.removeAuthNote( "AUTH_SESSION_ID" );
+
+		if ( firstName == null || firstName.isEmpty( ) || lastName == null || lastName.isEmpty( ) || dob == null || dob.isEmpty( ) || email == null || email.isEmpty( ) ) {
 			List< FormMessage > errors = new ArrayList<>( );
 			errors.add( new FormMessage( null, "Please provide all required demographic information." ) );
 			context.validationError( formData, errors );
 			return;
 		}
 
+		context.getAuthenticationSession( )
+		       .setAuthNote( "email", email );
 		context.getAuthenticationSession( )
 		       .setAuthNote( "firstName", firstName );
 		context.getAuthenticationSession( )
@@ -76,12 +82,41 @@ class DemographicRegistrationFormAction implements FormAction {
 	public
 	void success( FormContext context ) {
 
-		var session = context.getAuthenticationSession( );
-		var user    = context.getUser( );
+		var session     = context.getSession( );
+		var realm       = context.getRealm( );
+		var authSession = context.getAuthenticationSession( );
 
-		user.setAttribute( "firstName", List.of( session.getAuthNote( "firstName" ) ) );
-		user.setAttribute( "lastName", List.of( session.getAuthNote( "lastName" ) ) );
-		user.setAttribute( "dob", List.of( session.getAuthNote( "dob" ) ) );
+		var username = authSession.getAuthNote( "username" );
+		var email    = authSession.getAuthNote( "email" );
+
+		if ( ( username == null || username.isEmpty( ) ) && ( email == null || email.isEmpty( ) ) ) {
+			throw new RuntimeException( "Either username or email is required for registration." );
+		}
+
+		var user = email != null && realm.isLoginWithEmailAllowed( ) ? session.users( )
+		                                                                      .getUserByEmail( realm, email ) : session.users( )
+		                                                                                                               .getUserByUsername( realm, username );
+
+		if ( user == null ) {
+			user = session.users( )
+			              .addUser( realm, username != null ? username : email );
+			user.setEnabled( true );
+			if ( email != null ) {
+				user.setEmail( email );
+				user.setEmailVerified( false );
+			}
+		}
+
+		var firstName = authSession.getAuthNote( "firstName" );
+		var lastName  = authSession.getAuthNote( "lastName" );
+		var dob       = authSession.getAuthNote( "dob" );
+
+		user.setEmail( email );
+		user.setFirstName( firstName );
+		user.setLastName( lastName );
+		user.setSingleAttribute( "dob", dob );
+
+		context.setUser( user );
 	}
 
 	/**
