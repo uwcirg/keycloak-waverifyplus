@@ -8,8 +8,7 @@
 	    <form id="kc-totp-login-form" class="${properties.kcFormClass!}" action="${url.loginAction}" method="post">
 		    <div class="${properties.kcFormGroupClass!}">
 			    <div class="${properties.kcLabelWrapperClass!}">
-				    <label for="totp" class="${properties.kcLabelClass!}">What is your mom's first
-					    name?</label>
+				    <label for="totp" class="${properties.kcLabelClass!}">What is your PIN?</label>
 			    </div>
 
 			    <div class="${properties.kcInputWrapperClass!}">

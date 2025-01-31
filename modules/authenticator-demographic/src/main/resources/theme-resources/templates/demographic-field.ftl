@@ -10,15 +10,6 @@
 		                  aria-invalid="<#if error?has_content>true</#if>"/>
 		        </span>
 		    </div>
-		    <div class="${properties.kcInputGroupItemClass}">
-			    <button class="${properties.kcFormPasswordVisibilityButtonClass}" type="button"
-			            aria-label="${msg('showPassword')}"
-			            aria-controls="${name}" data-password-toggle
-			            data-icon-show="fa-eye fas" data-icon-hide="fa-eye-slash fas"
-			            data-label-show="${msg('showPassword')}" data-label-hide="${msg('hidePin')}">
-				    <i class="fa-eye fas" aria-hidden="true"></i>
-			    </button>
-		    </div>
 	    </div>
     </@field.group>
 </#macro>

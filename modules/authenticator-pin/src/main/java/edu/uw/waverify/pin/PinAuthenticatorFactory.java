@@ -5,16 +5,20 @@ import java.util.List;
 
 import org.keycloak.Config;
 import org.keycloak.authentication.*;
-import org.keycloak.models.*;
+import org.keycloak.models.KeycloakSession;
+import org.keycloak.models.KeycloakSessionFactory;
 import org.keycloak.provider.ProviderConfigProperty;
+
+import static org.keycloak.models.AuthenticationExecutionModel.Requirement;
+import static org.keycloak.models.AuthenticationExecutionModel.Requirement.*;
 
 public
 class PinAuthenticatorFactory implements AuthenticatorFactory, ConfigurableAuthenticatorFactory {
 
-	private static final PinAuthenticator                           SINGLETON           = new PinAuthenticator( );
-	private static final List< ProviderConfigProperty >             configProperties    = new ArrayList< ProviderConfigProperty >( );
-	private static final AuthenticationExecutionModel.Requirement[] REQUIREMENT_CHOICES = { AuthenticationExecutionModel.Requirement.REQUIRED, AuthenticationExecutionModel.Requirement.ALTERNATIVE, AuthenticationExecutionModel.Requirement.DISABLED };
-	public static final  String                                     PROVIDER_ID         = "pin-authenticator";
+	private static final PinAuthenticator               SINGLETON           = new PinAuthenticator( );
+	private static final List< ProviderConfigProperty > configProperties    = new ArrayList<>( );
+	private static final Requirement[]                  REQUIREMENT_CHOICES = { REQUIRED, ALTERNATIVE, DISABLED };
+	public static final  String                         PROVIDER_ID         = "pin-authenticator";
 
 	static {
 		ProviderConfigProperty property;
@@ -81,7 +85,7 @@ class PinAuthenticatorFactory implements AuthenticatorFactory, ConfigurableAuthe
 
 	@Override
 	public
-	AuthenticationExecutionModel.Requirement[] getRequirementChoices( ) {
+	Requirement[] getRequirementChoices( ) {
 
 		return REQUIREMENT_CHOICES;
 	}
@@ -106,6 +110,5 @@ class PinAuthenticatorFactory implements AuthenticatorFactory, ConfigurableAuthe
 
 		return configProperties;
 	}
-
 
 }

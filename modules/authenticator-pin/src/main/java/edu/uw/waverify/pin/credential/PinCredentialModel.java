@@ -6,7 +6,6 @@ import org.keycloak.common.util.Time;
 import org.keycloak.credential.CredentialModel;
 import org.keycloak.util.JsonSerialization;
 
-import edu.uw.waverify.pin.credential.dto.PinCredentialData;
 import edu.uw.waverify.pin.credential.dto.PinSecretData;
 
 public
@@ -14,20 +13,17 @@ class PinCredentialModel extends CredentialModel {
 
 	public static final String TYPE = "PIN";
 
-	private final PinCredentialData credentialData;
-	private final PinSecretData     secretData;
+	private final PinSecretData secretData;
 
 	private
-	PinCredentialModel( PinCredentialData credentialData, PinSecretData secretData ) {
+	PinCredentialModel( PinSecretData secretData ) {
 
-		this.credentialData = credentialData;
 		this.secretData = secretData;
 	}
 
 	private
-	PinCredentialModel( String question, String answer ) {
+	PinCredentialModel( String answer ) {
 
-		credentialData = new PinCredentialData( question );
 		secretData = new PinSecretData( answer );
 	}
 
@@ -35,16 +31,14 @@ class PinCredentialModel extends CredentialModel {
 	PinCredentialModel createFromCredentialModel( CredentialModel credentialModel ) {
 
 		try {
-			PinCredentialData credentialData = JsonSerialization.readValue( credentialModel.getCredentialData( ), PinCredentialData.class );
-			PinSecretData     secretData     = JsonSerialization.readValue( credentialModel.getSecretData( ), PinSecretData.class );
+			PinSecretData secretData = JsonSerialization.readValue( credentialModel.getSecretData( ), PinSecretData.class );
 
-			PinCredentialModel PinCredentialModel = new PinCredentialModel( credentialData, secretData );
+			PinCredentialModel PinCredentialModel = new PinCredentialModel( secretData );
 			PinCredentialModel.setUserLabel( credentialModel.getUserLabel( ) );
 			PinCredentialModel.setCreatedDate( credentialModel.getCreatedDate( ) );
 			PinCredentialModel.setType( TYPE );
 			PinCredentialModel.setId( credentialModel.getId( ) );
 			PinCredentialModel.setSecretData( credentialModel.getSecretData( ) );
-			PinCredentialModel.setCredentialData( credentialModel.getCredentialData( ) );
 			return PinCredentialModel;
 		} catch ( IOException e ) {
 			throw new RuntimeException( e );
@@ -52,9 +46,9 @@ class PinCredentialModel extends CredentialModel {
 	}
 
 	public static
-	PinCredentialModel createPin( String question, String answer ) {
+	PinCredentialModel createPin( String answer ) {
 
-		PinCredentialModel credentialModel = new PinCredentialModel( question, answer );
+		PinCredentialModel credentialModel = new PinCredentialModel( answer );
 		credentialModel.fillCredentialModelFields( );
 		return credentialModel;
 	}
@@ -63,19 +57,12 @@ class PinCredentialModel extends CredentialModel {
 	void fillCredentialModelFields( ) {
 
 		try {
-			setCredentialData( JsonSerialization.writeValueAsString( credentialData ) );
 			setSecretData( JsonSerialization.writeValueAsString( secretData ) );
 			setType( TYPE );
 			setCreatedDate( Time.currentTimeMillis( ) );
 		} catch ( IOException e ) {
 			throw new RuntimeException( e );
 		}
-	}
-
-	public
-	PinCredentialData getPinCredentialData( ) {
-
-		return credentialData;
 	}
 
 	public

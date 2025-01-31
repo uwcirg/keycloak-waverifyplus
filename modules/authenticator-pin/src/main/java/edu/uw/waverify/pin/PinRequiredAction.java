@@ -9,6 +9,8 @@ import edu.uw.waverify.pin.credential.PinCredentialModel;
 
 import jakarta.ws.rs.core.Response;
 
+import static edu.uw.waverify.pin.credential.PinCredentialModel.TYPE;
+
 public
 class PinRequiredAction implements RequiredActionProvider, CredentialRegistrator {
 
@@ -40,12 +42,12 @@ class PinRequiredAction implements RequiredActionProvider, CredentialRegistrator
 	public
 	void processAction( RequiredActionContext context ) {
 
-		String answer = ( context.getHttpRequest( )
-		                         .getDecodedFormParameters( )
-		                         .getFirst( "pin" ) );
+		var pin = ( context.getHttpRequest( )
+		                   .getDecodedFormParameters( )
+		                   .getFirst( "pin" ) );
 		PinCredentialProvider sqcp = ( PinCredentialProvider ) context.getSession( )
-		                                                              .getProvider( CredentialProvider.class, "pin" );
-		sqcp.createCredential( context.getRealm( ), context.getUser( ), PinCredentialModel.createPin( "What is your mom's first name?", answer ) );
+		                                                              .getProvider( CredentialProvider.class, TYPE );
+		sqcp.createCredential( context.getRealm( ), context.getUser( ), PinCredentialModel.createPin( pin ) );
 		context.success( );
 	}
 
@@ -53,7 +55,7 @@ class PinRequiredAction implements RequiredActionProvider, CredentialRegistrator
 	public
 	String getCredentialType( KeycloakSession session, AuthenticationSessionModel AuthenticationSession ) {
 
-		return PinCredentialModel.TYPE;
+		return TYPE;
 	}
 
 }
