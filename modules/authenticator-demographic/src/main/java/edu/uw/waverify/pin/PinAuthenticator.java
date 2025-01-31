@@ -9,7 +9,9 @@ import org.keycloak.credential.CredentialProvider;
 import org.keycloak.models.*;
 
 import jakarta.ws.rs.core.*;
+import lombok.extern.jbosslog.JBossLog;
 
+@JBossLog
 public
 class PinAuthenticator implements Authenticator, CredentialValidator< PinCredentialProvider > {
 
@@ -17,10 +19,16 @@ class PinAuthenticator implements Authenticator, CredentialValidator< PinCredent
 	public
 	void authenticate( AuthenticationFlowContext context ) {
 
+		if ( context.getUser( ) == null ) {
+			context.failure( AuthenticationFlowError.UNKNOWN_USER );
+			return;
+		}
+
 		if ( hasCookie( context ) ) {
 			context.success( );
 			return;
 		}
+
 		Response challenge = context.form( )
 		                            .createForm( "pin.ftl" );
 		context.challenge( challenge );
@@ -30,6 +38,11 @@ class PinAuthenticator implements Authenticator, CredentialValidator< PinCredent
 	public
 	void action( AuthenticationFlowContext context ) {
 
+		if ( context.getUser( ) == null ) {
+			context.failure( AuthenticationFlowError.UNKNOWN_USER );
+			return;
+		}
+
 		boolean validated = validateAnswer( context );
 		if ( !validated ) {
 			Response challenge = context.form( )
@@ -38,6 +51,7 @@ class PinAuthenticator implements Authenticator, CredentialValidator< PinCredent
 			context.failureChallenge( AuthenticationFlowError.INVALID_CREDENTIALS, challenge );
 			return;
 		}
+
 		setCookie( context );
 		context.success( );
 	}
@@ -74,7 +88,7 @@ class PinAuthenticator implements Authenticator, CredentialValidator< PinCredent
 	@Override
 	public
 	void close( ) {
-
+		// No cleanup required
 	}
 
 	@Override
@@ -84,30 +98,31 @@ class PinAuthenticator implements Authenticator, CredentialValidator< PinCredent
 		return ( PinCredentialProvider ) session.getProvider( CredentialProvider.class, PinCredentialProviderFactory.PROVIDER_ID );
 	}
 
-	protected
+	private
 	boolean hasCookie( AuthenticationFlowContext context ) {
 
-		Cookie cookie = context.getHttpRequest( )
-		                       .getHttpHeaders( )
-		                       .getCookies( )
-		                       .get( "PIN_ANSWERED" );
+		Cookie  cookie = context.getHttpRequest( )
+		                        .getHttpHeaders( )
+		                        .getCookies( )
+		                        .get( "PIN_ANSWERED" );
 		boolean result = cookie != null;
 		if ( result ) {
-			System.out.println( "Bypassing pin because cookie is set" );
+			log.info( "Bypassing PIN because cookie is set" );
 		}
 		return result;
 	}
 
-	protected
+	private
 	void setCookie( AuthenticationFlowContext context ) {
 
 		AuthenticatorConfigModel config       = context.getAuthenticatorConfig( );
-		int                      maxCookieAge = 60 * 60 * 24 * 30; // 30 days
-		if ( config != null ) {
-			maxCookieAge = Integer.valueOf( config.getConfig( )
-			                                      .get( "cookie.max.age" ) );
+		int                      maxCookieAge = 60 * 60 * 24 * 30; // Default 30 days
 
+		if ( config != null ) {
+			maxCookieAge = Integer.parseInt( config.getConfig( )
+			                                       .get( "cookie.max.age" ) );
 		}
+
 		URI uri = context.getUriInfo( )
 		                 .getBaseUriBuilder( )
 		                 .path( "realms" )
@@ -120,25 +135,27 @@ class PinAuthenticator implements Authenticator, CredentialValidator< PinCredent
 		                                                             .maxAge( maxCookieAge )
 		                                                             .secure( false )
 		                                                             .build( );
+
 		context.getSession( )
 		       .getContext( )
 		       .getHttpResponse( )
 		       .setCookieIfAbsent( newCookie );
 	}
 
-	protected
+	private
 	boolean validateAnswer( AuthenticationFlowContext context ) {
 
-		MultivaluedMap< String, String > formData = context.getHttpRequest( )
-		                                                   .getDecodedFormParameters( );
-		String secret       = formData.getFirst( "pin" );
-		String credentialId = formData.getFirst( "credentialId" );
+		MultivaluedMap< String, String > formData     = context.getHttpRequest( )
+		                                                       .getDecodedFormParameters( );
+		String                           pin          = formData.getFirst( "pin" );
+		String                           credentialId = formData.getFirst( "credentialId" );
+
 		if ( credentialId == null || credentialId.isEmpty( ) ) {
 			credentialId = getCredentialProvider( context.getSession( ) ).getDefaultCredential( context.getSession( ), context.getRealm( ), context.getUser( ) )
 			                                                             .getId( );
 		}
 
-		UserCredentialModel input = new UserCredentialModel( credentialId, getType( context.getSession( ) ), secret );
+		UserCredentialModel input = new UserCredentialModel( credentialId, getType( context.getSession( ) ), pin );
 		return getCredentialProvider( context.getSession( ) ).isValid( context.getRealm( ), context.getUser( ), input );
 	}
 

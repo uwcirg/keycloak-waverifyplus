@@ -112,4 +112,16 @@ class PinCredentialProvider implements CredentialProvider< PinCredentialModel >,
 		           .equals( challengeResponse );
 	}
 
+	public
+	void updateCredential( RealmModel realm, UserModel user, PinCredentialModel pinCredentialModel ) {
+
+		if ( pinCredentialModel.getCreatedDate( ) == null ) {
+			pinCredentialModel.setCreatedDate( Time.currentTimeMillis( ) );
+		}
+
+		user.credentialManager( )
+		    .updateStoredCredential( pinCredentialModel );
+
+	}
+
 }

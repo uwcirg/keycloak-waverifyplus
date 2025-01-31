@@ -1,4 +1,4 @@
-package edu.uw.waverify.demographic.identification;
+package edu.uw.waverify.token;
 
 import java.nio.charset.StandardCharsets;
 import java.security.*;
@@ -12,8 +12,8 @@ import org.keycloak.models.UserModel;
 public
 class UserTokenGenerator {
 
-	private static final String NONCE_ATTRIBUTE = "auth_nonce";
-	private static final String TOKEN_ATTRIBUTE = "auth_token";
+	public static final String NONCE_ATTRIBUTE = "auth_nonce";
+	public static final String TOKEN_ATTRIBUTE = "auth_token";
 
 	/**
 	 * Generates and stores a persistent unique token for the user.

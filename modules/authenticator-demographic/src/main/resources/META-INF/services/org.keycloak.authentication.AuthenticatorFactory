@@ -1,1 +1,2 @@
 edu.uw.waverify.demographic.authenticator.DemographicAuthenticatorFactory
+edu.uw.waverify.token.TokenAuthenticatorFactory

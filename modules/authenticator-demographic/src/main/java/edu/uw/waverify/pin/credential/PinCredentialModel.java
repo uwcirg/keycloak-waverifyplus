@@ -21,7 +21,7 @@ class PinCredentialModel extends CredentialModel {
 		this.secretData = secretData;
 	}
 
-	private
+	public
 	PinCredentialModel( String answer ) {
 
 		secretData = new PinSecretData( answer );

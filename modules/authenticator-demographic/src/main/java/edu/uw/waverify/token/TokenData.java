@@ -1,4 +1,4 @@
-package edu.uw.waverify.demographic.identification;
+package edu.uw.waverify.token;
 
 import lombok.Data;
 

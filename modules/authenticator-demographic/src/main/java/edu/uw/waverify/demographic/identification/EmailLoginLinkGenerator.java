@@ -4,6 +4,8 @@ import org.keycloak.email.EmailSenderProvider;
 import org.keycloak.models.KeycloakSession;
 import org.keycloak.models.UserModel;
 
+import edu.uw.waverify.token.UserTokenGenerator;
+
 import lombok.extern.jbosslog.JBossLog;
 
 /**

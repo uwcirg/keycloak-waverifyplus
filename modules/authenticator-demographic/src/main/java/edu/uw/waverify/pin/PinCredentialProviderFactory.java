@@ -6,10 +6,12 @@ import org.keycloak.models.KeycloakSession;
 
 import edu.uw.waverify.pin.credential.PinCredentialModel;
 
+import static edu.uw.waverify.pin.credential.PinCredentialModel.TYPE;
+
 public
 class PinCredentialProviderFactory implements CredentialProviderFactory< PinCredentialProvider > {
 
-	public static final String PROVIDER_ID = "pin";
+	public static final String PROVIDER_ID = TYPE;
 
 	@Override
 	public

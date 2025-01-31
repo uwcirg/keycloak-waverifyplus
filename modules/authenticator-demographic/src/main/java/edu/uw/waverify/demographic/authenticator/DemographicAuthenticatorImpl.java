@@ -2,10 +2,14 @@ package edu.uw.waverify.demographic.authenticator;
 
 import org.keycloak.authentication.AuthenticationFlowContext;
 import org.keycloak.authentication.AuthenticationFlowError;
+import org.keycloak.credential.CredentialProvider;
 import org.keycloak.models.*;
 
 import edu.uw.waverify.demographic.authenticator.verification.*;
 import edu.uw.waverify.demographic.identification.EmailLoginLinkGenerator;
+import edu.uw.waverify.pin.PinCredentialProvider;
+import edu.uw.waverify.pin.PinCredentialProviderFactory;
+import edu.uw.waverify.pin.credential.PinCredentialModel;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -84,6 +88,10 @@ class DemographicAuthenticatorImpl implements DemographicAuthenticator {
 		var user = DemographicDataHelper.saveUser( context.getSession( ), context.getRealm( ), authSession );
 		context.setUser( user );
 
+		if ( demographicData.getPin( ) != null ) {
+			storePinCredential( context.getSession( ), context.getRealm( ), user, demographicData.getPin( ) );
+		}
+
 		EmailLoginLinkGenerator.sendLoginEmail( context.getSession( ), user );
 		context.success( );
 	}
@@ -142,6 +150,18 @@ class DemographicAuthenticatorImpl implements DemographicAuthenticator {
 	public
 	void close( ) {
 		// No specific cleanup required.
+	}
+
+	private
+	void storePinCredential( KeycloakSession session, RealmModel realm, UserModel user, String pin ) {
+
+		var provider = ( PinCredentialProvider ) session.getProvider( CredentialProvider.class, PinCredentialProviderFactory.PROVIDER_ID );
+
+		if ( provider.isConfiguredFor( realm, user, provider.getType( ) ) ) {
+			provider.updateCredential( realm, user, new PinCredentialModel( pin ) );
+		} else {
+			provider.createCredential( realm, user, new PinCredentialModel( pin ) );
+		}
 	}
 
 }
