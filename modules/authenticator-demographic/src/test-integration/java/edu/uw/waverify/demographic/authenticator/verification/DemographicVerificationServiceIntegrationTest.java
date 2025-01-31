@@ -86,7 +86,7 @@ class DemographicVerificationServiceIntegrationTest {
 	@Test
 	void testInvalidDemographics_BlankName( ) {
 
-		Map< String, String > demographics = Map.of( "firstName", "", "lastName", "Doe", "dob", "1990-01-01" );
+		Map< String, String > demographics = Map.of( "firstName", "", "lastName", "Doe", "dateOfBirth", "1990-01-01" );
 
 		boolean result = service.verify( demographics );
 
@@ -94,19 +94,19 @@ class DemographicVerificationServiceIntegrationTest {
 	}
 
 	@Test
-	void testInvalidDemographics_FutureDOB( ) {
+	void testInvalidDemographics_FutureDateOfBirth( ) {
 
-		Map< String, String > demographics = Map.of( "firstName", "John", "lastName", "Doe", "dob", "2100-01-01" );
+		Map< String, String > demographics = Map.of( "firstName", "John", "lastName", "Doe", "dateOfBirth", "2100-01-01" );
 
 		boolean result = service.verify( demographics );
 
-		assertFalse( result, "Expected invalid demographics to return false due to future DOB" );
+		assertFalse( result, "Expected invalid demographics to return false due to future DateOfBirth" );
 	}
 
 	@Test
 	void testValidDemographics( ) {
 
-		Map< String, String > demographics = Map.of( "firstName", "John", "lastName", "Doe", "dob", "1990-01-01" );
+		Map< String, String > demographics = Map.of( "firstName", "John", "lastName", "Doe", "dateOfBirth", "1990-01-01" );
 
 		boolean result = service.verify( demographics );
 

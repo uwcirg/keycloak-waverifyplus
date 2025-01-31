@@ -1,11 +1,11 @@
-package edu.uw.waverify.authenticator.pin;
+package edu.uw.waverify.pin;
 
 import org.keycloak.authentication.*;
 import org.keycloak.credential.CredentialProvider;
 import org.keycloak.models.KeycloakSession;
 import org.keycloak.sessions.AuthenticationSessionModel;
 
-import edu.uw.waverify.authenticator.pin.credential.PinCredentialModel;
+import edu.uw.waverify.pin.credential.PinCredentialModel;
 
 import jakarta.ws.rs.core.Response;
 

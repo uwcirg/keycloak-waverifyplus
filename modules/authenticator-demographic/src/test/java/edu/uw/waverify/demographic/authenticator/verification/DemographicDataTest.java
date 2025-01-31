@@ -22,7 +22,7 @@ class DemographicDataTest {
 		assertNull( demographicData.getLastName( ) );
 		assertNull( demographicData.getDateOfBirth( ) );
 		assertNull( demographicData.getEmail( ) );
-		assertNull( demographicData.getPhoneNumber( ) );
+		assertNull( demographicData.getPin( ) );
 	}
 
 	@Test
@@ -44,7 +44,7 @@ class DemographicDataTest {
 		assertEquals( "Doe", demographicData.getLastName( ) );
 		assertEquals( "1990-01-01", demographicData.getDateOfBirth( ) );
 		assertEquals( "john.doe@example.com", demographicData.getEmail( ) );
-		assertEquals( "1234567890", demographicData.getPhoneNumber( ) );
+		assertEquals( "1234567890", demographicData.getPin( ) );
 	}
 
 	@Test
@@ -54,13 +54,13 @@ class DemographicDataTest {
 		demographicData.setLastName( "Smith" );
 		demographicData.setDateOfBirth( "1985-05-15" );
 		demographicData.setEmail( "jane.smith@example.com" );
-		demographicData.setPhoneNumber( "9876543210" );
+		demographicData.setPin( "9876543210" );
 
 		assertEquals( "Jane", demographicData.getFirstName( ) );
 		assertEquals( "Smith", demographicData.getLastName( ) );
 		assertEquals( "1985-05-15", demographicData.getDateOfBirth( ) );
 		assertEquals( "jane.smith@example.com", demographicData.getEmail( ) );
-		assertEquals( "9876543210", demographicData.getPhoneNumber( ) );
+		assertEquals( "9876543210", demographicData.getPin( ) );
 	}
 
 	@Test

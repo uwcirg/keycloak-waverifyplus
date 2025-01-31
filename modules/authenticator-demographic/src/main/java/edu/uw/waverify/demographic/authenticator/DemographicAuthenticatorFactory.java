@@ -31,12 +31,19 @@ class DemographicAuthenticatorFactory implements AuthenticatorFactory, Configura
 	private String baseUrl;
 
 	static {
-		ProviderConfigProperty property = new ProviderConfigProperty( );
-		property.setName( VERIFICATION_TIMEOUT );
-		property.setLabel( "Verification Timeout" );
-		property.setType( ProviderConfigProperty.STRING_TYPE );
-		property.setHelpText( "Timeout in seconds for demographic verification." );
-		CONFIG_PROPERTIES.add( property );
+		ProviderConfigProperty timeoutProperty = new ProviderConfigProperty( );
+		timeoutProperty.setName( VERIFICATION_TIMEOUT );
+		timeoutProperty.setLabel( "Verification Timeout" );
+		timeoutProperty.setType( ProviderConfigProperty.STRING_TYPE );
+		timeoutProperty.setHelpText( "Timeout in seconds for demographic verification." );
+		CONFIG_PROPERTIES.add( timeoutProperty );
+
+		ProviderConfigProperty baseUrlProperty = new ProviderConfigProperty( );
+		baseUrlProperty.setName( "baseUrl" );
+		baseUrlProperty.setLabel( "Base URL" );
+		baseUrlProperty.setType( ProviderConfigProperty.STRING_TYPE );
+		baseUrlProperty.setHelpText( "Base URL for demographic verification service." );
+		CONFIG_PROPERTIES.add( baseUrlProperty );
 	}
 
 	/**

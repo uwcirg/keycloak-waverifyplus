@@ -17,7 +17,7 @@ class ValidationController {
 
 		return !request.getFirstName( )
 		               .isBlank( ) && !request.getLastName( )
-		                                      .isBlank( ) && request.getDob( )
+		                                      .isBlank( ) && request.getDateOfBirth( )
 		                                                            .isBefore( LocalDate.now( ) );
 	}
 

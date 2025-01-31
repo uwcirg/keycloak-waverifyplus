@@ -6,9 +6,11 @@ import java.util.List;
 import org.keycloak.Config;
 import org.keycloak.authentication.FormAction;
 import org.keycloak.authentication.FormActionFactory;
-import org.keycloak.models.*;
+import org.keycloak.models.KeycloakSession;
+import org.keycloak.models.KeycloakSessionFactory;
 import org.keycloak.provider.ProviderConfigProperty;
 
+import static org.keycloak.models.AuthenticationExecutionModel.Requirement;
 import static org.keycloak.models.AuthenticationExecutionModel.Requirement.*;
 
 /**
@@ -23,6 +25,23 @@ class DemographicRegistrationFormActionFactory implements FormActionFactory {
 
 	private static final String                         PROVIDER_ID       = "demographic-registration-form-action";
 	private static final List< ProviderConfigProperty > CONFIG_PROPERTIES = new ArrayList<>( );
+	private              String                         baseUrl;
+
+	static {
+		ProviderConfigProperty baseUrlProperty = new ProviderConfigProperty( );
+		baseUrlProperty.setName( "baseUrl" );
+		baseUrlProperty.setLabel( "Base URL" );
+		baseUrlProperty.setType( ProviderConfigProperty.STRING_TYPE );
+		baseUrlProperty.setHelpText( "The base URL for API requests." );
+		CONFIG_PROPERTIES.add( baseUrlProperty );
+
+		ProviderConfigProperty verificationTimeout = new ProviderConfigProperty( );
+		verificationTimeout.setName( "verification.timeout" );
+		verificationTimeout.setLabel( "Verification Timeout" );
+		verificationTimeout.setType( ProviderConfigProperty.STRING_TYPE );
+		verificationTimeout.setHelpText( "Timeout in seconds for demographic verification." );
+		CONFIG_PROPERTIES.add( verificationTimeout );
+	}
 
 	/**
 	 * Creates a new instance of {@link DemographicRegistrationFormAction}.
@@ -36,7 +55,7 @@ class DemographicRegistrationFormActionFactory implements FormActionFactory {
 	public
 	FormAction create( KeycloakSession session ) {
 
-		return new DemographicRegistrationFormAction( );
+		return new DemographicRegistrationFormAction( session, baseUrl );
 	}
 
 	/**
@@ -48,7 +67,10 @@ class DemographicRegistrationFormActionFactory implements FormActionFactory {
 	@Override
 	public
 	void init( Config.Scope scope ) {
-		// No initialization required
+
+		if ( scope != null ) {
+			baseUrl = scope.get( "baseUrl" );
+		}
 	}
 
 	/**
@@ -72,11 +94,6 @@ class DemographicRegistrationFormActionFactory implements FormActionFactory {
 		// No cleanup required
 	}
 
-	/**
-	 * Returns the unique provider ID for this factory.
-	 *
-	 * @return the provider ID as a string.
-	 */
 	@Override
 	public
 	String getId( ) {
@@ -84,11 +101,6 @@ class DemographicRegistrationFormActionFactory implements FormActionFactory {
 		return PROVIDER_ID;
 	}
 
-	/**
-	 * Returns the display name for this form action.
-	 *
-	 * @return the display name as a string.
-	 */
 	@Override
 	public
 	String getDisplayType( ) {
@@ -96,47 +108,27 @@ class DemographicRegistrationFormActionFactory implements FormActionFactory {
 		return "Demographic Registration Form Action";
 	}
 
-	/**
-	 * Returns the reference category for this form action.
-	 *
-	 * @return an empty string as no reference category is defined.
-	 */
 	@Override
 	public
 	String getReferenceCategory( ) {
 
-		return "";
+		return "Demographic Validation";
 	}
 
-	/**
-	 * Indicates whether this form action is configurable.
-	 *
-	 * @return {@code false} as no additional configuration is needed.
-	 */
 	@Override
 	public
 	boolean isConfigurable( ) {
 
-		return false;
+		return true;
 	}
 
-	/**
-	 * Defines the requirement choices available for this form action.
-	 *
-	 * @return an array of possible requirement choices.
-	 */
 	@Override
 	public
-	AuthenticationExecutionModel.Requirement[] getRequirementChoices( ) {
+	Requirement[] getRequirementChoices( ) {
 
-		return new AuthenticationExecutionModel.Requirement[] { REQUIRED, ALTERNATIVE, DISABLED };
+		return new Requirement[] { REQUIRED, ALTERNATIVE, DISABLED };
 	}
 
-	/**
-	 * Indicates whether user setup is allowed for this form action.
-	 *
-	 * @return {@code false} as user setup is not applicable.
-	 */
 	@Override
 	public
 	boolean isUserSetupAllowed( ) {
@@ -144,11 +136,6 @@ class DemographicRegistrationFormActionFactory implements FormActionFactory {
 		return false;
 	}
 
-	/**
-	 * Provides a brief description of this form action.
-	 *
-	 * @return the help text as a string.
-	 */
 	@Override
 	public
 	String getHelpText( ) {
@@ -156,11 +143,6 @@ class DemographicRegistrationFormActionFactory implements FormActionFactory {
 		return "Collects demographic data during user registration.";
 	}
 
-	/**
-	 * Retrieves the configuration properties for this form action.
-	 *
-	 * @return an empty list as no configuration properties are defined.
-	 */
 	@Override
 	public
 	List< ProviderConfigProperty > getConfigProperties( ) {

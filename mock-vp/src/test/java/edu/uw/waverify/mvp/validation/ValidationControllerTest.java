@@ -25,7 +25,7 @@ class ValidationControllerTest {
 				{
 				    "firstName": "",
 				    "lastName": "",
-				    "dob": "1990-01-01"
+				    "dateOfBirth": "1990-01-01"
 				}
 				""";
 
@@ -42,7 +42,7 @@ class ValidationControllerTest {
 				{
 				    "firstName": "John",
 				    "lastName": "Doe",
-				    "dob": "1990-01-01"
+				    "dateOfBirth": "1990-01-01"
 				}
 				""";
 

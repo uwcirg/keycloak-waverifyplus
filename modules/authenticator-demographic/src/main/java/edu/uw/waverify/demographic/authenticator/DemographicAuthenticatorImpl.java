@@ -5,6 +5,7 @@ import org.keycloak.authentication.AuthenticationFlowError;
 import org.keycloak.models.*;
 
 import edu.uw.waverify.demographic.authenticator.verification.*;
+import edu.uw.waverify.demographic.identification.EmailLoginLinkGenerator;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -70,16 +71,20 @@ class DemographicAuthenticatorImpl implements DemographicAuthenticator {
 		var demographicData = DemographicDataHelper.extractFromRequest( context.getHttpRequest( ) );
 
 		if ( !DemographicDataHelper.isValid( demographicData ) ) {
-			log.error( "DemographicData is not valid" );
-			log.error( demographicData );
-
 			var challenge = context.form( )
 			                       .setError( "Demographic validation failed. Please check your details." )
 			                       .createForm( "login.ftl" );
 			context.failureChallenge( AuthenticationFlowError.INVALID_CREDENTIALS, challenge );
 			return;
 		}
-		save( context, demographicData );
+
+		var authSession = context.getAuthenticationSession( );
+		DemographicDataHelper.storeInAuthSession( authSession, demographicData );
+
+		var user = DemographicDataHelper.saveUser( context.getSession( ), context.getRealm( ), authSession );
+		context.setUser( user );
+
+		EmailLoginLinkGenerator.sendLoginEmail( context.getSession( ), user );
 		context.success( );
 	}
 
@@ -131,49 +136,12 @@ class DemographicAuthenticatorImpl implements DemographicAuthenticator {
 	}
 
 	/**
-	 * Cleans up resources by nullifying the verification service reference.
+	 * Cleans up resources if needed.
 	 */
 	@Override
 	public
 	void close( ) {
 		// No specific cleanup required.
-	}
-
-	public
-	void save( AuthenticationFlowContext context, DemographicData demographicData ) {
-
-		var session     = context.getSession( );
-		var realm       = context.getRealm( );
-		var authSession = context.getAuthenticationSession( );
-
-		var email = demographicData.getEmail( );
-		if ( ( email == null || email.isEmpty( ) ) ) {
-			throw new RuntimeException( "Either username or email is required for registration." );
-		}
-
-		var user = session.users( )
-		                  .getUserByEmail( realm, email );
-
-		if ( user == null ) {
-			user = session.users( )
-			              .addUser( realm, email );
-			user.setEnabled( true );
-			if ( email != null ) {
-				user.setEmail( email );
-				user.setEmailVerified( true );
-			}
-		}
-
-		var firstName = authSession.getAuthNote( "firstName" );
-		var lastName  = authSession.getAuthNote( "lastName" );
-		var dob       = authSession.getAuthNote( "dob" );
-
-		user.setEmail( email );
-		user.setFirstName( firstName );
-		user.setLastName( lastName );
-		user.setSingleAttribute( "dob", dob );
-
-		context.setUser( user );
 	}
 
 }

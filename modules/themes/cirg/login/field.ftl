@@ -42,11 +42,11 @@
     </#if>
 </#macro>
 
-<#macro input name label value="" required=false autocomplete="off" fieldName=name autofocus=false>
+<#macro input name label value="" required=false autocomplete="off" type="text" fieldName=name autofocus=false>
     <#assign error=kcSanitize(messagesPerField.get(fieldName))?no_esc>
     <@group name=name label=label error=error required=required>
 	    <span class="${properties.kcInputWrapperClass!} <#if error?has_content>${properties.kcError}</#if>">
-	        <input id="${name}" name="${name}" value="${value}" type="text" class="${properties.kcInputClass!}"
+	        <input id="${name}" name="${name}" value="${value}" type="${type}" class="${properties.kcInputClass!}"
 	               autocomplete="${autocomplete}"
                        <#if autofocus>autofocus</#if>
 	                aria-invalid="<#if error?has_content>true</#if>"/>

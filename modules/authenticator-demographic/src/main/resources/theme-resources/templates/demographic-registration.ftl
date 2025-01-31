@@ -1,27 +1,6 @@
 <#macro demographicRegistration>
-    <@field.input name="firstName" label="firstName" autofocus=true autocomplete="firstName" value='' />
-    <@field.input name="lastName" label="lastName" autofocus=true autocomplete="lastName" value='' />
-
-	<div class="${properties.kcFormGroupClass!}">
-		<div class="${properties.kcLabelWrapperClass!}">
-			<label for="dob" class="${properties.kcLabelClass!}">
-                            ${msg("dateOfBirth", "Date of Birth")}
-			</label>
-		</div>
-		<div class="${properties.kcInputWrapperClass!}">
-			<input type="date" id="dob" name="dob" class="${properties.kcInputClass!}" required/>
-		</div>
-	</div>
-
-	<div class="${properties.kcFormGroupClass!}">
-		<div class="${properties.kcLabelWrapperClass!}">
-			<label for="phoneNumber" class="${properties.kcLabelClass!}">
-                            ${msg("phoneNumber", "Phone Number")}
-			</label>
-		</div>
-		<div class="${properties.kcInputWrapperClass!}">
-			<input type="tel" id="phoneNumber" name="phoneNumber"
-			       class="${properties.kcInputClass!}" required/>
-		</div>
-	</div>
+    <@field.input name="firstName" label=msg("firstName", "First Name") autofocus=true autocomplete="firstName" value='' required=true />
+    <@field.input name="lastName" label=msg("lastName", "Last Name") autofocus=true autocomplete="lastName" value='' required=true/>
+    <@field.input name="dateOfBirth" label=msg("dateOfBirth", "Date of Birth") autofocus=true autocomplete="dateOfBirth" value='' type="date" required=true/>
+    <@demographicFiled.setPin name="pin" label=msg("pin", "PIN") autofocus=true autocomplete="pin" value='' required=true />
 </#macro>

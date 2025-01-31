@@ -1,4 +1,4 @@
-package edu.uw.waverify.authenticator.pin.credential.dto;
+package edu.uw.waverify.pin.credential.dto;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -6,13 +6,13 @@ import lombok.Getter;
 
 @Getter
 public
-class PinCredentialData {
+class PinSecretData {
 
 	private final String pin;
 
 	@JsonCreator
 	public
-	PinCredentialData( @JsonProperty("pin") String pin ) {
+	PinSecretData( @JsonProperty("pin") String pin ) {
 
 		this.pin = pin;
 	}

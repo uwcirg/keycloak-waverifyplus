@@ -1,12 +1,14 @@
 package edu.uw.waverify.demographic.authenticator.verification;
 
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 /**
  * Represents demographic information provided by the user. This class encapsulates personal details such as name, date
- * of birth, email, and phone number.
+ * of birth, email, and pin.
  */
 @Data
+@NoArgsConstructor
 public
 class DemographicData {
 
@@ -14,15 +16,7 @@ class DemographicData {
 	private String lastName;
 	private String dateOfBirth;
 	private String email;
-	private String phoneNumber;
-
-	/**
-	 * Creates an empty instance of {@code DemographicData}.
-	 */
-	public
-	DemographicData( ) {
-
-	}
+	private String pin;
 
 	/**
 	 * Creates an instance of {@code DemographicData} with all fields initialized.
@@ -35,17 +29,17 @@ class DemographicData {
 	 * 		User's date of birth in YYYY-MM-DD format.
 	 * @param email
 	 * 		User's email address.
-	 * @param phoneNumber
-	 * 		User's phone number.
+	 * @param pin
+	 * 		User's pin.
 	 */
 	public
-	DemographicData( String firstName, String lastName, String dateOfBirth, String email, String phoneNumber ) {
+	DemographicData( String firstName, String lastName, String dateOfBirth, String email, String pin ) {
 
 		this.firstName = firstName;
 		this.lastName = lastName;
 		this.dateOfBirth = dateOfBirth;
 		this.email = email;
-		this.phoneNumber = phoneNumber;
+		this.pin = pin;
 	}
 
 	/**
@@ -57,7 +51,7 @@ class DemographicData {
 	public
 	String toString( ) {
 
-		return "DemographicData{" + "firstName='" + firstName + '\'' + ", lastName='" + lastName + '\'' + ", dateOfBirth='" + dateOfBirth + '\'' + ", email='" + email + '\'' + ", phoneNumber='" + phoneNumber + '\'' + '}';
+		return "DemographicData{" + "firstName='" + firstName + '\'' + ", lastName='" + lastName + '\'' + ", dateOfBirth='" + dateOfBirth + '\'' + ", email='" + email + '\'' + ", phoneNumber='" + pin + '\'' + '}';
 	}
 
 }

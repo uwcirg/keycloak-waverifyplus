@@ -104,7 +104,7 @@ class DemographicVerificationServiceImplTest {
 		when( mockSession.getProvider( HttpClientProvider.class ) ).thenReturn( mockHttpClientProvider );
 		when( mockHttpClientProvider.getHttpClient( ) ).thenReturn( mockCloseableHttpClient );
 
-		Map< String, String > demographics = Map.of( "firstName", "John", "lastName", "Doe", "dob", "1990-01-01" );
+		Map< String, String > demographics = Map.of( "firstName", "John", "lastName", "Doe", "dateOfBirth", "1990-01-01" );
 
 		try ( MockedStatic< SimpleHttp > simpleHttpMock = Mockito.mockStatic( SimpleHttp.class ) ) {
 			SimpleHttp mockSimpleHttp = mock( SimpleHttp.class );
@@ -122,7 +122,7 @@ class DemographicVerificationServiceImplTest {
 					} catch ( IOException e ) {
 						throw new RuntimeException( e );
 					}
-					return entityContent.contains( "\"firstName\":\"John\"" ) && entityContent.contains( "\"lastName\":\"Doe\"" ) && entityContent.contains( "\"dob\":\"1990-01-01\"" );
+					return entityContent.contains( "\"firstName\":\"John\"" ) && entityContent.contains( "\"lastName\":\"Doe\"" ) && entityContent.contains( "\"dateOfBirth\":\"1990-01-01\"" );
 				}
 				return false;
 			} ) ) ).thenReturn( mockSimpleHttp );
@@ -141,7 +141,7 @@ class DemographicVerificationServiceImplTest {
 					} catch ( IOException e ) {
 						throw new RuntimeException( e );
 					}
-					return entityContent.contains( "\"firstName\":\"John\"" ) && entityContent.contains( "\"lastName\":\"Doe\"" ) && entityContent.contains( "\"dob\":\"1990-01-01\"" );
+					return entityContent.contains( "\"firstName\":\"John\"" ) && entityContent.contains( "\"lastName\":\"Doe\"" ) && entityContent.contains( "\"dateOfBirth\":\"1990-01-01\"" );
 				}
 				return false;
 			} ) );

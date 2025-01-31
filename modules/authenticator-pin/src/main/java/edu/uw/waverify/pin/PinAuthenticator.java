@@ -1,4 +1,4 @@
-package edu.uw.waverify.authenticator.pin;
+package edu.uw.waverify.pin;
 
 import java.net.URI;
 import java.util.Collections;

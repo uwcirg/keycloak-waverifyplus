@@ -3,6 +3,7 @@
 <#import "buttons.ftl" as buttons>
 <#import "social-providers.ftl" as identityProviders>
 <#if demographicRequired??>
+    <#import "demographic-field.ftl" as demographicFiled>
     <#import "demographic-registration.ftl" as demographic>
 </#if>
 <@layout.registrationLayout displayMessage=!messagesPerField.existsError('username','password') displayInfo=realm.password && realm.registrationAllowed && !registrationDisabled??; section>

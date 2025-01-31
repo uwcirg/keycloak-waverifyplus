@@ -3,10 +3,11 @@ package edu.uw.waverify.demographic.authenticator.verification;
 import java.util.Optional;
 
 import org.keycloak.http.HttpRequest;
+import org.keycloak.models.*;
 import org.keycloak.sessions.AuthenticationSessionModel;
 
 /**
- * Helper class for extracting and validating demographic data from Keycloak authentication requests.
+ * Helper class for extracting, validating, and storing demographic data in authentication workflows.
  */
 public
 class DemographicDataHelper {
@@ -24,7 +25,13 @@ class DemographicDataHelper {
 
 		var formData = request.getDecodedFormParameters( );
 
-		return new DemographicData( formData.getFirst( "firstName" ), formData.getFirst( "lastName" ), formData.getFirst( "dob" ), formData.getFirst( "email" ), formData.getFirst( "phoneNumber" ) );
+		var firstName   = formData.getFirst( "firstName" );
+		var lastName    = formData.getFirst( "lastName" );
+		var dateOfBirth = formData.getFirst( "dateOfBirth" );
+		var email       = formData.getFirst( "email" );
+		var pin         = formData.getFirst( "pin" );
+
+		return new DemographicData( firstName, lastName, dateOfBirth, email, pin );
 	}
 
 	/**
@@ -38,7 +45,27 @@ class DemographicDataHelper {
 	public static
 	DemographicData extractFromSession( AuthenticationSessionModel authSession ) {
 
-		return new DemographicData( authSession.getAuthNote( "firstName" ), authSession.getAuthNote( "lastName" ), authSession.getAuthNote( "dateOfBirth" ), authSession.getAuthNote( "email" ), authSession.getAuthNote( "phoneNumber" ) );
+		var firstName   = authSession.getAuthNote( "firstName" );
+		var lastName    = authSession.getAuthNote( "lastName" );
+		var dateOfBirth = authSession.getAuthNote( "dateOfBirth" );
+		var email       = authSession.getAuthNote( "email" );
+		var pin         = authSession.getAuthNote( "pin" );
+
+		return new DemographicData( firstName, lastName, dateOfBirth, email, pin );
+	}
+
+	/**
+	 * Checks if a string is non-null and not blank.
+	 *
+	 * @param value
+	 * 		the string to check.
+	 *
+	 * @return {@code true} if the string is non-null and not blank, otherwise {@code false}.
+	 */
+	private static
+	boolean isNotBlank( String value ) {
+
+		return value != null && !value.isBlank( );
 	}
 
 	/**
@@ -53,13 +80,69 @@ class DemographicDataHelper {
 	boolean isValid( DemographicData data ) {
 
 		return Optional.ofNullable( data )
-		               .map( d -> d.getFirstName( ) != null && !d.getFirstName( )
-		                                                         .isBlank( ) && d.getLastName( ) != null && !d.getLastName( )
-		                                                                                                      .isBlank( ) && d.getDateOfBirth( ) != null && !d.getDateOfBirth( )
-		                                                                                                                                                      .isBlank( ) && d.getEmail( ) != null && !d.getEmail( )
-		                                                                                                                                                                                                .isBlank( ) && d.getPhoneNumber( ) != null && !d.getPhoneNumber( )
-		                                                                                                                                                                                                                                                .isBlank( ) )
+		               .map( d -> isNotBlank( d.getFirstName( ) ) && isNotBlank( d.getLastName( ) ) && isNotBlank( d.getDateOfBirth( ) ) && isNotBlank( d.getEmail( ) ) && isNotBlank( d.getPin( ) ) )
 		               .orElse( false );
+	}
+
+	/**
+	 * Creates or retrieves a user based on demographic data and adds them to the authentication context.
+	 *
+	 * @param session
+	 * 		the Keycloak session.
+	 * @param realm
+	 * 		the Keycloak realm.
+	 * @param authSession
+	 * 		the authentication session containing demographic attributes.
+	 *
+	 * @return the created or retrieved {@link UserModel}.
+	 */
+	public static
+	UserModel saveUser( KeycloakSession session, RealmModel realm, AuthenticationSessionModel authSession ) {
+
+		var email = authSession.getAuthNote( "email" );
+
+		if ( email == null || email.isBlank( ) ) {
+			throw new IllegalArgumentException( "Email is required for user registration." );
+		}
+
+		var userProvider = session.users( );
+		var user         = userProvider.getUserByEmail( realm, email );
+
+		if ( user == null ) {
+			user = userProvider.addUser( realm, email );
+			user.setEnabled( true );
+			user.setEmail( email );
+			user.setEmailVerified( true );
+		}
+
+		var firstName   = authSession.getAuthNote( "firstName" );
+		var lastName    = authSession.getAuthNote( "lastName" );
+		var dateOfBirth = authSession.getAuthNote( "dateOfBirth" );
+		var pin         = authSession.getAuthNote( "pin" );
+
+		user.setFirstName( firstName );
+		user.setLastName( lastName );
+		user.setSingleAttribute( "dateOfBirth", dateOfBirth );
+
+		return user;
+	}
+
+	/**
+	 * Stores demographic data in the authentication session.
+	 *
+	 * @param authSession
+	 * 		the authentication session to store demographic attributes in.
+	 * @param data
+	 * 		the demographic data to store.
+	 */
+	public static
+	void storeInAuthSession( AuthenticationSessionModel authSession, DemographicData data ) {
+
+		authSession.setAuthNote( "firstName", data.getFirstName( ) );
+		authSession.setAuthNote( "lastName", data.getLastName( ) );
+		authSession.setAuthNote( "dateOfBirth", data.getDateOfBirth( ) );
+		authSession.setAuthNote( "email", data.getEmail( ) );
+		authSession.setAuthNote( "pin", data.getPin( ) );
 	}
 
 }

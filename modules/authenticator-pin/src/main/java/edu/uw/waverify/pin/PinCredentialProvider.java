@@ -1,10 +1,10 @@
-package edu.uw.waverify.authenticator.pin;
+package edu.uw.waverify.pin;
 
 import org.keycloak.common.util.Time;
 import org.keycloak.credential.*;
 import org.keycloak.models.*;
 
-import edu.uw.waverify.authenticator.pin.credential.PinCredentialModel;
+import edu.uw.waverify.pin.credential.PinCredentialModel;
 
 import org.jboss.logging.Logger;
 
@@ -60,7 +60,7 @@ class PinCredentialProvider implements CredentialProvider< PinCredentialModel >,
 
 		return CredentialTypeMetadata.builder( )
 		                             .type( getType( ) )
-		                             .category( CredentialTypeMetadata.Category.TWO_FACTOR )
+		                             .category( CredentialTypeMetadata.Category.BASIC_AUTHENTICATION )
 		                             .displayName( PinCredentialProviderFactory.PROVIDER_ID )
 		                             .helpText( "pin-text" )
 		                             .createAction( PinAuthenticatorFactory.PROVIDER_ID )

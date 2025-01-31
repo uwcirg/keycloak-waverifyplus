@@ -8,15 +8,26 @@ import org.keycloak.forms.login.LoginFormsProvider;
 import org.keycloak.models.*;
 import org.keycloak.models.utils.FormMessage;
 
+import edu.uw.waverify.demographic.authenticator.verification.DemographicDataHelper;
+import edu.uw.waverify.demographic.authenticator.verification.DemographicVerificationServiceImpl;
+
 /**
  * Form action for collecting and processing demographic information during user registration.
  * <p>
- * This action ensures that the required demographic fields—first name, last name, and date of birth—are provided during
- * registration and stores them as user attributes.
+ * This action ensures that the required demographic fields—first name, last name, date of birth, and email—are provided
+ * during registration and stores them as user attributes.
  * </p>
  */
 public
 class DemographicRegistrationFormAction implements FormAction {
+
+	private final DemographicVerificationServiceImpl verificationService;
+
+	public
+	DemographicRegistrationFormAction( KeycloakSession session, String baseUrl ) {
+
+		this.verificationService = new DemographicVerificationServiceImpl( session, baseUrl );
+	}
 
 	/**
 	 * Adds demographic attributes to the registration form.
@@ -43,32 +54,18 @@ class DemographicRegistrationFormAction implements FormAction {
 	public
 	void validate( ValidationContext context ) {
 
-		var formData = context.getHttpRequest( )
-		                      .getDecodedFormParameters( );
-		var email       = formData.getFirst( "email" );
-		var firstName   = formData.getFirst( "firstName" );
-		var lastName    = formData.getFirst( "lastName" );
-		var dob         = formData.getFirst( "dob" );
-		var authSession = context.getAuthenticationSession( );
+		var demographicData = DemographicDataHelper.extractFromRequest( context.getHttpRequest( ) );
 
-		authSession.removeAuthNote( "AUTH_SESSION_ID" );
-
-		if ( firstName == null || firstName.isEmpty( ) || lastName == null || lastName.isEmpty( ) || dob == null || dob.isEmpty( ) || email == null || email.isEmpty( ) ) {
+		if ( !DemographicDataHelper.isValid( demographicData ) ) {
 			List< FormMessage > errors = new ArrayList<>( );
 			errors.add( new FormMessage( null, "Please provide all required demographic information." ) );
-			context.validationError( formData, errors );
+			context.validationError( context.getHttpRequest( )
+			                                .getDecodedFormParameters( ), errors );
 			return;
 		}
 
-		context.getAuthenticationSession( )
-		       .setAuthNote( "email", email );
-		context.getAuthenticationSession( )
-		       .setAuthNote( "firstName", firstName );
-		context.getAuthenticationSession( )
-		       .setAuthNote( "lastName", lastName );
-		context.getAuthenticationSession( )
-		       .setAuthNote( "dob", dob );
-
+		// Store demographic data in the authentication session
+		DemographicDataHelper.storeInAuthSession( context.getAuthenticationSession( ), demographicData );
 		context.success( );
 	}
 
@@ -82,40 +79,7 @@ class DemographicRegistrationFormAction implements FormAction {
 	public
 	void success( FormContext context ) {
 
-		var session     = context.getSession( );
-		var realm       = context.getRealm( );
-		var authSession = context.getAuthenticationSession( );
-
-		var username = authSession.getAuthNote( "username" );
-		var email    = authSession.getAuthNote( "email" );
-
-		if ( ( username == null || username.isEmpty( ) ) && ( email == null || email.isEmpty( ) ) ) {
-			throw new RuntimeException( "Either username or email is required for registration." );
-		}
-
-		var user = email != null && realm.isLoginWithEmailAllowed( ) ? session.users( )
-		                                                                      .getUserByEmail( realm, email ) : session.users( )
-		                                                                                                               .getUserByUsername( realm, username );
-
-		if ( user == null ) {
-			user = session.users( )
-			              .addUser( realm, username != null ? username : email );
-			user.setEnabled( true );
-			if ( email != null ) {
-				user.setEmail( email );
-				user.setEmailVerified( false );
-			}
-		}
-
-		var firstName = authSession.getAuthNote( "firstName" );
-		var lastName  = authSession.getAuthNote( "lastName" );
-		var dob       = authSession.getAuthNote( "dob" );
-
-		user.setEmail( email );
-		user.setFirstName( firstName );
-		user.setLastName( lastName );
-		user.setSingleAttribute( "dob", dob );
-
+		var user = DemographicDataHelper.saveUser( context.getSession( ), context.getRealm( ), context.getAuthenticationSession( ) );
 		context.setUser( user );
 	}
 

@@ -1,4 +1,4 @@
-package edu.uw.waverify.authenticator.pin;
+package edu.uw.waverify.pin;
 
 import org.keycloak.Config;
 import org.keycloak.authentication.RequiredActionFactory;

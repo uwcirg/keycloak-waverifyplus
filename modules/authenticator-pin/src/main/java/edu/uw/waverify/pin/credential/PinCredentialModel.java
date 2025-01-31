@@ -1,4 +1,4 @@
-package edu.uw.waverify.authenticator.pin.credential;
+package edu.uw.waverify.pin.credential;
 
 import java.io.IOException;
 
@@ -6,8 +6,8 @@ import org.keycloak.common.util.Time;
 import org.keycloak.credential.CredentialModel;
 import org.keycloak.util.JsonSerialization;
 
-import edu.uw.waverify.authenticator.pin.credential.dto.PinCredentialData;
-import edu.uw.waverify.authenticator.pin.credential.dto.PinSecretData;
+import edu.uw.waverify.pin.credential.dto.PinCredentialData;
+import edu.uw.waverify.pin.credential.dto.PinSecretData;
 
 public
 class PinCredentialModel extends CredentialModel {
