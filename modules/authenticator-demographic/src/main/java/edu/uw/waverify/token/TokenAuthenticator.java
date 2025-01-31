@@ -3,33 +3,40 @@ package edu.uw.waverify.token;
 import org.keycloak.authentication.*;
 import org.keycloak.models.*;
 
+import lombok.extern.jbosslog.JBossLog;
+
 import static edu.uw.waverify.token.UserTokenGenerator.TOKEN_ATTRIBUTE;
 
 /**
  * Authenticator that validates a user token and identifies the user. If the token is valid, authentication proceeds to
  * the next step (PIN verification).
  */
+@JBossLog
 public
 class TokenAuthenticator implements Authenticator {
 
-	private static final String TOKEN_PARAM = "auth_token";
+	private static final String TOKEN_PARAM = "user_token";
 
 	@Override
 	public
 	void authenticate( AuthenticationFlowContext context ) {
 
-		var formData = context.getHttpRequest( )
-		                      .getDecodedFormParameters( );
-		var token = formData.getFirst( TOKEN_PARAM );
+		var token = context.getHttpRequest( )
+		                   .getUri( )
+		                   .getQueryParameters( )
+		                   .getFirst( TOKEN_PARAM );
 
 		if ( token == null || token.isBlank( ) ) {
-			challenge( context, "Invalid or missing authentication token." );
+			log.warn( "No token found in request parameters" );
+			context.failure( AuthenticationFlowError.INVALID_CREDENTIALS );
 			return;
 		}
 
 		var user = findUserByToken( context.getSession( ), context.getRealm( ), token );
 		if ( user == null ) {
-			challenge( context, "Invalid authentication token." );
+			log.warn( "No such user found in request parameters" );
+			log.warn( "token: " + token );
+			context.failure( AuthenticationFlowError.UNKNOWN_USER );
 			return;
 		}
 
@@ -68,23 +75,6 @@ class TokenAuthenticator implements Authenticator {
 	public
 	void close( ) {
 		// No resources to close
-	}
-
-	/**
-	 * Sends an authentication challenge response.
-	 *
-	 * @param context
-	 * 		The authentication flow context.
-	 * @param errorMessage
-	 * 		The error message to display.
-	 */
-	private
-	void challenge( AuthenticationFlowContext context, String errorMessage ) {
-
-		var response = context.form( )
-		                      .setError( errorMessage )
-		                      .createForm( "token-auth.ftl" );
-		context.failureChallenge( AuthenticationFlowError.INVALID_CREDENTIALS, response );
 	}
 
 	/**

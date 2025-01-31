@@ -1,8 +1,10 @@
 package edu.uw.waverify.demographic.identification;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+
 import org.keycloak.email.EmailSenderProvider;
-import org.keycloak.models.KeycloakSession;
-import org.keycloak.models.UserModel;
+import org.keycloak.models.*;
 
 import edu.uw.waverify.token.UserTokenGenerator;
 
@@ -15,7 +17,7 @@ import lombok.extern.jbosslog.JBossLog;
 public
 class EmailLoginLinkGenerator {
 
-	private static final String LOGIN_URL_TEMPLATE = "%s/realms/%s/login-actions/authenticate?user_token=%s";
+	private static final String LOGIN_URL_TEMPLATE = "%srealms/%s/protocol/openid-connect/auth?" + "response_type=code&" + "client_id=%s&" + "redirect_uri=%s&" + "auth_token=%s";
 
 	/**
 	 * Sends a login link email to the specified user.
@@ -30,26 +32,38 @@ class EmailLoginLinkGenerator {
 
 		var email = user.getEmail( );
 		if ( email == null || email.isBlank( ) ) {
-			log.warnf( "Skipping email login link for user %s as no email is set.", user.getId( ) );
+			log.warnf( "Skipping email for user %s: No email set", user.getId( ) );
 			return;
 		}
 
-		var realm = session.getContext( )
-		                   .getRealm( );
-		var baseUrl = session.getContext( )
-		                     .getUri( )
+		var context = session.getContext( );
+		var realm   = context.getRealm( );
+		var baseUrl = context.getUri( )
 		                     .getBaseUri( )
 		                     .toString( );
 
+		ClientModel client = context.getAuthenticationSession( )
+		                            .getClient( );
+		String redirectUri = context.getAuthenticationSession( )
+		                            .getRedirectUri( );
 		var tokenData = UserTokenGenerator.retrieveStoredToken( user );
+
 		if ( tokenData == null ) {
 			log.warnf( "No stored authentication token for user %s. Generating a new one.", user.getId( ) );
 			tokenData = UserTokenGenerator.generateAndStoreToken( user );
 		}
 
-		var loginUrl = String.format( LOGIN_URL_TEMPLATE, baseUrl, realm.getName( ), tokenData.getHashedToken( ) );
-		var subject  = "Your Secure Login Link";
-		var body     = String.format( "Hello %s,\n\n" + "Use the following link to log in securely:\n%s\n\n" + "This link does not expire and can be used multiple times.\n\n" + "If you did not request this, please ignore this email.\n\n" + "Regards,\nYour Security Team", user.getFirstName( ), loginUrl );
+		String encodedRealm    = URLEncoder.encode( realm.getName( ), StandardCharsets.UTF_8 );
+		String encodedClientId = URLEncoder.encode( client.getClientId( ), StandardCharsets.UTF_8 );
+		String encodedRedirect = URLEncoder.encode( redirectUri, StandardCharsets.UTF_8 );
+		String encodedToken    = URLEncoder.encode( tokenData.getHashedToken( ), StandardCharsets.UTF_8 );
+
+		var loginUrl = String.format( LOGIN_URL_TEMPLATE, baseUrl, encodedRealm, encodedClientId, encodedRedirect, encodedToken );
+
+		log.warnf( "Generated login URL: %s", loginUrl );
+
+		var subject = "Your Secure Login Link";
+		var body    = String.format( "Hello %s,\n\n" + "Use the following link to log in securely:\n%s\n\n" + "This link does not expire and can be used multiple times.\n\n" + "If you did not request this, please ignore this email.\n\n" + "Regards,\nYour Security Team", user.getFirstName( ), loginUrl );
 
 		try {
 			session.getProvider( EmailSenderProvider.class )

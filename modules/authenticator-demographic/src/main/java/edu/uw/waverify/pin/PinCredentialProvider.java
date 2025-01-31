@@ -25,7 +25,7 @@ class PinCredentialProvider implements CredentialProvider< PinCredentialModel >,
 	public
 	String getType( ) {
 
-		return PinCredentialModel.TYPE;
+		return CredentialModel.SECRET;
 	}
 
 	@Override
