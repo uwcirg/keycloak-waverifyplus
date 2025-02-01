@@ -17,7 +17,7 @@ import lombok.extern.jbosslog.JBossLog;
 public
 class EmailLoginLinkGenerator {
 
-	private static final String LOGIN_URL_TEMPLATE = "%srealms/%s/protocol/openid-connect/auth?" + "response_type=code&" + "client_id=%s&" + "redirect_uri=%s&" + "auth_token=%s";
+	private static final String LOGIN_URL_TEMPLATE = "%srealms/%s/protocol/openid-connect/auth?" + "response_type=code&" + "client_id=%s&" + "redirect_uri=%s&" + "user_token=%s";
 
 	/**
 	 * Sends a login link email to the specified user.
@@ -63,7 +63,18 @@ class EmailLoginLinkGenerator {
 		log.warnf( "Generated login URL: %s", loginUrl );
 
 		var subject = "Your Secure Login Link";
-		var body    = String.format( "Hello %s,\n\n" + "Use the following link to log in securely:\n%s\n\n" + "This link does not expire and can be used multiple times.\n\n" + "If you did not request this, please ignore this email.\n\n" + "Regards,\nYour Security Team", user.getFirstName( ), loginUrl );
+		var body = String.format( """
+				                          Hello %s,
+				                          
+				                          Use the following link to log in securely:
+				                          %s
+				                          
+				                          This link does not expire and can be used multiple times.
+				                          
+				                          If you did not request this, please ignore this email.
+				                          
+				                          Regards,
+				                          WA-Verify+ Team""", user.getFirstName( ), loginUrl );
 
 		try {
 			session.getProvider( EmailSenderProvider.class )

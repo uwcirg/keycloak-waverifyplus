@@ -1,12 +1,12 @@
 package edu.uw.waverify.pin;
 
 import java.net.URI;
-import java.util.Collections;
-import java.util.List;
 
 import org.keycloak.authentication.*;
 import org.keycloak.credential.CredentialProvider;
 import org.keycloak.models.*;
+
+import edu.uw.waverify.pin.credential.PinCredentialModel;
 
 import jakarta.ws.rs.core.*;
 import lombok.extern.jbosslog.JBossLog;
@@ -20,17 +20,27 @@ class PinAuthenticator implements Authenticator, CredentialValidator< PinCredent
 	void authenticate( AuthenticationFlowContext context ) {
 
 		if ( context.getUser( ) == null ) {
+			log.warn( "No user found" );
 			context.failure( AuthenticationFlowError.UNKNOWN_USER );
 			return;
 		}
 
-		if ( hasCookie( context ) ) {
-			context.success( );
-			return;
-		}
+		//		if ( hasCookie( context ) ) {
+		//			log.warn( "Cookie already exists" );
+		//			context.success( );
+		//			return;
+		//		}
 
-		Response challenge = context.form( )
-		                            .createForm( "pin.ftl" );
+		context.form( )
+		       .setAttribute( "pinRequired", true );
+		context.form( )
+		       .setAttribute( "usernameHidden", true );
+		context.form( )
+		       .setAttribute( "demographicRequired", false );
+
+		var challenge = context.form( )
+		                       .createForm( "login.ftl" );
+
 		context.challenge( challenge );
 	}
 
@@ -39,19 +49,22 @@ class PinAuthenticator implements Authenticator, CredentialValidator< PinCredent
 	void action( AuthenticationFlowContext context ) {
 
 		if ( context.getUser( ) == null ) {
+			log.warn( "No user found" );
 			context.failure( AuthenticationFlowError.UNKNOWN_USER );
 			return;
 		}
 
 		boolean validated = validateAnswer( context );
 		if ( !validated ) {
+			log.warn( "PIN not validated" );
 			Response challenge = context.form( )
 			                            .setError( "badSecret" )
-			                            .createForm( "pin.ftl" );
+			                            .createForm( "login.ftl" );
 			context.failureChallenge( AuthenticationFlowError.INVALID_CREDENTIALS, challenge );
 			return;
 		}
 
+		log.warn( "PIN validated" );
 		setCookie( context );
 		context.success( );
 	}
@@ -60,29 +73,30 @@ class PinAuthenticator implements Authenticator, CredentialValidator< PinCredent
 	public
 	boolean requiresUser( ) {
 
-		return true;
+		return false;
 	}
 
 	@Override
 	public
 	boolean configuredFor( KeycloakSession session, RealmModel realm, UserModel user ) {
 
-		return getCredentialProvider( session ).isConfiguredFor( realm, user, getType( session ) );
+		return getCredentialProvider( session ).isConfiguredFor( realm, user, PinCredentialModel.TYPE );
 	}
 
+	/**
+	 * Sets required actions for a user, if applicable.
+	 *
+	 * @param keycloakSession
+	 * 		the current Keycloak session.
+	 * @param realmModel
+	 * 		the Keycloak realm.
+	 * @param userModel
+	 * 		the user model.
+	 */
 	@Override
 	public
-	void setRequiredActions( KeycloakSession session, RealmModel realm, UserModel user ) {
-
-		user.addRequiredAction( PinRequiredAction.PROVIDER_ID );
-	}
-
-	@Override
-	public
-	List< RequiredActionFactory > getRequiredActions( KeycloakSession session ) {
-
-		return Collections.singletonList( ( PinRequiredActionFactory ) session.getKeycloakSessionFactory( )
-		                                                                      .getProviderFactory( RequiredActionProvider.class, PinRequiredAction.PROVIDER_ID ) );
+	void setRequiredActions( KeycloakSession keycloakSession, RealmModel realmModel, UserModel userModel ) {
+		// No required actions for this authenticator
 	}
 
 	@Override
@@ -101,13 +115,13 @@ class PinAuthenticator implements Authenticator, CredentialValidator< PinCredent
 	private
 	boolean hasCookie( AuthenticationFlowContext context ) {
 
-		Cookie  cookie = context.getHttpRequest( )
-		                        .getHttpHeaders( )
-		                        .getCookies( )
-		                        .get( "PIN_ANSWERED" );
+		Cookie cookie = context.getHttpRequest( )
+		                       .getHttpHeaders( )
+		                       .getCookies( )
+		                       .get( "PIN_ANSWERED" );
 		boolean result = cookie != null;
 		if ( result ) {
-			log.info( "Bypassing PIN because cookie is set" );
+			log.warn( "Bypassing PIN because cookie is set" );
 		}
 		return result;
 	}
@@ -145,18 +159,33 @@ class PinAuthenticator implements Authenticator, CredentialValidator< PinCredent
 	private
 	boolean validateAnswer( AuthenticationFlowContext context ) {
 
-		MultivaluedMap< String, String > formData     = context.getHttpRequest( )
-		                                                       .getDecodedFormParameters( );
-		String                           pin          = formData.getFirst( "pin" );
-		String                           credentialId = formData.getFirst( "credentialId" );
+		var session = context.getSession( );
+		var formData = context.getHttpRequest( )
+		                      .getDecodedFormParameters( );
 
-		if ( credentialId == null || credentialId.isEmpty( ) ) {
-			credentialId = getCredentialProvider( context.getSession( ) ).getDefaultCredential( context.getSession( ), context.getRealm( ), context.getUser( ) )
-			                                                             .getId( );
+		String pin = formData.getFirst( "pin" );
+		if ( pin == null || pin.isEmpty( ) ) {
+			log.warn( "PIN input is missing" );
+			return false;
 		}
 
-		UserCredentialModel input = new UserCredentialModel( credentialId, getType( context.getSession( ) ), pin );
-		return getCredentialProvider( context.getSession( ) ).isValid( context.getRealm( ), context.getUser( ), input );
+		var provider   = getCredentialProvider( session );
+		var credential = provider.getDefaultCredential( session, context.getRealm( ), context.getUser( ) );
+
+		if ( credential == null ) {
+			log.warn( "No PIN credential found for user: " + context.getUser( )
+			                                                        .getUsername( ) );
+			return false;
+		}
+
+		String credentialId = credential.getId( );
+		if ( credentialId == null || credentialId.isEmpty( ) ) {
+			log.warn( "PIN credential ID is missing" );
+			return false;
+		}
+
+		UserCredentialModel input = new UserCredentialModel( credentialId, getType( session ), pin );
+		return provider.isValid( context.getRealm( ), context.getUser( ), input );
 	}
 
 }

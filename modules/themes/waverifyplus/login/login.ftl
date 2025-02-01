@@ -6,6 +6,10 @@
     <#import "demographic-field.ftl" as demographicFiled>
     <#import "demographic-registration.ftl" as demographic>
 </#if>
+<#if pinRequired??>
+    <#import "demographic-field.ftl" as demographicFiled>
+    <#import "pin.ftl" as pinForm>
+</#if>
 <@layout.registrationLayout displayMessage=!messagesPerField.existsError('username','password') displayInfo=realm.password && realm.registrationAllowed && !registrationDisabled??; section>
 	<!-- template: login.ftl -->
 
@@ -21,21 +25,24 @@
 				      onsubmit="login.disabled = true; return true;" action="${url.loginAction}"
 				      method="post" novalidate="novalidate">
 
-                                    <#if !usernameHidden??>
+                                    <#if !usernameHidden?? >
                                         <#assign label>
                                             <#if !realm.loginWithEmailAllowed>${msg("username")}<#elseif !realm.registrationEmailAsUsername>${msg("usernameOrEmail")}<#else>${msg("email")}</#if>
                                         </#assign>
                                         <#if !realm.loginWithEmailAllowed>
                                             <@field.input name="username" label=label autofocus=true autocomplete="username" value=login.username!'' />
-                                        <#elseif !realm.registrationEmailAsUsername>${msg("usernameOrEmail")}
+                                        <#elseif !realm.registrationEmailAsUsername>
+                                            ${msg("usernameOrEmail")}
                                             <@field.input name="username" label=label autofocus=true autocomplete="username" value=login.username!'' />
                                         <#else>
                                             <@field.input name="email" label=label autofocus=true autocomplete="email" value='' />
                                         </#if>
                                     </#if>
 
-                                    <#if demographicRequired??>
+                                    <#if demographicRequired?? && demographicRequired>
                                         <@demographic.demographicRegistration />
+                                    <#elseif pinRequired?? && pinRequired>
+                                        <@pinForm.pin />
                                     <#else>
                                         <@field.password name="password" label=msg("password") forgotPassword=realm.resetPasswordAllowed autofocus=usernameHidden?? autocomplete="current-password" />
 

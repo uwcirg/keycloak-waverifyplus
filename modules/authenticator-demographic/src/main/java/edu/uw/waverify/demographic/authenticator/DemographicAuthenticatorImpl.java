@@ -16,10 +16,9 @@ import lombok.Setter;
 import lombok.extern.jbosslog.JBossLog;
 
 /**
- * Implementation of the {@link DemographicAuthenticator} interface.
+ * Handles demographic authentication in a Keycloak authentication flow.
  * <p>
- * This class handles demographic authentication within a Keycloak authentication flow. It collects user demographic
- * data, validates it using a verification service, and determines whether authentication should proceed.
+ * This authenticator collects user demographic data, verifies it, and creates or updates a PIN credential if provided.
  * </p>
  */
 @Setter
@@ -31,13 +30,12 @@ class DemographicAuthenticatorImpl implements DemographicAuthenticator {
 	private final DemographicVerificationService verificationService;
 
 	/**
-	 * Constructs a {@code DemographicAuthenticatorImpl} instance with a Keycloak session and a demographic verification
-	 * service.
+	 * Constructs the authenticator with a verification service.
 	 *
 	 * @param session
-	 * 		the Keycloak session used for authentication flow interactions.
+	 * 		the Keycloak session.
 	 * @param baseUrl
-	 * 		the base URL for the demographic verification service.
+	 * 		the verification service base URL.
 	 */
 	public
 	DemographicAuthenticatorImpl( KeycloakSession session, String baseUrl ) {
@@ -46,7 +44,7 @@ class DemographicAuthenticatorImpl implements DemographicAuthenticator {
 	}
 
 	/**
-	 * Initiates the authentication process by displaying a demographic information form.
+	 * Initiates authentication by displaying the demographic form.
 	 *
 	 * @param context
 	 * 		the authentication flow context.
@@ -63,7 +61,7 @@ class DemographicAuthenticatorImpl implements DemographicAuthenticator {
 	}
 
 	/**
-	 * Handles the user's submitted demographic information and performs validation.
+	 * Processes the demographic data and validates the user.
 	 *
 	 * @param context
 	 * 		the authentication flow context.
@@ -97,9 +95,9 @@ class DemographicAuthenticatorImpl implements DemographicAuthenticator {
 	}
 
 	/**
-	 * Indicates whether a user is required for this authentication process.
+	 * Determines if an authenticated user is required.
 	 *
-	 * @return {@code false} since demographic validation does not require an authenticated user.
+	 * @return {@code false} since authentication is based on demographic input.
 	 */
 	@Override
 	public
@@ -109,16 +107,16 @@ class DemographicAuthenticatorImpl implements DemographicAuthenticator {
 	}
 
 	/**
-	 * Determines whether this authenticator is configured for a given user in a realm.
+	 * Checks whether this authenticator is configured for a given user.
 	 *
 	 * @param keycloakSession
-	 * 		the current Keycloak session.
+	 * 		the Keycloak session.
 	 * @param realmModel
 	 * 		the Keycloak realm.
 	 * @param userModel
 	 * 		the user model.
 	 *
-	 * @return {@code false} since this authenticator does not require specific user configuration.
+	 * @return {@code false}, as no specific configuration is required.
 	 */
 	@Override
 	public
@@ -128,10 +126,10 @@ class DemographicAuthenticatorImpl implements DemographicAuthenticator {
 	}
 
 	/**
-	 * Sets required actions for a user, if applicable.
+	 * Defines any required actions for the user.
 	 *
 	 * @param keycloakSession
-	 * 		the current Keycloak session.
+	 * 		the Keycloak session.
 	 * @param realmModel
 	 * 		the Keycloak realm.
 	 * @param userModel
@@ -140,11 +138,11 @@ class DemographicAuthenticatorImpl implements DemographicAuthenticator {
 	@Override
 	public
 	void setRequiredActions( KeycloakSession keycloakSession, RealmModel realmModel, UserModel userModel ) {
-		// No required actions for this authenticator
+		// No required actions.
 	}
 
 	/**
-	 * Cleans up resources if needed.
+	 * Cleans up any necessary resources.
 	 */
 	@Override
 	public
@@ -152,16 +150,35 @@ class DemographicAuthenticatorImpl implements DemographicAuthenticator {
 		// No specific cleanup required.
 	}
 
+	/**
+	 * Stores or updates the user's PIN credential. Ensures the credential is properly initialized with secret data.
+	 *
+	 * @param session
+	 * 		the Keycloak session.
+	 * @param realm
+	 * 		the Keycloak realm.
+	 * @param user
+	 * 		the user model.
+	 * @param pin
+	 * 		the user's PIN.
+	 */
 	private
 	void storePinCredential( KeycloakSession session, RealmModel realm, UserModel user, String pin ) {
 
 		var provider = ( PinCredentialProvider ) session.getProvider( CredentialProvider.class, PinCredentialProviderFactory.PROVIDER_ID );
 
-		if ( provider.isConfiguredFor( realm, user, provider.getType( ) ) ) {
-			provider.updateCredential( realm, user, new PinCredentialModel( pin ) );
-		} else {
-			provider.createCredential( realm, user, new PinCredentialModel( pin ) );
-		}
+		var pinCredentialModel = PinCredentialModel.createPin( pin );
+
+		user.credentialManager( )
+		    .getStoredCredentialsByTypeStream( provider.getType( ) )
+		    .findFirst( )
+		    .ifPresentOrElse( existingCredential -> {
+			    log.warn( "Updating existing PIN credential for user: " + user.getUsername( ) );
+			    provider.updateCredential( realm, user, pinCredentialModel );
+		    }, ( ) -> {
+			    log.warn( "Creating new PIN credential for user: " + user.getUsername( ) );
+			    provider.createCredential( realm, user, pinCredentialModel );
+		    } );
 	}
 
 }
