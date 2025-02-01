@@ -64,7 +64,6 @@ class DemographicRegistrationFormAction implements FormAction {
 			return;
 		}
 
-		// Store demographic data in the authentication session
 		DemographicDataHelper.storeInAuthSession( context.getAuthenticationSession( ), demographicData );
 		context.success( );
 	}

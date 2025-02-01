@@ -94,6 +94,11 @@ class DemographicRegistrationFormActionFactory implements FormActionFactory {
 		// No cleanup required
 	}
 
+	/**
+	 * Retrieves the provider ID for this factory.
+	 *
+	 * @return the provider ID.
+	 */
 	@Override
 	public
 	String getId( ) {
@@ -101,6 +106,11 @@ class DemographicRegistrationFormActionFactory implements FormActionFactory {
 		return PROVIDER_ID;
 	}
 
+	/**
+	 * Retrieves the display name for this factory in the Keycloak admin console.
+	 *
+	 * @return the display name.
+	 */
 	@Override
 	public
 	String getDisplayType( ) {
@@ -108,6 +118,11 @@ class DemographicRegistrationFormActionFactory implements FormActionFactory {
 		return "Demographic Registration Form Action";
 	}
 
+	/**
+	 * Retrieves the reference category for this form action.
+	 *
+	 * @return the reference category.
+	 */
 	@Override
 	public
 	String getReferenceCategory( ) {
@@ -115,6 +130,11 @@ class DemographicRegistrationFormActionFactory implements FormActionFactory {
 		return "Demographic Validation";
 	}
 
+	/**
+	 * Determines whether this form action is configurable.
+	 *
+	 * @return {@code true}, since configuration is allowed.
+	 */
 	@Override
 	public
 	boolean isConfigurable( ) {
@@ -122,6 +142,11 @@ class DemographicRegistrationFormActionFactory implements FormActionFactory {
 		return true;
 	}
 
+	/**
+	 * Retrieves the supported requirements for this form action.
+	 *
+	 * @return an array of supported {@link Requirement} values.
+	 */
 	@Override
 	public
 	Requirement[] getRequirementChoices( ) {
@@ -129,6 +154,11 @@ class DemographicRegistrationFormActionFactory implements FormActionFactory {
 		return new Requirement[] { REQUIRED, ALTERNATIVE, DISABLED };
 	}
 
+	/**
+	 * Determines whether user setup is allowed for this form action.
+	 *
+	 * @return {@code false}, as user setup is not required.
+	 */
 	@Override
 	public
 	boolean isUserSetupAllowed( ) {
@@ -136,6 +166,11 @@ class DemographicRegistrationFormActionFactory implements FormActionFactory {
 		return false;
 	}
 
+	/**
+	 * Provides a help text description for this form action.
+	 *
+	 * @return a short description of this action.
+	 */
 	@Override
 	public
 	String getHelpText( ) {
@@ -143,6 +178,11 @@ class DemographicRegistrationFormActionFactory implements FormActionFactory {
 		return "Collects demographic data during user registration.";
 	}
 
+	/**
+	 * Retrieves the configuration properties for this form action.
+	 *
+	 * @return a list of {@link ProviderConfigProperty} instances.
+	 */
 	@Override
 	public
 	List< ProviderConfigProperty > getConfigProperties( ) {

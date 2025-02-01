@@ -12,8 +12,8 @@ import org.keycloak.models.UserModel;
 public
 class UserTokenGenerator {
 
-	public static final String NONCE_ATTRIBUTE = "auth_nonce";
-	public static final String TOKEN_ATTRIBUTE = "auth_token";
+	public static final String NONCE_ATTRIBUTE = "user_nonce";
+	public static final String TOKEN_ATTRIBUTE = "user_token";
 
 	/**
 	 * Generates and stores a persistent unique token for the user.

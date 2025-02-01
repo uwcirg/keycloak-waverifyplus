@@ -1,17 +1,20 @@
-# Demographic Authentication Module
+# Demographic & PIN Authentication Module
 
 ## Overview
 
-The Demographic Authentication Module extends Keycloak's functionality by integrating demographic validation into its
-authentication workflows. This module includes custom authenticators, form actions, and services to validate demographic
-data submitted by users during registration or login processes.
+This module extends Keycloak's authentication workflows by integrating demographic validation and PIN-based
+authentication. It includes custom authenticators, form actions, credential providers, and services to validate
+demographic data and secure user access using a PIN.
 
 ## Key Features
 
-- Custom authenticator for demographic validation during authentication workflows.
-- Custom form action for collecting and processing demographic information during user registration.
-- Integration with external services for validation logic.
-- Support for user-defined configurations (e.g., timeout settings).
+- **Demographic Authentication:** Validates user demographic data during registration or login.
+- **PIN Authentication:** Allows users to authenticate using a secure PIN.
+- **Custom Authenticators:** Implements authentication logic for both demographic verification and PIN entry.
+- **Credential Management:** Supports PIN storage and validation through Keycloak's credential framework.
+- **Integration with External Services:** Enables validation of demographic data via external APIs.
+- **Configurable Authentication Flows:** Admins can integrate these authenticators into Keycloak's authentication
+  workflows.
 
 ---
 
@@ -19,64 +22,91 @@ data submitted by users during registration or login processes.
 
 ### **1. Authenticator**
 
-An authenticator implements the logic for validating demographic information during authentication workflows. It
-processes the provided user data and integrates external verification services.
+Handles authentication logic for validating demographic information and PINs during authentication workflows.
 
-Example: `DemographicAuthenticatorImpl` contains the core logic for demographic validation.
+Examples:
+
+- `DemographicAuthenticatorImpl`: Validates demographic data.
+- `PinAuthenticator`: Validates user-entered PINs.
 
 ---
 
 ### **2. Authenticator Factory**
 
-A factory class is responsible for:
+Responsible for creating instances of authenticators and providing necessary dependencies.
 
-- Instantiating authenticators.
-- Providing configurations or dependencies.
-- Managing the lifecycle of authenticators.
+Examples:
 
-Example: `DemographicAuthenticatorFactory` creates instances of `DemographicAuthenticatorImpl` and injects the
-`DemographicVerificationService` dependency.
+- `DemographicAuthenticatorFactory`: Instantiates `DemographicAuthenticatorImpl`.
+- `PinAuthenticatorFactory`: Instantiates `PinAuthenticator`.
 
 ---
 
 ### **3. Form Action**
 
-A form action defines additional steps or validations during user interactions with forms in Keycloak. This includes
-processing data submitted during registration or login workflows.
+Defines additional processing steps for user interactions with forms in Keycloak.
 
-Example: `DemographicRegistrationFormAction` processes demographic data during registration.
+Example:
+
+- `DemographicRegistrationFormAction`: Collects and processes demographic data during user registration.
 
 ---
 
-### **4. Verification Service**
+### **4. Credential Provider**
 
-The verification service is a standalone class that connects to an external API or database to validate demographic
-information. It encapsulates the logic for communication and response handling.
+Manages PIN storage, retrieval, and validation within Keycloak's credential framework.
 
-Example: `DemographicVerificationServiceImpl` provides a concrete implementation for interacting with the demographic
-verification API.
+Example:
+
+- `PinCredentialProvider`: Handles PIN storage and validation.
+- `PinCredentialProviderFactory`: Factory for creating `PinCredentialProvider` instances.
+
+---
+
+### **5. Required Actions**
+
+Required actions are prompts that users must complete to continue authentication.
+
+Example:
+
+- `PinRequiredAction`: Forces users to set up a PIN if they don’t have one.
+
+---
+
+### **6. Token Authentication**
+
+Allows users to authenticate using a token link received via email.
+
+Examples:
+
+- `TokenAuthenticator`: Validates user tokens and identifies users.
+- `TokenAuthenticatorFactory`: Factory for creating token authenticators.
+- `UserTokenGenerator`: Generates and assigns authentication tokens to users.
 
 ---
 
 ## Module Structure
 
-### **1. Authenticator**
+### **1. Demographic Authentication**
 
 - `DemographicAuthenticatorImpl`: Handles demographic validation workflows during authentication.
+- `DemographicAuthenticatorFactory`: Manages demographic authenticator instances.
+- `DemographicRegistrationFormAction`: Processes demographic data during user registration.
 
-### **2. Authenticator Factory**
+### **2. PIN Authentication**
 
-- `DemographicAuthenticatorFactory`: Manages authenticator instances, dependencies, and configurations.
+- `PinAuthenticator`: Validates user-entered PINs.
+- `PinAuthenticatorFactory`: Creates instances of `PinAuthenticator`.
+- `PinCredentialModel`: Represents stored PIN credentials.
+- `PinCredentialProvider`: Handles PIN storage and validation.
+- `PinCredentialProviderFactory`: Factory for `PinCredentialProvider`.
+- `PinRequiredAction`: Forces users to set up a PIN if missing.
 
-### **3. Form Action**
+### **3. Token-Based Authentication**
 
-- `DemographicRegistrationFormAction`: A form action that collects and processes demographic data during user
-  registration. It validates the data and stores it in the user's attributes upon successful submission.
-
-### **4. Verification Services**
-
-- `DemographicVerificationService`: Abstract service for demographic verification.
-- `DemographicVerificationServiceImpl`: Concrete implementation communicating with the validation provider server.
+- `TokenAuthenticator`: Authenticates users based on a token received via email.
+- `TokenAuthenticatorFactory`: Factory for creating `TokenAuthenticator` instances.
+- `UserTokenGenerator`: Generates unique, non-expiring login tokens.
 
 ---
 
@@ -101,38 +131,17 @@ verification API.
 
 ### **Configuring the Module**
 
-- Use the Keycloak admin console to add the `DemographicRegistrationFormAction` or `DemographicAuthenticatorFactory` to
-  the desired flow.
-- Adjust the configuration properties (e.g., API endpoint, timeouts) as required.
+- Use the Keycloak admin console to add the appropriate authenticators or form actions to authentication flows.
+- Configure the PIN and token authentication settings as needed.
 
 ---
 
 ## Example Configuration
 
-To integrate demographic validation into your workflows:
+To integrate demographic and PIN authentication into Keycloak:
 
-1. Add `DemographicAuthenticatorFactory` or `DemographicRegistrationFormAction` to your Keycloak flow in the admin
-   console.
-2. Ensure that demographic fields (e.g., age, gender, location) are included in the form template for registration
-   flows.
-3. Deploy the updated flow and test the demographic validation functionality.
-
----
-
-## Form Action: `DemographicRegistrationFormAction`
-
-### Overview
-
-`DemographicRegistrationFormAction` collects demographic information during user registration and validates the
-submitted data.
-
-### Key Features
-
-- Dynamically adds demographic fields (e.g., age, gender, location) to the registration form.
-- Validates submitted demographic data to ensure completeness.
-- Stores validated demographic data in user attributes.
-
-### Deployment
-
-Include the compiled JAR in the `providers` directory and enable the form action in your Keycloak configuration.
-Customize the form template to display demographic fields.
+1. Add `DemographicAuthenticatorFactory`, `PinAuthenticatorFactory`, or `TokenAuthenticatorFactory` to your
+   authentication flow.
+2. Enable `PinRequiredAction` to ensure users set up a PIN.
+3. Customize form templates for demographic and PIN input.
+4. Deploy and test the authentication process.

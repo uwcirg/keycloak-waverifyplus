@@ -8,8 +8,10 @@ import lombok.extern.jbosslog.JBossLog;
 import static edu.uw.waverify.token.UserTokenGenerator.TOKEN_ATTRIBUTE;
 
 /**
- * Authenticator that validates a user token and identifies the user. If the token is valid, authentication proceeds to
- * the next step (PIN verification).
+ * Authenticator that validates a user token and identifies the user.
+ * <p>
+ * If the token is valid, authentication proceeds to the next step (PIN verification). Otherwise, authentication fails.
+ * </p>
  */
 @JBossLog
 public
@@ -17,6 +19,16 @@ class TokenAuthenticator implements Authenticator {
 
 	private static final String TOKEN_PARAM = "user_token";
 
+	/**
+	 * Authenticates a user based on the provided token.
+	 * <p>
+	 * If the token is valid and a user is found, authentication is successful. Otherwise, it fails with an appropriate
+	 * error.
+	 * </p>
+	 *
+	 * @param context
+	 * 		the authentication flow context.
+	 */
 	@Override
 	public
 	void authenticate( AuthenticationFlowContext context ) {
@@ -44,6 +56,15 @@ class TokenAuthenticator implements Authenticator {
 		context.success( );
 	}
 
+	/**
+	 * Processes an authentication action.
+	 * <p>
+	 * This implementation simply calls {@link #authenticate(AuthenticationFlowContext)}.
+	 * </p>
+	 *
+	 * @param context
+	 * 		the authentication flow context.
+	 */
 	@Override
 	public
 	void action( AuthenticationFlowContext context ) {
@@ -51,6 +72,11 @@ class TokenAuthenticator implements Authenticator {
 		authenticate( context );
 	}
 
+	/**
+	 * Indicates whether this authenticator requires a user to be set before execution.
+	 *
+	 * @return {@code false}, as the user is identified based on the token.
+	 */
 	@Override
 	public
 	boolean requiresUser( ) {
@@ -58,6 +84,18 @@ class TokenAuthenticator implements Authenticator {
 		return false;
 	}
 
+	/**
+	 * Checks whether the authenticator is configured for the given user.
+	 *
+	 * @param session
+	 * 		the Keycloak session.
+	 * @param realm
+	 * 		the realm.
+	 * @param user
+	 * 		the user.
+	 *
+	 * @return {@code true}, indicating that this authenticator does not require per-user configuration.
+	 */
 	@Override
 	public
 	boolean configuredFor( KeycloakSession session, RealmModel realm, UserModel user ) {
@@ -65,12 +103,28 @@ class TokenAuthenticator implements Authenticator {
 		return true;
 	}
 
+	/**
+	 * Sets any required actions for the user.
+	 * <p>
+	 * This implementation does not require any additional actions.
+	 * </p>
+	 *
+	 * @param session
+	 * 		the Keycloak session.
+	 * @param realm
+	 * 		the realm.
+	 * @param user
+	 * 		the user.
+	 */
 	@Override
 	public
 	void setRequiredActions( KeycloakSession session, RealmModel realm, UserModel user ) {
 		// No required actions
 	}
 
+	/**
+	 * Releases any resources held by this authenticator.
+	 */
 	@Override
 	public
 	void close( ) {
@@ -81,13 +135,13 @@ class TokenAuthenticator implements Authenticator {
 	 * Finds a user by validating the provided token.
 	 *
 	 * @param session
-	 * 		The Keycloak session.
+	 * 		the Keycloak session.
 	 * @param realm
-	 * 		The realm in which to search for the user.
+	 * 		the realm in which to search for the user.
 	 * @param token
-	 * 		The authentication token.
+	 * 		the authentication token.
 	 *
-	 * @return The identified user, or null if no valid user is found.
+	 * @return the identified user, or {@code null} if no valid user is found.
 	 */
 	private
 	UserModel findUserByToken( KeycloakSession session, RealmModel realm, String token ) {
