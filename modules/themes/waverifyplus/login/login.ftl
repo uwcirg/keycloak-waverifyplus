@@ -18,24 +18,27 @@
         ${msg("loginAccountTitle")}
     <#elseif section = "form">
         <#include "intro.ftl">
-	    <div id="kc-form">
+	    <div id="kc-form" class="container-sm">
 		    <div id="kc-form-wrapper">
                         <#if realm.password>
 				<form id="kc-form-login" class="${properties.kcFormClass!}"
 				      onsubmit="login.disabled = true; return true;" action="${url.loginAction}"
 				      method="post" novalidate="novalidate">
-
+                                    <#if demographicRequired?? && demographicRequired>
+					    <h2 class="form-prompt">${msg("demographicFormPrompt")}</h2>
+					    <p>Required fields marked with *</p>
+                                    </#if>
                                     <#if !usernameHidden?? >
                                         <#assign label>
                                             <#if !realm.loginWithEmailAllowed>${msg("username")}<#elseif !realm.registrationEmailAsUsername>${msg("usernameOrEmail")}<#else>${msg("email")}</#if>
                                         </#assign>
                                         <#if !realm.loginWithEmailAllowed>
-                                            <@field.input name="username" label=label autofocus=true autocomplete="username" value=login.username!'' />
+                                            <@field.input name="username" label=label autofocus=true autocomplete="username" value=login.username!'' required=true/>
                                         <#elseif !realm.registrationEmailAsUsername>
                                             ${msg("usernameOrEmail")}
-                                            <@field.input name="username" label=label autofocus=true autocomplete="username" value=login.username!'' />
+                                            <@field.input name="username" label=label autofocus=true autocomplete="username" value=login.username!'' required=true/>
                                         <#else>
-                                            <@field.input name="email" label=label autofocus=true autocomplete="email" value='' />
+                                            <@field.input name="email" label=label autofocus=true autocomplete="email" value='' required=true/>
                                         </#if>
                                     </#if>
 

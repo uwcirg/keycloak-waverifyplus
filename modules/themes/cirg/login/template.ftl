@@ -5,7 +5,10 @@
 	<head>
 		<meta charset="utf-8">
 		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+		<meta name="author" content="Victor de Lima Soares">
 		<meta name="robots" content="noindex, nofollow">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta name="keywords" content="health, summaries, control, sharable">
 
             <#if properties.meta?has_content>
                 <#list properties.meta?split(' ') as meta>
@@ -45,9 +48,9 @@
 
 	<header id="header" class="container-fluid text-center py-2 m-0">
 		<img src="${url.resourcesPath}/${properties.headerLogo}"
-		     alt="${properties.headerLogoAlt}" class="img-fluid d-block">
+		     alt="${properties.headerLogoAlt}" class="img-fluid d-block header-logo">
             <#if properties.headerTitle??>
-		    <h1>${properties.headerTitle}</h1>
+		    <h1 class="header-title">${properties.headerTitle}</h1>
             </#if>
 	</header>
 

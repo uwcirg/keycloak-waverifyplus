@@ -22,4 +22,9 @@
 			href="https://www.ecfr.gov/current/title-34/subtitle-A/part-99/subpart-D/section-99.30"
 			style="color: rgb(13, 110, 253); margin: 0px; text-decoration: underline;">34 CFR § 99.30</a>.
 		If not, the Department of Health does not require any specific form of consent.</p>
+
+	<div class="form-note">
+		<span>Note:</span>
+		<p>${msg("submitNote")}</p>
+	</div>
 </div>

@@ -80,6 +80,17 @@ class DemographicAuthenticatorImpl implements DemographicAuthenticator {
 			return;
 		}
 
+		var formData = context.getHttpRequest( )
+		                      .getDecodedFormParameters( );
+		var authorization = formData.getFirst( "authorization" );
+		if ( authorization == null || !authorization.equals( "on" ) ) {
+			var challenge = context.form( )
+			                       .setError( "Consent with the Authorization Declaration is needed to proceed." )
+			                       .createForm( "login.ftl" );
+			context.failureChallenge( AuthenticationFlowError.GENERIC_AUTHENTICATION_ERROR, challenge );
+			return;
+		}
+
 		var authSession = context.getAuthenticationSession( );
 		DemographicDataHelper.storeInAuthSession( authSession, demographicData );
 

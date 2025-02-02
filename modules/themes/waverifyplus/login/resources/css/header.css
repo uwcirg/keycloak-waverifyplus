@@ -66,13 +66,62 @@
 }
 
 .intro {
-	background: #07294C url(../img/bluebackground.png) center center;
+	/*background: #07294C url(../img/bluebackground.png) center center;
+	color: #fff;*/
 	font-size: 1.1rem;
 	line-height: 2rem;
 	flex: 1 1 auto;
 	padding: 2rem 2rem 1rem 2rem;
 	border: 1px solid rgba(0, 0, 0, .125);
 	border-radius: 1.25rem;
-	color: #fff;
 	margin-bottom: 2rem;
+}
+
+.form-note {
+	display: flex;
+	padding: 1.25rem;
+	margin-top: 1.25rem;
+	margin-bottom: 1.25rem;
+	background-color: #f8f9fa;
+	border-left: 0.25rem solid #dee2e6;
+}
+
+.form-note > :first-child {
+	font-weight: bolder;
+	margin-right: 1em;
+}
+
+.form-note > p {
+	margin-bottom: 0;
+}
+
+.form-prompt {
+	color: #22489c;
+	font-size: 24px;
+	font-weight: 700;
+	margin-bottom: 25px;
+}
+
+.form-prompt + p {
+	font-weight: bold;
+}
+
+@media (min-width: 720px) {
+	#kc-form {
+		width: 52%;
+	}
+}
+
+@media (max-width: 720px) {
+	#header {
+		flex-direction: column;
+		height: unset;
+	}
+
+	#header h1 {
+		margin: 0.5em;
+		line-height: 1.5em;
+		padding-left: unset;
+		font-size: 1em;
+	}
 }
