@@ -58,32 +58,21 @@
 <#macro password name label value="" required=false forgotPassword=false fieldName=name autocomplete="off" autofocus=false>
     <#assign error=kcSanitize(messagesPerField.get(fieldName))?no_esc>
     <@group name=name label=label error=error required=required>
-	    <div class="${properties.kcInputGroup}">
-		    <div class="${properties.kcInputGroupItemClass} ${properties.kcFill}">
-        <span class="${properties.kcInputClass} <#if error?has_content>${properties.kcError}</#if>">
-          <input id="${name}" name="${name}" value="${value}" type="password" autocomplete="${autocomplete}"
-                 <#if autofocus>autofocus</#if>
-                  aria-invalid="<#if error?has_content>true</#if>"/>
-          <@errorIcon error=error/>
-        </span>
-		    </div>
-		    <div class="${properties.kcInputGroupItemClass}">
-			    <button class="${properties.kcFormPasswordVisibilityButtonClass}" type="button"
-			            aria-label="${msg('showPassword')}"
-			            aria-controls="${name}" data-password-toggle
-			            data-icon-show="fa-eye fas" data-icon-hide="fa-eye-slash fas"
-			            data-label-show="${msg('showPassword')}" data-label-hide="${msg('hidePassword')}">
-				    <i class="fa-eye fas" aria-hidden="true"></i>
-			    </button>
-		    </div>
-	    </div>
+
+	    <span class="${properties.kcInputWrapperClass!} <#if error?has_content>${properties.kcError}</#if>">
+		<input id="${name}" name="${name}" value="${value}" type="password" class="${properties.kcInputClass!}"
+		       autocomplete="${autocomplete}"
+                       <#if autofocus>autofocus</#if> aria-invalid="<#if error?has_content>true</#if>"/>
+		<@errorIcon error=error/>
+	</span>
+
         <#if forgotPassword>
 		<div class="${properties.kcFormHelperTextClass}" aria-live="polite">
 			<div class="${properties.kcInputHelperTextClass}">
 				<div class="${properties.kcInputHelperTextItemClass}">
-                    <span class="${properties.kcInputHelperTextItemTextClass}">
-                        <a href="${url.loginResetCredentialsUrl}">${msg("doForgotPassword")}</a>
-                    </span>
+		                    <span class="${properties.kcInputHelperTextItemTextClass}">
+		                        <a href="${url.loginResetCredentialsUrl}">${msg("doForgotPassword")}</a>
+		                    </span>
 				</div>
 			</div>
 		</div>
