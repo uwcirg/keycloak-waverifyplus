@@ -184,10 +184,8 @@ class DemographicAuthenticatorImpl implements DemographicAuthenticator {
 		    .getStoredCredentialsByTypeStream( provider.getType( ) )
 		    .findFirst( )
 		    .ifPresentOrElse( existingCredential -> {
-			    log.warn( "Updating existing PIN credential for user: " + user.getUsername( ) );
 			    provider.updateCredential( realm, user, pinCredentialModel );
 		    }, ( ) -> {
-			    log.warn( "Creating new PIN credential for user: " + user.getUsername( ) );
 			    provider.createCredential( realm, user, pinCredentialModel );
 		    } );
 	}

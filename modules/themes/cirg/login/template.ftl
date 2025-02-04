@@ -159,12 +159,14 @@
 
                                     <#nested "form">
 
+                                    <#-- Needs approval
                                     <#if auth?has_content && auth.showTryAnotherWayLink()>
 					    <form id="kc-select-try-another-way-form"
 					          action="${url.loginAction}" method="post">
                                                 <@buttons.tryAnotherWay />
 					    </form>
                                     </#if>
+                                    -->
 
                                     <#nested "socialProviders">
 

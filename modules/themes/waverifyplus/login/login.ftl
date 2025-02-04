@@ -16,6 +16,7 @@
     <#if section = "header">
 	    <i class="fa-solid fa-virus-covid"></i>
         ${msg("loginAccountTitle")}
+    <#elseif section = "show-username">
     <#elseif section = "form">
         <#include "intro.ftl">
 	    <div id="kc-form" class="container-sm">
@@ -44,6 +45,10 @@
 
                                     <#if demographicRequired?? && demographicRequired>
                                         <@demographic.demographicRegistration />
+					    <div class="form-note">
+						    <span>Note:</span>
+						    <p>${msg("submitNote")}</p>
+					    </div>
                                     <#elseif pinRequired?? && pinRequired>
                                         <@pinForm.pin />
                                     <#else>
