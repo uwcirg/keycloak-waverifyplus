@@ -21,7 +21,6 @@ class NoopAuthenticator implements Authenticator {
 	public
 	void authenticate( AuthenticationFlowContext context ) {
 
-		log.info( "NoopAuthenticator triggered: presenting an unresolvable challenge." );
 		var challenge = context.form( )
 		                       .createForm( "noop-challenge.ftl" );
 		context.challenge( challenge );
@@ -31,7 +30,6 @@ class NoopAuthenticator implements Authenticator {
 	public
 	void action( AuthenticationFlowContext context ) {
 
-		log.info( "NoopAuthenticator action called: maintaining authentication block." );
 		var challenge = context.form( )
 		                       .createForm( "noop-challenge.ftl" );
 		context.challenge( challenge );

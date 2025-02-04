@@ -57,6 +57,8 @@
 			.footer {
 				text-align: center;
 				padding: 20px;
+				align-items: center;
+				justify-content: center;
 			}
 
 			.footer img {

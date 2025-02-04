@@ -1,11 +1,14 @@
 package edu.uw.waverify.demographic.identification;
 
+import java.io.IOException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
+import java.util.Map;
 
 import org.keycloak.email.EmailTemplateProvider;
 import org.keycloak.models.*;
+import org.keycloak.theme.Theme;
 
 import edu.uw.waverify.token.UserTokenGenerator;
 
@@ -19,6 +22,21 @@ public
 class EmailLoginLinkGenerator {
 
 	private static final String LOGIN_URL_TEMPLATE = "%srealms/%s/protocol/openid-connect/auth?" + "response_type=code&" + "client_id=%s&" + "redirect_uri=%s&" + "user_token=%s";
+
+	private static
+	void addThemeProperties( KeycloakSession session, Map< String, Object > variables ) throws IOException {
+
+		var theme = session.theme( )
+		                   .getTheme( Theme.Type.EMAIL );
+		var themeProperties = theme.getProperties( );
+
+		var properties = new HashMap< String, Object >( );
+		for ( String key : themeProperties.stringPropertyNames( ) ) {
+			properties.put( key, themeProperties.getProperty( key ) );
+		}
+
+		variables.put( "properties", properties );
+	}
 
 	/**
 	 * Sends a login link email to the specified user.
@@ -64,18 +82,23 @@ class EmailLoginLinkGenerator {
 		variables.put( "user", user );
 		variables.put( "link", loginUrl );
 
-		var subject = "International Patient Summary Prototype";
+		var urlVariables = Map.of( "base", baseUrl, "resourcesUrl", baseUrl + "/realms/" + realm.getName( ) + "/resources" );
+		variables.put( "url", urlVariables );
 
 		try {
+			addThemeProperties( session, variables );
+
+			var subject = "International Patient Summary Prototype";
+
 			var provider = session.getProvider( EmailTemplateProvider.class );
 
 			provider.setRealm( realm )
 			        .setUser( user )
-			        .send( subject, "access-link", variables );
+			        .send( subject, "access-link.ftl", variables );
 
 			log.infof( "Login email sent successfully to %s", email );
 		} catch ( Exception e ) {
-			log.errorf( "Failed to send login email to %s: %s", email, e.getMessage( ) );
+			log.error( "Failed to send login email to " + email, e );
 		}
 	}
 

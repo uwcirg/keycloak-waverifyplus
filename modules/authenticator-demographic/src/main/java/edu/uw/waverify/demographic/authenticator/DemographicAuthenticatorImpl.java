@@ -1,7 +1,6 @@
 package edu.uw.waverify.demographic.authenticator;
 
 import org.keycloak.authentication.AuthenticationFlowContext;
-import org.keycloak.authentication.AuthenticationFlowError;
 import org.keycloak.credential.CredentialProvider;
 import org.keycloak.models.*;
 
@@ -14,6 +13,8 @@ import edu.uw.waverify.pin.credential.PinCredentialModel;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.jbosslog.JBossLog;
+
+import static org.keycloak.authentication.AuthenticationFlowError.*;
 
 /**
  * Handles demographic authentication in a Keycloak authentication flow.
@@ -73,10 +74,12 @@ class DemographicAuthenticatorImpl implements DemographicAuthenticator {
 		var demographicData = DemographicDataHelper.extractFromRequest( context.getHttpRequest( ) );
 
 		if ( !DemographicDataHelper.isValid( demographicData ) ) {
+			context.form( )
+			       .setAttribute( "demographicRequired", true );
 			var challenge = context.form( )
 			                       .setError( "Demographic validation failed. Please check your details." )
 			                       .createForm( "login.ftl" );
-			context.failureChallenge( AuthenticationFlowError.INVALID_CREDENTIALS, challenge );
+			context.failureChallenge( INVALID_CREDENTIALS, challenge );
 			return;
 		}
 
@@ -84,10 +87,12 @@ class DemographicAuthenticatorImpl implements DemographicAuthenticator {
 		                      .getDecodedFormParameters( );
 		var authorization = formData.getFirst( "authorization" );
 		if ( authorization == null || !authorization.equals( "on" ) ) {
+			context.form( )
+			       .setAttribute( "demographicRequired", true );
 			var challenge = context.form( )
 			                       .setError( "Consent with the Authorization Declaration is needed to proceed." )
 			                       .createForm( "login.ftl" );
-			context.failureChallenge( AuthenticationFlowError.GENERIC_AUTHENTICATION_ERROR, challenge );
+			context.failureChallenge( GENERIC_AUTHENTICATION_ERROR, challenge );
 			return;
 		}
 

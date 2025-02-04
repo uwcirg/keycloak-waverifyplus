@@ -2,7 +2,7 @@ services:
     keycloak:
         image: quay.io/keycloak/keycloak:${KEYCLOAK_IMAGE_TAG:-26.1.0}
         container_name: keycloak
-        command: start-dev
+        command: start-dev -Dorg.keycloak.theme.LOG_LEVEL=DEBUG -Dfreemarker.logger=DEBUG
         init: true
         ports:
             - "8080:8080"
