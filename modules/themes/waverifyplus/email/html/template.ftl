@@ -3,49 +3,46 @@
 	<html>
 	<head>
 		<meta charset="UTF-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
 		<style>
 			body {
-				font-family: Arial, sans-serif;
 				margin: 0;
 				padding: 0;
-				display: flex;
-				justify-content: center;
-			}
-
-			.container, .container > div {
-				display: flex;
+				min-width: 100%;
+				font-family: Arial, sans-serif;
+				line-height: 1.5;
 			}
 
 			.container {
 				width: 100%;
+				max-width: 600px;
+				margin: 0 auto;
 				background: #ffffff;
 				border-radius: 8px;
-				overflow: hidden;
-				flex-direction: column;
 				box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 			}
 
 			.header {
 				padding: 20px;
-				flex-direction: column;
+				text-align: center;
 			}
 
 			.header img {
 				height: 50px;
-				margin-right: 15px;
+				display: block;
+				margin: 0 auto 15px;
 			}
 
 			.header-title {
 				font-size: 20px;
 				font-weight: bold;
-				color: rgb(200, 76, 14);
+				color: #c84c0e;
 				margin: 15px 0;
 			}
 
 			.body {
 				padding: 20px;
-				text-align: left;
 			}
 
 			.separator {
@@ -55,20 +52,25 @@
 			}
 
 			.footer {
-				text-align: center;
 				padding: 20px;
-				align-items: center;
-				justify-content: center;
+				text-align: center;
 			}
 
 			.footer img {
 				width: 100px;
+				display: block;
+				margin: 0 auto;
+			}
+
+			@media screen and (max-width: 600px) {
+				.container {
+					width: 100% !important;
+				}
 			}
 		</style>
 	</head>
 	<body>
 	<div class="container">
-
 		<div class="header">
 			<img src="${url.resourcesUrl}/${properties.headerLogo}"
 			     alt="${properties.headerLogoAlt}">
@@ -85,7 +87,6 @@
 			<img src="${url.resourcesUrl}/${properties.footerLogo}"
 			     alt="${properties.footerLogoAlt}">
 		</div>
-
 	</div>
 	</body>
 	</html>
