@@ -101,6 +101,25 @@ class PinCredentialModel extends CredentialModel {
 	}
 
 	/**
+	 * Creates a new {@code PinCredentialModel} with the given PIN value.
+	 * <p>
+	 * This method ensures that the credential fields, including secret data, are properly initialized.
+	 * </p>
+	 *
+	 * @param answer
+	 * 		the PIN value.
+	 *
+	 * @return a fully initialized {@code PinCredentialModel}.
+	 */
+	public static
+	PinCredentialModel createPin( String answer, String credentialModelId ) {
+
+		PinCredentialModel credentialModel = createPin( answer );
+		credentialModel.setId( credentialModelId );
+		return credentialModel;
+	}
+
+	/**
 	 * Fills the credential model fields, including setting the secret data, type, and creation timestamp.
 	 *
 	 * @throws RuntimeException

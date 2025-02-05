@@ -156,14 +156,14 @@ class DemographicAuthenticatorImpl extends SimpleAuthenticator implements Demogr
 
 		var provider = ( PinCredentialProvider ) session.getProvider( CredentialProvider.class, PinCredentialProviderFactory.PROVIDER_ID );
 
-		var pinCredentialModel = PinCredentialModel.createPin( pin );
-
 		user.credentialManager( )
 		    .getStoredCredentialsByTypeStream( provider.getType( ) )
 		    .findFirst( )
 		    .ifPresentOrElse( existingCredential -> {
-			    provider.updateCredential( realm, user, pinCredentialModel );
+			    var updatedModel = PinCredentialModel.createPin( pin, existingCredential.getId( ) );
+			    provider.updateCredential( user, updatedModel, pin );
 		    }, ( ) -> {
+			    var pinCredentialModel = PinCredentialModel.createPin( pin );
 			    provider.createCredential( realm, user, pinCredentialModel );
 		    } );
 	}

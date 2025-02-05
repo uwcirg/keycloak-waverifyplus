@@ -204,15 +204,13 @@ class PinCredentialProvider implements CredentialProvider< PinCredentialModel >,
 	/**
 	 * Updates an existing PIN credential for a user.
 	 *
-	 * @param realm
-	 * 		the Keycloak realm.
 	 * @param user
 	 * 		the user whose credential is to be updated.
 	 * @param pinCredentialModel
 	 * 		the new PIN credential model.
 	 */
 	public
-	void updateCredential( RealmModel realm, UserModel user, PinCredentialModel pinCredentialModel ) {
+	void updateCredential( UserModel user, PinCredentialModel pinCredentialModel, String pin ) {
 
 		if ( pinCredentialModel.getCreatedDate( ) == null ) {
 			pinCredentialModel.setCreatedDate( Time.currentTimeMillis( ) );

@@ -51,7 +51,12 @@ class PinAuthenticator extends SimpleAuthenticator implements Authenticator, Cre
 
 		boolean validated = validateAnswer( context );
 		if ( !validated ) {
-			log.warn( "PIN not validated" );
+			context.form( )
+			       .setAttribute( "pinRequired", true );
+			context.form( )
+			       .setAttribute( "usernameHidden", true );
+			context.form( )
+			       .setAttribute( "demographicRequired", false );
 			Response challenge = context.form( )
 			                            .setError( "badSecret" )
 			                            .createForm( "login.ftl" );
