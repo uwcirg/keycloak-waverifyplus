@@ -4,6 +4,8 @@ import org.keycloak.authentication.AuthenticationFlowContext;
 import org.keycloak.authentication.Authenticator;
 import org.keycloak.models.*;
 
+import edu.uw.waverify.SimpleAuthenticator;
+
 import lombok.extern.jbosslog.JBossLog;
 
 /**
@@ -15,7 +17,7 @@ import lombok.extern.jbosslog.JBossLog;
  */
 @JBossLog
 public
-class NoopAuthenticator implements Authenticator {
+class NoopAuthenticator extends SimpleAuthenticator implements Authenticator {
 
 	@Override
 	public
@@ -37,28 +39,9 @@ class NoopAuthenticator implements Authenticator {
 
 	@Override
 	public
-	boolean requiresUser( ) {
-
-		return false;
-	}
-
-	@Override
-	public
 	boolean configuredFor( KeycloakSession session, RealmModel realm, UserModel user ) {
 
 		return true;
-	}
-
-	@Override
-	public
-	void setRequiredActions( KeycloakSession session, RealmModel realm, UserModel user ) {
-		// No required actions.
-	}
-
-	@Override
-	public
-	void close( ) {
-		// No cleanup required.
 	}
 
 }

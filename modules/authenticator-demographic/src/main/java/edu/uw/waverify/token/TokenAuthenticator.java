@@ -3,6 +3,8 @@ package edu.uw.waverify.token;
 import org.keycloak.authentication.*;
 import org.keycloak.models.*;
 
+import edu.uw.waverify.SimpleAuthenticator;
+
 import lombok.extern.jbosslog.JBossLog;
 
 import static edu.uw.waverify.token.UserTokenGenerator.TOKEN_ATTRIBUTE;
@@ -15,7 +17,7 @@ import static edu.uw.waverify.token.UserTokenGenerator.TOKEN_ATTRIBUTE;
  */
 @JBossLog
 public
-class TokenAuthenticator implements Authenticator {
+class TokenAuthenticator extends SimpleAuthenticator implements Authenticator {
 
 	private static final String TOKEN_PARAM = "user_token";
 
@@ -73,18 +75,6 @@ class TokenAuthenticator implements Authenticator {
 	}
 
 	/**
-	 * Indicates whether this authenticator requires a user to be set before execution.
-	 *
-	 * @return {@code false}, as the user is identified based on the token.
-	 */
-	@Override
-	public
-	boolean requiresUser( ) {
-
-		return false;
-	}
-
-	/**
 	 * Checks whether the authenticator is configured for the given user.
 	 *
 	 * @param session
@@ -101,34 +91,6 @@ class TokenAuthenticator implements Authenticator {
 	boolean configuredFor( KeycloakSession session, RealmModel realm, UserModel user ) {
 
 		return true;
-	}
-
-	/**
-	 * Sets any required actions for the user.
-	 * <p>
-	 * This implementation does not require any additional actions.
-	 * </p>
-	 *
-	 * @param session
-	 * 		the Keycloak session.
-	 * @param realm
-	 * 		the realm.
-	 * @param user
-	 * 		the user.
-	 */
-	@Override
-	public
-	void setRequiredActions( KeycloakSession session, RealmModel realm, UserModel user ) {
-		// No required actions
-	}
-
-	/**
-	 * Releases any resources held by this authenticator.
-	 */
-	@Override
-	public
-	void close( ) {
-		// No resources to close
 	}
 
 	/**

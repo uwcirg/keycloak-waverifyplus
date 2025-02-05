@@ -1,13 +1,11 @@
 package edu.uw.waverify.pin;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.keycloak.Config;
 import org.keycloak.authentication.*;
 import org.keycloak.models.KeycloakSession;
-import org.keycloak.models.KeycloakSessionFactory;
-import org.keycloak.provider.ProviderConfigProperty;
+
+import edu.uw.waverify.SimpleAuthenticatorFactory;
+
+import lombok.extern.jbosslog.JBossLog;
 
 import static org.keycloak.models.AuthenticationExecutionModel.Requirement;
 import static org.keycloak.models.AuthenticationExecutionModel.Requirement.*;
@@ -19,26 +17,17 @@ import static org.keycloak.models.AuthenticationExecutionModel.Requirement.*;
  * the PIN-based authentication process.
  * </p>
  */
+@JBossLog
 public
-class PinAuthenticatorFactory implements AuthenticatorFactory, ConfigurableAuthenticatorFactory {
+class PinAuthenticatorFactory extends SimpleAuthenticatorFactory implements AuthenticatorFactory, ConfigurableAuthenticatorFactory {
 
-	private static final PinAuthenticator               SINGLETON           = new PinAuthenticator( );
-	private static final List< ProviderConfigProperty > configProperties    = new ArrayList<>( );
-	private static final Requirement[]                  REQUIREMENT_CHOICES = { REQUIRED, ALTERNATIVE, DISABLED };
+	private static final PinAuthenticator SINGLETON           = new PinAuthenticator( );
+	private static final Requirement[]    REQUIREMENT_CHOICES = { REQUIRED, ALTERNATIVE, DISABLED };
 
 	/**
 	 * The unique provider ID for the PIN authenticator.
 	 */
 	public static final String PROVIDER_ID = "pin-authenticator";
-
-	static {
-		ProviderConfigProperty property = new ProviderConfigProperty( );
-		property.setName( "cookie.max.age" );
-		property.setLabel( "Cookie Max Age" );
-		property.setType( ProviderConfigProperty.STRING_TYPE );
-		property.setHelpText( "Max age in seconds of the PIN_COOKIE." );
-		configProperties.add( property );
-	}
 
 	/**
 	 * Creates a new instance of the {@code PinAuthenticator}.
@@ -53,39 +42,6 @@ class PinAuthenticatorFactory implements AuthenticatorFactory, ConfigurableAuthe
 	Authenticator create( KeycloakSession session ) {
 
 		return SINGLETON;
-	}
-
-	/**
-	 * Initializes the authenticator factory.
-	 *
-	 * @param config
-	 * 		the configuration scope.
-	 */
-	@Override
-	public
-	void init( Config.Scope config ) {
-
-	}
-
-	/**
-	 * Performs post-initialization tasks after the Keycloak session factory has been initialized.
-	 *
-	 * @param factory
-	 * 		the Keycloak session factory.
-	 */
-	@Override
-	public
-	void postInit( KeycloakSessionFactory factory ) {
-
-	}
-
-	/**
-	 * Closes the factory and releases any resources if necessary.
-	 */
-	@Override
-	public
-	void close( ) {
-
 	}
 
 	/**
@@ -125,30 +81,6 @@ class PinAuthenticatorFactory implements AuthenticatorFactory, ConfigurableAuthe
 	}
 
 	/**
-	 * Indicates whether this authenticator can be configured.
-	 *
-	 * @return {@code true}, as the PIN authenticator supports configuration.
-	 */
-	@Override
-	public
-	boolean isConfigurable( ) {
-
-		return true;
-	}
-
-	/**
-	 * Retrieves the available requirement choices for this authenticator.
-	 *
-	 * @return an array of available {@link Requirement} options.
-	 */
-	@Override
-	public
-	Requirement[] getRequirementChoices( ) {
-
-		return REQUIREMENT_CHOICES;
-	}
-
-	/**
 	 * Indicates whether users are allowed to set up this authenticator.
 	 *
 	 * @return {@code true}, as user setup is allowed.
@@ -173,15 +105,27 @@ class PinAuthenticatorFactory implements AuthenticatorFactory, ConfigurableAuthe
 	}
 
 	/**
-	 * Retrieves the configuration properties available for this authenticator.
+	 * Indicates whether this authenticator can be configured.
 	 *
-	 * @return a list of configuration properties.
+	 * @return {@code true}, as the PIN authenticator supports configuration.
 	 */
 	@Override
 	public
-	List< ProviderConfigProperty > getConfigProperties( ) {
+	boolean isConfigurable( ) {
 
-		return configProperties;
+		return true;
+	}
+
+	/**
+	 * Retrieves the available requirement choices for this authenticator.
+	 *
+	 * @return an array of available {@link Requirement} options.
+	 */
+	@Override
+	public
+	Requirement[] getRequirementChoices( ) {
+
+		return REQUIREMENT_CHOICES;
 	}
 
 }

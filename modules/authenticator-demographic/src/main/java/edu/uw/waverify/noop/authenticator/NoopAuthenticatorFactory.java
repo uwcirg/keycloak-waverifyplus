@@ -1,19 +1,12 @@
 package edu.uw.waverify.noop.authenticator;
 
-import java.util.List;
-
-import org.keycloak.Config;
 import org.keycloak.authentication.Authenticator;
 import org.keycloak.authentication.AuthenticatorFactory;
-import org.keycloak.models.AuthenticationExecutionModel.Requirement;
 import org.keycloak.models.KeycloakSession;
-import org.keycloak.models.KeycloakSessionFactory;
-import org.keycloak.provider.ProviderConfigProperty;
+
+import edu.uw.waverify.SimpleAuthenticatorFactory;
 
 import lombok.extern.jbosslog.JBossLog;
-
-import static java.util.Collections.emptyList;
-import static org.keycloak.models.AuthenticationExecutionModel.Requirement.*;
 
 /**
  * Factory class responsible for creating and managing instances of {@link NoopAuthenticator}.
@@ -24,7 +17,7 @@ import static org.keycloak.models.AuthenticationExecutionModel.Requirement.*;
  */
 @JBossLog
 public
-class NoopAuthenticatorFactory implements AuthenticatorFactory {
+class NoopAuthenticatorFactory extends SimpleAuthenticatorFactory implements AuthenticatorFactory {
 
 	public static final String PROVIDER_ID = "noop-authenticator";
 
@@ -41,40 +34,6 @@ class NoopAuthenticatorFactory implements AuthenticatorFactory {
 	Authenticator create( KeycloakSession session ) {
 
 		return new NoopAuthenticator( );
-	}
-
-	/**
-	 * Initializes the factory with the provided configuration scope.
-	 *
-	 * @param config
-	 * 		The configuration scope.
-	 */
-	@Override
-	public
-	void init( Config.Scope config ) {
-		// No initialization required
-	}
-
-	/**
-	 * Performs post-initialization tasks after the Keycloak session factory is created.
-	 *
-	 * @param factory
-	 * 		The Keycloak session factory.
-	 */
-	@Override
-	public
-	void postInit( KeycloakSessionFactory factory ) {
-
-		log.info( "NoopAuthenticatorFactory initialized." );
-	}
-
-	/**
-	 * Cleans up resources when the factory is closed.
-	 */
-	@Override
-	public
-	void close( ) {
-		// No cleanup required
 	}
 
 	@Override
@@ -100,28 +59,6 @@ class NoopAuthenticatorFactory implements AuthenticatorFactory {
 
 	@Override
 	public
-	boolean isConfigurable( ) {
-
-		return false;
-	}
-
-	/**
-	 * Defines the requirement choices for this authenticator.
-	 * <p>
-	 * Since this authenticator blocks authentication, it cannot be set as ALTERNATIVE.
-	 * </p>
-	 *
-	 * @return An array containing {@link Requirement#REQUIRED} and {@link Requirement#DISABLED}.
-	 */
-	@Override
-	public
-	Requirement[] getRequirementChoices( ) {
-
-		return new Requirement[] { REQUIRED, DISABLED };
-	}
-
-	@Override
-	public
 	boolean isUserSetupAllowed( ) {
 
 		return false;
@@ -132,13 +69,6 @@ class NoopAuthenticatorFactory implements AuthenticatorFactory {
 	String getHelpText( ) {
 
 		return "Prevents authentication from proceeding by presenting an unresolvable challenge.";
-	}
-
-	@Override
-	public
-	List< ProviderConfigProperty > getConfigProperties( ) {
-
-		return emptyList( );
 	}
 
 }

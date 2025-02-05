@@ -1,19 +1,20 @@
 package edu.uw.waverify.pin;
 
-import java.net.URI;
-
 import org.keycloak.authentication.*;
 import org.keycloak.credential.CredentialProvider;
 import org.keycloak.models.*;
 
+import edu.uw.waverify.SimpleAuthenticator;
 import edu.uw.waverify.pin.credential.PinCredentialModel;
 
-import jakarta.ws.rs.core.*;
+import jakarta.ws.rs.core.Response;
 import lombok.extern.jbosslog.JBossLog;
+
+import static org.keycloak.authentication.AuthenticationFlowError.*;
 
 @JBossLog
 public
-class PinAuthenticator implements Authenticator, CredentialValidator< PinCredentialProvider > {
+class PinAuthenticator extends SimpleAuthenticator implements Authenticator, CredentialValidator< PinCredentialProvider > {
 
 	@Override
 	public
@@ -21,15 +22,9 @@ class PinAuthenticator implements Authenticator, CredentialValidator< PinCredent
 
 		if ( context.getUser( ) == null ) {
 			log.warn( "No user found" );
-			context.failure( AuthenticationFlowError.UNKNOWN_USER );
+			context.failure( UNKNOWN_USER );
 			return;
 		}
-
-		//		if ( hasCookie( context ) ) {
-		//			log.warn( "Cookie already exists" );
-		//			context.success( );
-		//			return;
-		//		}
 
 		context.form( )
 		       .setAttribute( "pinRequired", true );
@@ -50,7 +45,7 @@ class PinAuthenticator implements Authenticator, CredentialValidator< PinCredent
 
 		if ( context.getUser( ) == null ) {
 			log.warn( "No user found" );
-			context.failure( AuthenticationFlowError.UNKNOWN_USER );
+			context.failure( UNKNOWN_USER );
 			return;
 		}
 
@@ -60,20 +55,12 @@ class PinAuthenticator implements Authenticator, CredentialValidator< PinCredent
 			Response challenge = context.form( )
 			                            .setError( "badSecret" )
 			                            .createForm( "login.ftl" );
-			context.failureChallenge( AuthenticationFlowError.INVALID_CREDENTIALS, challenge );
+			context.failureChallenge( INVALID_CREDENTIALS, challenge );
 			return;
 		}
 
 		log.warn( "PIN validated" );
-		setCookie( context );
 		context.success( );
-	}
-
-	@Override
-	public
-	boolean requiresUser( ) {
-
-		return false;
 	}
 
 	@Override
@@ -83,28 +70,6 @@ class PinAuthenticator implements Authenticator, CredentialValidator< PinCredent
 		return getCredentialProvider( session ).isConfiguredFor( realm, user, PinCredentialModel.TYPE );
 	}
 
-	/**
-	 * Sets required actions for a user, if applicable.
-	 *
-	 * @param keycloakSession
-	 * 		the current Keycloak session.
-	 * @param realmModel
-	 * 		the Keycloak realm.
-	 * @param userModel
-	 * 		the user model.
-	 */
-	@Override
-	public
-	void setRequiredActions( KeycloakSession keycloakSession, RealmModel realmModel, UserModel userModel ) {
-		// No required actions for this authenticator
-	}
-
-	@Override
-	public
-	void close( ) {
-		// No cleanup required
-	}
-
 	@Override
 	public
 	PinCredentialProvider getCredentialProvider( KeycloakSession session ) {
@@ -112,48 +77,11 @@ class PinAuthenticator implements Authenticator, CredentialValidator< PinCredent
 		return ( PinCredentialProvider ) session.getProvider( CredentialProvider.class, PinCredentialProviderFactory.PROVIDER_ID );
 	}
 
-	private
-	boolean hasCookie( AuthenticationFlowContext context ) {
+	@Override
+	public
+	boolean requiresUser( ) {
 
-		Cookie cookie = context.getHttpRequest( )
-		                       .getHttpHeaders( )
-		                       .getCookies( )
-		                       .get( "PIN_ANSWERED" );
-		boolean result = cookie != null;
-		if ( result ) {
-			log.warn( "Bypassing PIN because cookie is set" );
-		}
-		return result;
-	}
-
-	private
-	void setCookie( AuthenticationFlowContext context ) {
-
-		AuthenticatorConfigModel config       = context.getAuthenticatorConfig( );
-		int                      maxCookieAge = 60 * 60 * 24 * 30; // Default 30 days
-
-		if ( config != null ) {
-			maxCookieAge = Integer.parseInt( config.getConfig( )
-			                                       .get( "cookie.max.age" ) );
-		}
-
-		URI uri = context.getUriInfo( )
-		                 .getBaseUriBuilder( )
-		                 .path( "realms" )
-		                 .path( context.getRealm( )
-		                               .getName( ) )
-		                 .build( );
-
-		NewCookie newCookie = new NewCookie.Builder( "PIN_ANSWERED" ).value( "true" )
-		                                                             .path( uri.getRawPath( ) )
-		                                                             .maxAge( maxCookieAge )
-		                                                             .secure( false )
-		                                                             .build( );
-
-		context.getSession( )
-		       .getContext( )
-		       .getHttpResponse( )
-		       .setCookieIfAbsent( newCookie );
+		return true;
 	}
 
 	private
@@ -163,7 +91,7 @@ class PinAuthenticator implements Authenticator, CredentialValidator< PinCredent
 		var formData = context.getHttpRequest( )
 		                      .getDecodedFormParameters( );
 
-		String pin = formData.getFirst( "pin" );
+		var pin = formData.getFirst( "pin" );
 		if ( pin == null || pin.isEmpty( ) ) {
 			log.warn( "PIN input is missing" );
 			return false;
@@ -178,13 +106,13 @@ class PinAuthenticator implements Authenticator, CredentialValidator< PinCredent
 			return false;
 		}
 
-		String credentialId = credential.getId( );
+		var credentialId = credential.getId( );
 		if ( credentialId == null || credentialId.isEmpty( ) ) {
 			log.warn( "PIN credential ID is missing" );
 			return false;
 		}
 
-		UserCredentialModel input = new UserCredentialModel( credentialId, getType( session ), pin );
+		var input = new UserCredentialModel( credentialId, getType( session ), pin );
 		return provider.isValid( context.getRealm( ), context.getUser( ), input );
 	}
 

@@ -1,6 +1,10 @@
 package edu.uw.waverify.demographic.authenticator;
 
+import java.util.Map;
+
 import org.keycloak.authentication.Authenticator;
+
+import edu.uw.waverify.demographic.authenticator.verification.DemographicVerificationService;
 
 /**
  * Interface defining the contract for demographic validation providers. Implementations of this interface are
@@ -10,7 +14,7 @@ import org.keycloak.authentication.Authenticator;
 public
 interface DemographicAuthenticator extends Authenticator {
 
-	//DemographicVerificationService getVerificationService( );
+	DemographicVerificationService getVerificationService( );
 
 	/**
 	 * Validates demographic information provided by the user.
@@ -22,6 +26,6 @@ interface DemographicAuthenticator extends Authenticator {
 	 *
 	 * @return {@code true} if the demographic information is valid, {@code false} otherwise.
 	 */
-	//boolean validateDemographics( Map< String, String > demographics );
+	boolean validateDemographics( Map< String, String > demographics );
 
 }

@@ -1,9 +1,12 @@
 package edu.uw.waverify.demographic.authenticator;
 
+import java.util.Map;
+
 import org.keycloak.authentication.AuthenticationFlowContext;
 import org.keycloak.credential.CredentialProvider;
 import org.keycloak.models.*;
 
+import edu.uw.waverify.SimpleAuthenticator;
 import edu.uw.waverify.demographic.authenticator.verification.*;
 import edu.uw.waverify.demographic.identification.EmailLoginLinkGenerator;
 import edu.uw.waverify.pin.PinCredentialProvider;
@@ -26,9 +29,9 @@ import static org.keycloak.authentication.AuthenticationFlowError.*;
 @Getter
 @JBossLog
 public
-class DemographicAuthenticatorImpl implements DemographicAuthenticator {
+class DemographicAuthenticatorImpl extends SimpleAuthenticator implements DemographicAuthenticator {
 
-	private final DemographicVerificationService verificationService;
+	private DemographicVerificationService verificationService;
 
 	/**
 	 * Constructs the authenticator with a verification service.
@@ -111,18 +114,6 @@ class DemographicAuthenticatorImpl implements DemographicAuthenticator {
 	}
 
 	/**
-	 * Determines if an authenticated user is required.
-	 *
-	 * @return {@code false} since authentication is based on demographic input.
-	 */
-	@Override
-	public
-	boolean requiresUser( ) {
-
-		return false;
-	}
-
-	/**
 	 * Checks whether this authenticator is configured for a given user.
 	 *
 	 * @param keycloakSession
@@ -141,29 +132,11 @@ class DemographicAuthenticatorImpl implements DemographicAuthenticator {
 		return false;
 	}
 
-	/**
-	 * Defines any required actions for the user.
-	 *
-	 * @param keycloakSession
-	 * 		the Keycloak session.
-	 * @param realmModel
-	 * 		the Keycloak realm.
-	 * @param userModel
-	 * 		the user model.
-	 */
 	@Override
 	public
-	void setRequiredActions( KeycloakSession keycloakSession, RealmModel realmModel, UserModel userModel ) {
-		// No required actions.
-	}
+	boolean validateDemographics( Map< String, String > demographics ) {
 
-	/**
-	 * Cleans up any necessary resources.
-	 */
-	@Override
-	public
-	void close( ) {
-		// No specific cleanup required.
+		return verificationService.verify( demographics );
 	}
 
 	/**
