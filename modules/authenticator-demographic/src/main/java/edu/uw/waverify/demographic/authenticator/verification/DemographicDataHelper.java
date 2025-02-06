@@ -7,13 +7,17 @@ import org.keycloak.models.*;
 import org.keycloak.sessions.AuthenticationSessionModel;
 
 /**
- * Helper class for extracting, validating, and storing demographic data in authentication workflows.
+ * Utility class for handling demographic data extraction, validation, and storage within authentication workflows.
+ * <p>
+ * This class provides methods for retrieving demographic data from HTTP requests and authentication sessions,
+ * validating its completeness, and persisting it to Keycloak's user model.
+ * </p>
  */
 public
 class DemographicDataHelper {
 
 	/**
-	 * Extracts demographic data from an incoming HTTP request.
+	 * Extracts demographic data from an HTTP request.
 	 *
 	 * @param request
 	 * 		the HTTP request containing form parameters.
@@ -54,14 +58,6 @@ class DemographicDataHelper {
 		return new DemographicData( firstName, lastName, dateOfBirth, email, pin );
 	}
 
-	/**
-	 * Checks if a string is non-null and not blank.
-	 *
-	 * @param value
-	 * 		the string to check.
-	 *
-	 * @return {@code true} if the string is non-null and not blank, otherwise {@code false}.
-	 */
 	private static
 	boolean isNotBlank( String value ) {
 
@@ -69,12 +65,12 @@ class DemographicDataHelper {
 	}
 
 	/**
-	 * Validates the given demographic data.
+	 * Validates whether the given demographic data is complete.
 	 *
 	 * @param data
 	 * 		the demographic data to validate.
 	 *
-	 * @return {@code true} if the demographic data is valid, otherwise {@code false}.
+	 * @return {@code true} if all required fields are non-null and non-blank, otherwise {@code false}.
 	 */
 	public static
 	boolean isValid( DemographicData data ) {
@@ -85,7 +81,11 @@ class DemographicDataHelper {
 	}
 
 	/**
-	 * Creates or retrieves a user based on demographic data and adds them to the authentication context.
+	 * Retrieves or creates a user based on the provided demographic data.
+	 * <p>
+	 * If the user does not exist, a new one is created with the provided email. The retrieved or newly created user is
+	 * then updated with demographic details.
+	 * </p>
 	 *
 	 * @param session
 	 * 		the Keycloak session.
@@ -94,7 +94,10 @@ class DemographicDataHelper {
 	 * @param authSession
 	 * 		the authentication session containing demographic attributes.
 	 *
-	 * @return the created or retrieved {@link UserModel}.
+	 * @return the retrieved or newly created {@link UserModel}.
+	 *
+	 * @throws IllegalArgumentException
+	 * 		if the email is missing.
 	 */
 	public static
 	UserModel saveUser( KeycloakSession session, RealmModel realm, AuthenticationSessionModel authSession ) {
@@ -118,7 +121,6 @@ class DemographicDataHelper {
 		var firstName   = authSession.getAuthNote( "firstName" );
 		var lastName    = authSession.getAuthNote( "lastName" );
 		var dateOfBirth = authSession.getAuthNote( "dateOfBirth" );
-		var pin         = authSession.getAuthNote( "pin" );
 
 		user.setFirstName( firstName );
 		user.setLastName( lastName );
@@ -128,10 +130,10 @@ class DemographicDataHelper {
 	}
 
 	/**
-	 * Stores demographic data in the authentication session.
+	 * Stores demographic data in an authentication session.
 	 *
 	 * @param authSession
-	 * 		the authentication session to store demographic attributes in.
+	 * 		the authentication session in which to store demographic attributes.
 	 * @param data
 	 * 		the demographic data to store.
 	 */

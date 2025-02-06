@@ -19,6 +19,9 @@ import lombok.extern.jbosslog.JBossLog;
 public
 class NoopAuthenticatorFactory extends SimpleAuthenticatorFactory implements AuthenticatorFactory {
 
+	/**
+	 * The unique provider ID for the Noop authenticator.
+	 */
 	public static final String PROVIDER_ID = "noop-authenticator";
 
 	/**
@@ -36,6 +39,11 @@ class NoopAuthenticatorFactory extends SimpleAuthenticatorFactory implements Aut
 		return new NoopAuthenticator( );
 	}
 
+	/**
+	 * Retrieves the unique ID of this authenticator provider.
+	 *
+	 * @return The provider ID.
+	 */
 	@Override
 	public
 	String getId( ) {
@@ -43,6 +51,11 @@ class NoopAuthenticatorFactory extends SimpleAuthenticatorFactory implements Aut
 		return PROVIDER_ID;
 	}
 
+	/**
+	 * Retrieves the display name of the authenticator in the Keycloak admin console.
+	 *
+	 * @return The display name for the Noop authenticator.
+	 */
 	@Override
 	public
 	String getDisplayType( ) {
@@ -50,6 +63,11 @@ class NoopAuthenticatorFactory extends SimpleAuthenticatorFactory implements Aut
 		return "No-Op Authenticator";
 	}
 
+	/**
+	 * Retrieves the reference category for this authenticator.
+	 *
+	 * @return The reference category name.
+	 */
 	@Override
 	public
 	String getReferenceCategory( ) {
@@ -57,6 +75,11 @@ class NoopAuthenticatorFactory extends SimpleAuthenticatorFactory implements Aut
 		return "No-Op Authentication";
 	}
 
+	/**
+	 * Indicates whether users are allowed to set up this authenticator.
+	 *
+	 * @return {@code false}, as this authenticator does not require user setup.
+	 */
 	@Override
 	public
 	boolean isUserSetupAllowed( ) {
@@ -64,6 +87,11 @@ class NoopAuthenticatorFactory extends SimpleAuthenticatorFactory implements Aut
 		return false;
 	}
 
+	/**
+	 * Provides a short help text describing the purpose of this authenticator.
+	 *
+	 * @return A description of the Noop authenticator.
+	 */
 	@Override
 	public
 	String getHelpText( ) {

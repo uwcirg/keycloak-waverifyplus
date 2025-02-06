@@ -15,9 +15,9 @@ import static org.apache.http.entity.ContentType.APPLICATION_JSON;
 /**
  * Implementation of the {@link DemographicVerificationService} interface.
  * <p>
- * This class verifies demographic information by sending it to the mock-vp server using Keycloak's {@link SimpleHttp}
- * utility. It interacts with an external verification service and processes responses to determine if the provided
- * demographics are valid.
+ * This service verifies demographic information by sending it to the mock-vp server using Keycloak's {@link SimpleHttp}
+ * utility. It encodes the demographic data into JSON, sends an HTTP POST request, and processes the response to
+ * determine validity.
  * </p>
  */
 @Setter
@@ -46,16 +46,12 @@ class DemographicVerificationServiceImpl implements DemographicVerificationServi
 
 	/**
 	 * Verifies the provided demographic information by sending it to the mock-vp server.
-	 * <p>
-	 * The method encodes the demographic data into JSON, sends an HTTP POST request, and parses the response to check
-	 * if the information is valid.
-	 * </p>
 	 *
 	 * @param demographics
 	 * 		a map containing demographic data where keys represent attribute names and values represent corresponding
 	 * 		user-provided values.
 	 *
-	 * @return {@code true} if the demographic information is valid, {@code false} otherwise.
+	 * @return {@code true} if the demographic information is valid, otherwise {@code false}.
 	 */
 	@Override
 	public
@@ -73,7 +69,7 @@ class DemographicVerificationServiceImpl implements DemographicVerificationServi
 
 			return Boolean.TRUE.equals( decodedResponse.get( "valid" ) );
 		} catch ( Exception e ) {
-			log.error( "Error during demographic verification: " + e.getMessage( ) );
+			log.error( "Error during demographic verification: " + e.getMessage( ), e );
 		}
 		return false;
 	}

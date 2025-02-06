@@ -143,7 +143,7 @@ class PinAuthenticator extends SimpleAuthenticator implements Authenticator, Cre
 	private
 	boolean validateAnswer( AuthenticationFlowContext context ) {
 
-		var session  = context.getSession( );
+		var session = context.getSession( );
 		var formData = context.getHttpRequest( )
 		                      .getDecodedFormParameters( );
 

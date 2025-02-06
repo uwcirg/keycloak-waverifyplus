@@ -20,9 +20,10 @@ import lombok.extern.jbosslog.JBossLog;
 import static org.keycloak.authentication.AuthenticationFlowError.*;
 
 /**
- * Handles demographic authentication in a Keycloak authentication flow.
+ * Authenticator for demographic-based user validation in a Keycloak authentication flow.
  * <p>
- * This authenticator collects user demographic data, verifies it, and creates or updates a PIN credential if provided.
+ * This authenticator collects demographic data, verifies it against an external service, and registers users with
+ * optional PIN credential storage.
  * </p>
  */
 @Setter
@@ -34,12 +35,12 @@ class DemographicAuthenticatorImpl extends SimpleAuthenticator implements Demogr
 	private DemographicVerificationService verificationService;
 
 	/**
-	 * Constructs the authenticator with a verification service.
+	 * Constructs a demographic authenticator.
 	 *
 	 * @param session
 	 * 		the Keycloak session.
 	 * @param baseUrl
-	 * 		the verification service base URL.
+	 * 		the base URL of the demographic verification service.
 	 */
 	public
 	DemographicAuthenticatorImpl( KeycloakSession session, String baseUrl ) {
@@ -65,7 +66,7 @@ class DemographicAuthenticatorImpl extends SimpleAuthenticator implements Demogr
 	}
 
 	/**
-	 * Processes the demographic data and validates the user.
+	 * Processes the demographic data, verifies it, and completes authentication if valid.
 	 *
 	 * @param context
 	 * 		the authentication flow context.
@@ -77,22 +78,20 @@ class DemographicAuthenticatorImpl extends SimpleAuthenticator implements Demogr
 		var demographicData = DemographicDataHelper.extractFromRequest( context.getHttpRequest( ) );
 
 		if ( !DemographicDataHelper.isValid( demographicData ) ) {
-			context.form( )
-			       .setAttribute( "demographicRequired", true );
 			var challenge = context.form( )
+			                       .setAttribute( "demographicRequired", true )
 			                       .setError( "Demographic validation failed. Please check your details." )
 			                       .createForm( "login.ftl" );
 			context.failureChallenge( INVALID_CREDENTIALS, challenge );
 			return;
 		}
 
-		var formData = context.getHttpRequest( )
-		                      .getDecodedFormParameters( );
+		var formData      = context.getHttpRequest( )
+		                           .getDecodedFormParameters( );
 		var authorization = formData.getFirst( "authorization" );
 		if ( authorization == null || !authorization.equals( "on" ) ) {
-			context.form( )
-			       .setAttribute( "demographicRequired", true );
 			var challenge = context.form( )
+			                       .setAttribute( "demographicRequired", true )
 			                       .setError( "Consent with the Authorization Declaration is needed to proceed." )
 			                       .createForm( "login.ftl" );
 			context.failureChallenge( GENERIC_AUTHENTICATION_ERROR, challenge );
@@ -114,7 +113,7 @@ class DemographicAuthenticatorImpl extends SimpleAuthenticator implements Demogr
 	}
 
 	/**
-	 * Checks whether this authenticator is configured for a given user.
+	 * Checks if this authenticator is configured for a user.
 	 *
 	 * @param keycloakSession
 	 * 		the Keycloak session.
@@ -123,7 +122,7 @@ class DemographicAuthenticatorImpl extends SimpleAuthenticator implements Demogr
 	 * @param userModel
 	 * 		the user model.
 	 *
-	 * @return {@code false}, as no specific configuration is required.
+	 * @return {@code false}, as no specific user configuration is required.
 	 */
 	@Override
 	public
@@ -132,6 +131,14 @@ class DemographicAuthenticatorImpl extends SimpleAuthenticator implements Demogr
 		return false;
 	}
 
+	/**
+	 * Validates demographic data using the verification service.
+	 *
+	 * @param demographics
+	 * 		a map containing key-value pairs of demographic attributes.
+	 *
+	 * @return {@code true} if the demographic data is valid, {@code false} otherwise.
+	 */
 	@Override
 	public
 	boolean validateDemographics( Map< String, String > demographics ) {
@@ -140,7 +147,7 @@ class DemographicAuthenticatorImpl extends SimpleAuthenticator implements Demogr
 	}
 
 	/**
-	 * Stores or updates the user's PIN credential. Ensures the credential is properly initialized with secret data.
+	 * Stores or updates the user's PIN credential.
 	 *
 	 * @param session
 	 * 		the Keycloak session.

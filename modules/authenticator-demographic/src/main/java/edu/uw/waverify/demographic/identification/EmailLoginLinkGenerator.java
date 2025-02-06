@@ -7,7 +7,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.keycloak.email.EmailTemplateProvider;
-import org.keycloak.models.*;
+import org.keycloak.models.KeycloakSession;
+import org.keycloak.models.UserModel;
 import org.keycloak.theme.Theme;
 
 import edu.uw.waverify.token.UserTokenGenerator;
@@ -23,6 +24,17 @@ class EmailLoginLinkGenerator {
 
 	private static final String LOGIN_URL_TEMPLATE = "%srealms/%s/protocol/openid-connect/auth?" + "response_type=code&" + "client_id=%s&" + "redirect_uri=%s&" + "user_token=%s";
 
+	/**
+	 * Adds theme properties from the Keycloak email theme to the provided variables map.
+	 *
+	 * @param session
+	 * 		The Keycloak session.
+	 * @param variables
+	 * 		The map to store theme properties.
+	 *
+	 * @throws IOException
+	 * 		If an error occurs while retrieving theme properties.
+	 */
 	private static
 	void addThemeProperties( KeycloakSession session, Map< String, Object > variables ) throws IOException {
 
@@ -61,8 +73,8 @@ class EmailLoginLinkGenerator {
 		                     .getBaseUri( )
 		                     .toString( );
 
-		ClientModel client = context.getAuthenticationSession( )
-		                            .getClient( );
+		var client = context.getAuthenticationSession( )
+		                    .getClient( );
 		var redirectUri = context.getAuthenticationSession( )
 		                         .getRedirectUri( );
 		var tokenData = UserTokenGenerator.retrieveStoredToken( user );

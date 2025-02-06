@@ -17,8 +17,10 @@ import static org.keycloak.models.AuthenticationExecutionModel.Requirement;
 import static org.keycloak.models.AuthenticationExecutionModel.Requirement.*;
 
 /**
- * Factory class responsible for creating and managing instances of {@link DemographicAuthenticator}. This factory
- * initializes required services and ensures proper lifecycle management for demographic validation authenticators.
+ * Factory class for creating instances of {@link DemographicAuthenticator}.
+ * <p>
+ * This factory initializes required services and manages the lifecycle of demographic validation authenticators.
+ * </p>
  */
 @JBossLog
 public
@@ -31,7 +33,7 @@ class DemographicAuthenticatorFactory extends SimpleAuthenticatorFactory impleme
 	private String baseUrl;
 
 	static {
-		ProviderConfigProperty baseUrlProperty = new ProviderConfigProperty( );
+		var baseUrlProperty = new ProviderConfigProperty( );
 		baseUrlProperty.setName( "baseUrl" );
 		baseUrlProperty.setLabel( "Base URL" );
 		baseUrlProperty.setType( ProviderConfigProperty.STRING_TYPE );
@@ -40,12 +42,12 @@ class DemographicAuthenticatorFactory extends SimpleAuthenticatorFactory impleme
 	}
 
 	/**
-	 * Creates a new instance of {@link DemographicAuthenticator} for the given session.
+	 * Creates a new instance of {@link DemographicAuthenticator}.
 	 *
 	 * @param session
-	 * 		The Keycloak session for which the authenticator is created.
+	 * 		the Keycloak session.
 	 *
-	 * @return A new instance of {@link DemographicAuthenticator}.
+	 * @return a new instance of {@link DemographicAuthenticator}.
 	 */
 	@Override
 	public
@@ -59,6 +61,11 @@ class DemographicAuthenticatorFactory extends SimpleAuthenticatorFactory impleme
 		}
 	}
 
+	/**
+	 * Returns the unique provider ID.
+	 *
+	 * @return the provider ID.
+	 */
 	@Override
 	public
 	String getId( ) {
@@ -66,6 +73,11 @@ class DemographicAuthenticatorFactory extends SimpleAuthenticatorFactory impleme
 		return PROVIDER_ID;
 	}
 
+	/**
+	 * Returns the configurable properties for this authenticator.
+	 *
+	 * @return a list of {@link ProviderConfigProperty}.
+	 */
 	@Override
 	public
 	List< ProviderConfigProperty > getConfigProperties( ) {
@@ -74,10 +86,10 @@ class DemographicAuthenticatorFactory extends SimpleAuthenticatorFactory impleme
 	}
 
 	/**
-	 * Initializes the factory with the provided configuration scope.
+	 * Initializes the factory with configuration values.
 	 *
 	 * @param config
-	 * 		The configuration scope.
+	 * 		the configuration scope.
 	 */
 	@Override
 	public
@@ -88,6 +100,11 @@ class DemographicAuthenticatorFactory extends SimpleAuthenticatorFactory impleme
 		}
 	}
 
+	/**
+	 * Determines if this authenticator is configurable.
+	 *
+	 * @return {@code true}, indicating that configuration is allowed.
+	 */
 	@Override
 	public
 	boolean isConfigurable( ) {
@@ -95,6 +112,11 @@ class DemographicAuthenticatorFactory extends SimpleAuthenticatorFactory impleme
 		return true;
 	}
 
+	/**
+	 * Returns the available requirement choices.
+	 *
+	 * @return an array of supported {@link Requirement} values.
+	 */
 	@Override
 	public
 	Requirement[] getRequirementChoices( ) {
@@ -102,6 +124,11 @@ class DemographicAuthenticatorFactory extends SimpleAuthenticatorFactory impleme
 		return REQUIREMENT_CHOICES;
 	}
 
+	/**
+	 * Returns the display name of this authenticator.
+	 *
+	 * @return the display name.
+	 */
 	@Override
 	public
 	String getDisplayType( ) {
@@ -109,6 +136,11 @@ class DemographicAuthenticatorFactory extends SimpleAuthenticatorFactory impleme
 		return "Demographic Validation";
 	}
 
+	/**
+	 * Returns the reference category for this authenticator.
+	 *
+	 * @return the reference category.
+	 */
 	@Override
 	public
 	String getReferenceCategory( ) {
@@ -116,6 +148,11 @@ class DemographicAuthenticatorFactory extends SimpleAuthenticatorFactory impleme
 		return "Demographic Validation";
 	}
 
+	/**
+	 * Determines if user setup is allowed.
+	 *
+	 * @return {@code true}, indicating that users can configure this authenticator.
+	 */
 	@Override
 	public
 	boolean isUserSetupAllowed( ) {
@@ -123,6 +160,11 @@ class DemographicAuthenticatorFactory extends SimpleAuthenticatorFactory impleme
 		return true;
 	}
 
+	/**
+	 * Returns help text for this authenticator.
+	 *
+	 * @return a description of the authenticator's purpose.
+	 */
 	@Override
 	public
 	String getHelpText( ) {
