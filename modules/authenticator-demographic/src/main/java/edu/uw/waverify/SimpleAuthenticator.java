@@ -3,6 +3,9 @@ package edu.uw.waverify;
 import org.keycloak.authentication.Authenticator;
 import org.keycloak.models.*;
 
+/**
+ * A base class for Keycloak authenticators that provides default implementations for common methods.
+ */
 public abstract
 class SimpleAuthenticator implements Authenticator {
 
@@ -12,9 +15,14 @@ class SimpleAuthenticator implements Authenticator {
 	@Override
 	public
 	void close( ) {
-		// No specific cleanup required.
+
 	}
 
+	/**
+	 * Indicates whether this authenticator requires a user to be authenticated.
+	 *
+	 * @return {@code false}, meaning no user is required.
+	 */
 	@Override
 	public
 	boolean requiresUser( ) {
@@ -35,7 +43,7 @@ class SimpleAuthenticator implements Authenticator {
 	@Override
 	public
 	void setRequiredActions( KeycloakSession keycloakSession, RealmModel realmModel, UserModel userModel ) {
-		// No required actions.
+
 	}
 
 }

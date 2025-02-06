@@ -13,6 +13,10 @@ import org.jboss.logging.Logger;
 import static org.keycloak.models.AuthenticationExecutionModel.Requirement;
 import static org.keycloak.models.AuthenticationExecutionModel.Requirement.*;
 
+/**
+ * A base class for Keycloak authenticator factories that simplifies the implementation by providing default behavior
+ * for common methods.
+ */
 public abstract
 class SimpleAuthenticatorFactory implements AuthenticatorFactory {
 
@@ -37,7 +41,7 @@ class SimpleAuthenticatorFactory implements AuthenticatorFactory {
 	@Override
 	public
 	void init( Config.Scope scope ) {
-		// No initialization required
+
 	}
 
 	/**
@@ -60,7 +64,7 @@ class SimpleAuthenticatorFactory implements AuthenticatorFactory {
 	@Override
 	public
 	void close( ) {
-		// No resources to close
+
 	}
 
 	/**
@@ -90,6 +94,14 @@ class SimpleAuthenticatorFactory implements AuthenticatorFactory {
 		return new Requirement[] { REQUIRED, DISABLED };
 	}
 
+	/**
+	 * Retrieves the logger instance for this factory.
+	 *
+	 * @return the logger associated with the class.
+	 *
+	 * @throws IllegalStateException
+	 * 		if the logger field cannot be accessed.
+	 */
 	public
 	Logger getLog( ) {
 

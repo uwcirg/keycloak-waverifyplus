@@ -1,7 +1,6 @@
 package edu.uw.waverify.token;
 
 import org.keycloak.authentication.Authenticator;
-import org.keycloak.authentication.AuthenticatorFactory;
 import org.keycloak.models.KeycloakSession;
 
 import edu.uw.waverify.SimpleAuthenticatorFactory;
@@ -16,7 +15,7 @@ import lombok.extern.jbosslog.JBossLog;
  */
 @JBossLog
 public
-class TokenAuthenticatorFactory extends SimpleAuthenticatorFactory implements AuthenticatorFactory {
+class TokenAuthenticatorFactory extends SimpleAuthenticatorFactory {
 
 	/**
 	 * The unique provider ID for this authenticator.

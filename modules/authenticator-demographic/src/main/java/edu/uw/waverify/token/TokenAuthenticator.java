@@ -1,6 +1,7 @@
 package edu.uw.waverify.token;
 
-import org.keycloak.authentication.*;
+import org.keycloak.authentication.AuthenticationFlowContext;
+import org.keycloak.authentication.AuthenticationFlowError;
 import org.keycloak.models.*;
 
 import edu.uw.waverify.SimpleAuthenticator;
@@ -17,7 +18,7 @@ import static edu.uw.waverify.token.UserTokenGenerator.TOKEN_ATTRIBUTE;
  */
 @JBossLog
 public
-class TokenAuthenticator extends SimpleAuthenticator implements Authenticator {
+class TokenAuthenticator extends SimpleAuthenticator {
 
 	private static final String TOKEN_PARAM = "user_token";
 

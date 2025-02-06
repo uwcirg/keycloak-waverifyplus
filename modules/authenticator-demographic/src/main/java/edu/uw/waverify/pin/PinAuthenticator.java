@@ -12,10 +12,22 @@ import lombok.extern.jbosslog.JBossLog;
 
 import static org.keycloak.authentication.AuthenticationFlowError.*;
 
+/**
+ * Authenticator for validating a user's PIN credential.
+ * <p>
+ * This authenticator challenges the user to enter a PIN and verifies it against stored credentials.
+ * </p>
+ */
 @JBossLog
 public
 class PinAuthenticator extends SimpleAuthenticator implements Authenticator, CredentialValidator< PinCredentialProvider > {
 
+	/**
+	 * Initiates the authentication challenge by prompting the user for a PIN.
+	 *
+	 * @param context
+	 * 		the authentication flow context.
+	 */
 	@Override
 	public
 	void authenticate( AuthenticationFlowContext context ) {
@@ -39,6 +51,12 @@ class PinAuthenticator extends SimpleAuthenticator implements Authenticator, Cre
 		context.challenge( challenge );
 	}
 
+	/**
+	 * Handles user input and validates the provided PIN.
+	 *
+	 * @param context
+	 * 		the authentication flow context.
+	 */
 	@Override
 	public
 	void action( AuthenticationFlowContext context ) {
@@ -68,6 +86,18 @@ class PinAuthenticator extends SimpleAuthenticator implements Authenticator, Cre
 		context.success( );
 	}
 
+	/**
+	 * Checks if the authenticator is configured for a given user.
+	 *
+	 * @param session
+	 * 		the Keycloak session.
+	 * @param realm
+	 * 		the realm.
+	 * @param user
+	 * 		the user.
+	 *
+	 * @return {@code true} if the user has a configured PIN credential.
+	 */
 	@Override
 	public
 	boolean configuredFor( KeycloakSession session, RealmModel realm, UserModel user ) {
@@ -75,6 +105,14 @@ class PinAuthenticator extends SimpleAuthenticator implements Authenticator, Cre
 		return getCredentialProvider( session ).isConfiguredFor( realm, user, PinCredentialModel.TYPE );
 	}
 
+	/**
+	 * Retrieves the credential provider responsible for PIN authentication.
+	 *
+	 * @param session
+	 * 		the Keycloak session.
+	 *
+	 * @return the {@link PinCredentialProvider} instance.
+	 */
 	@Override
 	public
 	PinCredentialProvider getCredentialProvider( KeycloakSession session ) {
@@ -82,6 +120,11 @@ class PinAuthenticator extends SimpleAuthenticator implements Authenticator, Cre
 		return ( PinCredentialProvider ) session.getProvider( CredentialProvider.class, PinCredentialProviderFactory.PROVIDER_ID );
 	}
 
+	/**
+	 * Indicates whether a user is required for this authenticator.
+	 *
+	 * @return {@code true}, as a user must be identified before verifying the PIN.
+	 */
 	@Override
 	public
 	boolean requiresUser( ) {
@@ -89,10 +132,18 @@ class PinAuthenticator extends SimpleAuthenticator implements Authenticator, Cre
 		return true;
 	}
 
+	/**
+	 * Validates the user's provided PIN.
+	 *
+	 * @param context
+	 * 		the authentication flow context.
+	 *
+	 * @return {@code true} if the PIN is valid, otherwise {@code false}.
+	 */
 	private
 	boolean validateAnswer( AuthenticationFlowContext context ) {
 
-		var session = context.getSession( );
+		var session  = context.getSession( );
 		var formData = context.getHttpRequest( )
 		                      .getDecodedFormParameters( );
 

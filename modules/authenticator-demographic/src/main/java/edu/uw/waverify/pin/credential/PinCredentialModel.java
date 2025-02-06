@@ -40,13 +40,13 @@ class PinCredentialModel extends CredentialModel {
 	/**
 	 * Constructs a {@code PinCredentialModel} with a plain PIN value.
 	 *
-	 * @param answer
+	 * @param pin
 	 * 		the PIN value.
 	 */
 	public
-	PinCredentialModel( String answer ) {
+	PinCredentialModel( String pin ) {
 
-		this.secretData = new PinSecretData( answer );
+		this.secretData = new PinSecretData( pin );
 	}
 
 	/**
@@ -87,34 +87,36 @@ class PinCredentialModel extends CredentialModel {
 	 * This method ensures that the credential fields, including secret data, are properly initialized.
 	 * </p>
 	 *
-	 * @param answer
+	 * @param pin
 	 * 		the PIN value.
 	 *
 	 * @return a fully initialized {@code PinCredentialModel}.
 	 */
 	public static
-	PinCredentialModel createPin( String answer ) {
+	PinCredentialModel createPin( String pin ) {
 
-		PinCredentialModel credentialModel = new PinCredentialModel( answer );
+		PinCredentialModel credentialModel = new PinCredentialModel( pin );
 		credentialModel.fillCredentialModelFields( );
 		return credentialModel;
 	}
 
 	/**
-	 * Creates a new {@code PinCredentialModel} with the given PIN value.
+	 * Creates a new {@code PinCredentialModel} with the given PIN value and credential model ID.
 	 * <p>
 	 * This method ensures that the credential fields, including secret data, are properly initialized.
 	 * </p>
 	 *
-	 * @param answer
+	 * @param pin
 	 * 		the PIN value.
+	 * @param credentialModelId
+	 * 		the credential model ID.
 	 *
 	 * @return a fully initialized {@code PinCredentialModel}.
 	 */
 	public static
-	PinCredentialModel createPin( String answer, String credentialModelId ) {
+	PinCredentialModel createPin( String pin, String credentialModelId ) {
 
-		PinCredentialModel credentialModel = createPin( answer );
+		PinCredentialModel credentialModel = createPin( pin );
 		credentialModel.setId( credentialModelId );
 		return credentialModel;
 	}

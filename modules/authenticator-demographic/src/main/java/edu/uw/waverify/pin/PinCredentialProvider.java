@@ -6,7 +6,7 @@ import org.keycloak.models.*;
 
 import edu.uw.waverify.pin.credential.PinCredentialModel;
 
-import org.jboss.logging.Logger;
+import lombok.extern.jbosslog.JBossLog;
 
 /**
  * Credential provider for PIN-based authentication.
@@ -14,10 +14,9 @@ import org.jboss.logging.Logger;
  * This provider handles the creation, validation, and management of PIN credentials for Keycloak users.
  * </p>
  */
+@JBossLog
 public
 class PinCredentialProvider implements CredentialProvider< PinCredentialModel >, CredentialInputValidator {
-
-	private static final Logger logger = Logger.getLogger( PinCredentialProvider.class );
 
 	protected KeycloakSession session;
 
@@ -182,7 +181,7 @@ class PinCredentialProvider implements CredentialProvider< PinCredentialModel >,
 	boolean isValid( RealmModel realm, UserModel user, CredentialInput input ) {
 
 		if ( !( input instanceof UserCredentialModel ) ) {
-			logger.warn( "Expected instance of UserCredentialModel for CredentialInput" );
+			log.warn( "Expected instance of UserCredentialModel for CredentialInput" );
 			return false;
 		}
 		if ( !input.getType( )
@@ -208,6 +207,8 @@ class PinCredentialProvider implements CredentialProvider< PinCredentialModel >,
 	 * 		the user whose credential is to be updated.
 	 * @param pinCredentialModel
 	 * 		the new PIN credential model.
+	 * @param pin
+	 * 		the updated PIN value.
 	 */
 	public
 	void updateCredential( UserModel user, PinCredentialModel pinCredentialModel, String pin ) {
