@@ -20,18 +20,28 @@ demographic data and secure user access using a PIN.
 
 ## Glossary
 
-### **1. Authenticator**
+### **1. Demographic Verification Service**
+
+Handles communication with external verification systems to validate user demographic information.
+
+Example:
+
+- `DemographicVerificationServiceImpl`: Implements external demographic validation.
+
+---
+
+### **2. Authenticator**
 
 Handles authentication logic for validating demographic information and PINs during authentication workflows.
 
 Examples:
 
-- `DemographicAuthenticatorImpl`: Validates demographic data.
+- `DemographicAuthenticatorImpl`: Validates demographic data and integrates with `DemographicVerificationService`.
 - `PinAuthenticator`: Validates user-entered PINs.
 
 ---
 
-### **2. Authenticator Factory**
+### **3. Authenticator Factory**
 
 Responsible for creating instances of authenticators and providing necessary dependencies.
 
@@ -42,7 +52,7 @@ Examples:
 
 ---
 
-### **3. Form Action**
+### **4. Form Action**
 
 Defines additional processing steps for user interactions with forms in Keycloak.
 
@@ -52,7 +62,7 @@ Example:
 
 ---
 
-### **4. Credential Provider**
+### **5. Credential Provider**
 
 Manages PIN storage, retrieval, and validation within Keycloak's credential framework.
 
@@ -63,7 +73,7 @@ Example:
 
 ---
 
-### **5. Required Actions**
+### **6. Required Actions**
 
 Required actions are prompts that users must complete to continue authentication.
 
@@ -73,7 +83,7 @@ Example:
 
 ---
 
-### **6. Token Authentication**
+### **7. Token Authentication**
 
 Allows users to authenticate using a token link received via email.
 
@@ -91,6 +101,8 @@ Examples:
 
 - `DemographicAuthenticatorImpl`: Handles demographic validation workflows during authentication.
 - `DemographicAuthenticatorFactory`: Manages demographic authenticator instances.
+- `DemographicVerificationService`: Defines the contract for verifying demographic data.
+- `DemographicVerificationServiceImpl`: Implements verification logic.
 - `DemographicRegistrationFormAction`: Processes demographic data during user registration.
 
 ### **2. PIN Authentication**
@@ -133,6 +145,7 @@ Examples:
 
 - Use the Keycloak admin console to add the appropriate authenticators or form actions to authentication flows.
 - Configure the PIN and token authentication settings as needed.
+- Set the baseUrl for DemographicVerificationService via Keycloak's authentication flow configuration.
 
 ---
 
@@ -142,6 +155,7 @@ To integrate demographic and PIN authentication into Keycloak:
 
 1. Add `DemographicAuthenticatorFactory`, `PinAuthenticatorFactory`, or `TokenAuthenticatorFactory` to your
    authentication flow.
-2. Enable `PinRequiredAction` to ensure users set up a PIN.
-3. Customize form templates for demographic and PIN input.
-4. Deploy and test the authentication process.
+2. Configure the `baseUrl` property in `DemographicAuthenticatorFactory` to point to the external verification service.
+3. Enable `PinRequiredAction` to ensure users set up a PIN.
+4. Customize form templates for demographic and PIN input.
+5. Deploy and test the authentication process.

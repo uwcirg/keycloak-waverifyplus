@@ -1,11 +1,10 @@
 # Keycloak WaverifyPlus
 
 Keycloak WaverifyPlus is a multi-project Gradle-based application designed to integrate with Keycloak for extended
-functionality. It comprises three subprojects:
+functionality. It comprises two subprojects:
 
 1. **mock-vp**
 2. **authenticator-demographic**
-3. **authenticator-pin**
 
 ---
 
@@ -23,21 +22,11 @@ For more details, see the [mock-vp README](mock-vp/README.md).
 
 ### 2. authenticator-demographic
 
-**authenticator-demographic** is a Keycloak Service Provider Interface (SPI) implementation that integrates demographic
-validation into the Keycloak ecosystem. It communicates with the **mock-vp** server to perform demographic validation
-and provides a mechanism to extend Keycloak functionality with custom logic.
+**authenticator-demographic** is a Keycloak Service Provider Interface (SPI) implementation that integrates both
+**demographic validation** and **PIN-based authentication** into the Keycloak ecosystem. It communicates with the
+**mock-vp** server to perform demographic validation and supports secure PIN-based authentication workflows.
 
 For more details, see the [authenticator-demographic README](modules/authenticator-demographic/README.md).
-
----
-
-### 3. authenticator-pin
-
-**authenticator-pin** is another Keycloak Service Provider Interface (SPI) implementation. It provides functionality for
-PIN-based authentication within Keycloak. This subproject extends Keycloak’s authentication mechanisms, enabling
-PIN-based workflows for secure user authentication.
-
-For more details, see the [authenticator-pin README](modules/authenticator-pin/README.md).
 
 ---
 
